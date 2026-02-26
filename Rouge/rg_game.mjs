@@ -5,13 +5,10 @@ rogue Game, topdown 2d rogue-like game.
 Writen by Robert Watt
 Term 1 2025
 ***************************/
-import { ref, get}
-    from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-import {fb_initialize, FB_GAMEDB, fb_readSorted, fb_read, fb_write, fb_onAuthStateChanged} 
-    from "../../mainPages/Index/fb_io.mjs";
+import {fb_initialize, fb_readSorted, fb_read, fb_write, fb_onAuthStateChanged} 
+    from "../FireBase/fb_io.mjs";
 
 fb_initialize()
-fb_onAuthStateChanged()
 
 const TILE_GRID_SIZE_X = 50;
 const TILE_GRID_SIZE_Y = 26;
@@ -96,7 +93,7 @@ window.setup = setup
 window.draw = draw
 
 function preload() {
-  sheetImg = loadImage("/games/rg_game/rg_assests/TileSheet8x8.png");
+  sheetImg = loadImage("TileSheet8x8.png");
 }
 
 function setup() {

@@ -1,7 +1,7 @@
 //**************************************************************/
 // fb_io.mjs
 // Generalised firebase routines
-// Written by <Your Name Here>, Term 2 202?
+// Written by Robert, Term 1 2026
 //
 // All variables & function begin with fb_  all const with FB_
 // Diagnostic code lines have a comment appended to them //DIAG
@@ -10,7 +10,7 @@ const COL_C = 'white';	    // These two const are part of the coloured
 const COL_B = '#CD7F32';	// console.log for functions scheme
 console.log('%c fb_io.mjs',
             'color: blue; background-color: white;');
-let FB_GAMEDB
+let FB_DB
 let userDetails = {
     displayName:'n/a',
     email:'n/a',
@@ -39,8 +39,8 @@ export {
     fb_write,
     fb_read,
     fb_readSorted,
-    fb_onAuthStateChanged,
-    FB_GAMEDB}
+    fb_onAuthStateChanged
+}
 
 /**************************************************************/
 // EXPORT FUNCTIONS
@@ -85,7 +85,7 @@ async function fb_write(input,path){
     console.log('%c fb_write(',input, ':', path,'): ', 
                 'color: ' + COL_C + '; background-color: ' + COL_B + ';');
     console.log(input)
-    const dbReference = ref(FB_GAMEDB,path);
+    const dbReference = ref(FB_DB,path);
     try{
         set(dbReference, input)
         console.log("✅ Successful write")
@@ -98,7 +98,7 @@ async function fb_write(input,path){
 async function fb_read(path){
     console.log('%c fb_read(' + path + '):', 
                 'color: ' + COL_C + '; background-color: ' + COL_B + ';');
-    const dbReference= ref(FB_GAMEDB, path);
+    const dbReference= ref(FB_DB, path);
     try{
         const snapshot = await get(dbReference)
         var fb_data = snapshot.val();
@@ -117,7 +117,7 @@ async function fb_read(path){
 }
 
 async function fb_readSorted(path, key,amount){
-    const dbReference= query(ref(FB_GAMEDB, path), orderByChild(key), limitToLast(amount));
+    const dbReference= query(ref(FB_DB, path), orderByChild(key), limitToLast(amount));
     try{
         const snapshot = await get(dbReference)
         if (snapshot.val() != null) {
