@@ -10,13 +10,28 @@ ul{
 }
 
 body{
-    margin-left: 8%;
-    margin-right: 8%;
+    margin-left: 8vw;
+    margin-right: 8vw;
 }
 
 .gameButton{
     border: 0;
-    width: 25vh;
+    width: 25vw;
     height: 25vh;
 }
 
+div{
+    padding-bottom: 1vh;
+    padding-top: 1vh;
+    background-color: rgb(204, 204, 204);
+    position: absolute;
+    width: 50vw;
+    margin-top: -16vh;
+    display: flex;
+    justify-content: center;
+}
+
+#signInButton{
+    border: 0;
+    padding: 2%;
+}
