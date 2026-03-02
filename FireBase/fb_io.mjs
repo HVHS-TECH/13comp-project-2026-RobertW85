@@ -39,7 +39,8 @@ export {
     fb_write,
     fb_read,
     fb_readSorted,
-    fb_onAuthStateChanged
+    fb_onAuthStateChanged,
+    userDetails
 }
 
 /**************************************************************/
@@ -63,13 +64,13 @@ function fb_initialize() {
     console.info(FB_DB);       
 }
 
-function fb_authenticate(){
+async function fb_authenticate(){
     const AUTH = getAuth();
     const PROVIDER = new GoogleAuthProvider();
     PROVIDER.setCustomParameters({
         prompt: 'select_account'
     });
-    signInWithPopup(AUTH, PROVIDER).then((result) => {
+    await signInWithPopup(AUTH, PROVIDER).then((result) => {
         userDetails.displayName = result.user.displayName
         userDetails.email = result.user.email
         userDetails.photoURL = result.user.photoURL
