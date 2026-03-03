@@ -67,18 +67,21 @@ function fb_initialize() {
 async function fb_authenticate(){
     const AUTH = getAuth();
     const PROVIDER = new GoogleAuthProvider();
-    PROVIDER.setCustomParameters({
-        prompt: 'select_account'
-    });
-    await signInWithPopup(AUTH, PROVIDER).then((result) => {
-        userDetails.displayName = result.user.displayName
-        userDetails.email = result.user.email
-        userDetails.photoURL = result.user.photoURL
-        userDetails.uid = result.user.uid
-        console.log("Authentication successful")
-    })
-    .catch((error) => {
-        console.log(error)
+
+    return new Promise((resolve) => {
+        (async () => {
+            PROVIDER.setCustomParameters({
+                prompt: 'select_account'
+            });
+            try {
+                const RESULT = await signInWithPopup(AUTH, PROVIDER);
+                resolve(RESULT);
+                
+            } catch (error) {
+                console.log(error)
+            }
+            
+        })();
     });
 }
 
