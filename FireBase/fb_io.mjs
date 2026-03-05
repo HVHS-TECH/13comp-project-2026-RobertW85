@@ -11,12 +11,7 @@ const COL_B = '#CD7F32';	// console.log for functions scheme
 console.log('%c fb_io.mjs',
             'color: blue; background-color: white;');
 let FB_DB
-let userDetails = {
-    displayName:'n/a',
-    email:'n/a',
-    photoURL:'n/a',
-    uid:'n/a'
-}
+
 /**************************************************************/
 // Import all external constants & functions required
 /**************************************************************/
@@ -39,8 +34,7 @@ export {
     fb_write,
     fb_read,
     fb_readSorted,
-    fb_onAuthStateChanged,
-    userDetails
+    fb_onAuthStateChanged
 }
 
 /**************************************************************/
@@ -93,6 +87,7 @@ async function fb_write(input,path){
     try{
         set(dbReference, input)
         console.log("✅ Successful write")
+        return
     }
     catch(error){
         console.log(error)

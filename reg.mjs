@@ -1,23 +1,19 @@
-import {fb_write} 
+import {fb_write, fb_initialize, fb_read} 
     from "./FireBase/fb_io.mjs";
-
+fb_initialize()
 async function submit(){
-    //console.log("submit")
-    let result = sessionStorage.getItem("googleAuth")
-    console.log(result)
-    /*
     let userDetails = {
         address:document.getElementById("addressInput").value,
         phone:document.getElementById("phoneInput").value,
         age:document.getElementById("ageInput").value,
         username:document.getElementById("usernameInput").value,
-        uid:result.user.uid,
-        email:result.user.email,
-        photoURL:result.user.photoURL,
-        displayName:result.user.displayName
+        uid:sessionStorage.getItem("uid"),
+        email:sessionStorage.getItem("email"),
+        photoURL:sessionStorage.getItem("photoURL"),
+        displayName:sessionStorage.getItem("displayName")
     }
-    print(userDetails)
-    //await fb_write(address, sessionStorage.getItem("uid"))*/
+    await fb_write(userDetails, '/userDetails/'+userDetails.uid)
+    window.location.href = 'index.html'
 }
 
 window.submit = submit
