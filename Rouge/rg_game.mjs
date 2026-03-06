@@ -6,7 +6,7 @@ Writen by Robert Watt
 Term 1 2025
 ***************************/
 import {fb_initialize, fb_readSorted, fb_read, fb_write, fb_onAuthStateChanged} 
-    from "../FireBase/fb_io.mjs";
+    from "fireBase/fb_io.mjs";
 
 fb_initialize()
 

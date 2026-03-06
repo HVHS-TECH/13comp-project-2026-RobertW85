@@ -6,9 +6,9 @@
 </head>
 
 <body>
-    <script type="module" src="/FireBase/fb_io.mjs"></script>
-    <script type="module" src="/index.mjs"></script>
-    <ul class ="navul">
+    <script type="module" src="fireBase/fb_io.mjs"></script>
+    <script type="module" src="index.mjs"></script>
+    <ul id="navUl">
         <li class="navButton">Title</li>
         <li class="navButton">Admin</li>
         <li class="navButton">About</li>
@@ -19,10 +19,10 @@
     <h1>Title</h1>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore </p>
 
-    <button onclick="location.href='Rouge/rg.html'" class="gameButton">Rouge Game </button>
-    <button onclick="location.href='TicTacToe/ttt.html'" class="gameButton">Tic Tac Toe Game</button>
+    <button disabled onclick="location.href='Rouge/rg.html'" class="gameButton">Rouge Game </button>
+    <button disabled onclick="location.href='TicTacToe/ttt.html'" class="gameButton">Tic Tac Toe Game</button>
     
-    <div>
+    <div id="blockerDiv">
         <button id="signInButton" onclick=signIn()>Sign in to access</button>
     </div>
 </body>

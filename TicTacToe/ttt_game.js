@@ -1,4 +1,4 @@
-let canvas;
+let canvas
 let lineColor = (13,161, 146);
 let backgroundColor = (20, 189, 172);
 
