@@ -4,46 +4,75 @@ import {fb_initialize, fb_read, fb_write}
 let lobbyDiv = document.createElement('div')
 let lobbyTitle = document.createElement('h1')
 let lobbyTable = document.createElement('table')
-let buttonDiv = document.createElement('div')
-let hostButton = document.createElement('button')
 
 let lobbyData = {
     lobbyName:null,
-    player1:null,
-    player2:null,
+    players:null,
     turn:null,
     bord:null,
 }
 
 fb_initialize()
+let userName = await fb_read('/userDetails/' + sessionStorage.getItem("uid") + "/username")
 startup()
 
 function startup() {
+    let buttonDiv = document.createElement('div')
+    let hostButton = document.createElement('button')
+    let refreshButton = document.createElement('button')
+
     document.body.appendChild(lobbyDiv)
     lobbyDiv.appendChild(lobbyTitle)
     lobbyDiv.appendChild(buttonDiv)
-    lobbyDiv.appendChild(hostButton)
+    buttonDiv.appendChild(hostButton)
+    buttonDiv.appendChild(refreshButton)
     lobbyDiv.appendChild(lobbyTable)
     
 
     hostButton.innerHTML = 'Host'
     hostButton.onclick = hostLobby
+    refreshButton.innerHTML = 'refresh'
+    refreshButton.onclick = refreshAvalibleLobbies
     lobbyTitle.innerHTML = 'Tic tac toe Lobby'
 
     refreshAvalibleLobbies()
 }
 
 async function refreshAvalibleLobbies(){
+    lobbyTable.innerHTML = ''
+
     let lobbyList = await fb_read('/lobbies')
+    if (lobbyList == null){return}
     for (let i = 0; i < Object.keys(lobbyList).length; i++){
+        if ((lobbyList[Object.keys(lobbyList)[i]].players).length >= 2){
+            continue
+        }
+
+
         let tableRow = document.createElement('tr')
         let lobbyName = document.createElement('td')
+        //let lobbyPlayers = document.createElement('td')
         let joinButton = document.createElement('button')
 
         lobbyName.innerHTML = Object.keys(lobbyList)[i]
+        
+        /* no need to display lobby players as 0 player lobbies will not exist and 2 player lobbies are not joinable
+        console.log(lobbyList[Object.keys(lobbyList)[i]])
+        if (lobbyList[Object.keys(lobbyList)[i]].player1 != ""){
+            if (lobbyList[Object.keys(lobbyList)[i]].player2 != ""){
+                lobbyPlayers.innerHTML = "2/2"
+            }
+            else{
+                lobbyPlayers.innerHTML = "1/2"
+            }
+        }*/
+
+        //lobbyPlayers.innerHTML = 
         joinButton.innerHTML = 'Join'
+        joinButton.onclick = (()=>{joinLobby(lobbyName.innerHTML)})
 
         tableRow.appendChild(lobbyName)
+        //tableRow.appendChild(lobbyPlayers)
         tableRow.appendChild(joinButton)
         lobbyTable.appendChild(tableRow)
 
@@ -52,11 +81,28 @@ async function refreshAvalibleLobbies(){
 
 async function hostLobby(){
     let lobbyList = await fb_read('/lobbies')
-    let lobbyNumber = Object.keys(lobbyList).length + 1
+    let lobbyNumber
+    if (lobbyList != null){lobbyNumber = Object.keys(lobbyList).length + 1}
+    else{lobbyNumber = 1}
+    
     lobbyData.lobbyName = 'Lobby' + lobbyNumber
-    lobbyData.player1 = await fb_read('/userDetails/' + sessionStorage.getItem("uid") + "/username")
-    lobbyData.player2 = ""
+    lobbyData.players = [userName]
     lobbyData.turn = 0
     lobbyData.bord = [[0,0,0],[0,0,0],[0,0,0]]
     fb_write(lobbyData,'/lobbies/lobby'+lobbyNumber)
+}
+
+async function joinLobby(lobbyName){
+    console.log(lobbyName)
+    //let players = []
+    //players.push(await fb_read('/lobbies/'+lobbyName+'/players'))
+    //console.log(players)
+    //since its two player joiing a non full lobby will make you the second player
+    await fb_write(userName,'/lobbies/'+lobbyName+'/players/1')
+    
+    document.body.removeChild(lobbyDiv)
+
+    let game = document.createElement('script')
+    game.src = 'ticTacToe/ttt_game.js'
+    document.body.appendChild(game)
 }
