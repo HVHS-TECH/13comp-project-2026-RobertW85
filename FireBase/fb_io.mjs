@@ -177,7 +177,20 @@ function fb_onAuthStateChanged() {
 
 async function fb_onValue(_path) {
   const REF = ref(FB_DB, _path);
+  /*
+  return new Promise((resolve) => {
+    (async () => {
+      try {
+        const RESULT = await onValue(REF, (snapshot));
+        resolve(RESULT);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  });*/
+  let initail = true;
   const LISTENER = await onValue(REF, (snapshot) => {
-    console.log(snapshot);
+    console.log("change");
+    //console.log(snapshot);
   });
 }

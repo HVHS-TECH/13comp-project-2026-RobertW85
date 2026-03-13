@@ -104,15 +104,17 @@ async function hostLobby() {
     [0, 0, 0],
   ];
   let lobbyName = "lobby" + lobbyNumber;
-  fb_write(lobbyData, "/lobbies/" + lobbyName);
+  await fb_write(lobbyData, "/lobbies/" + lobbyName);
 
   //when player joins
   waitForPlayer(lobbyName);
 }
 
-function waitForPlayer(lobbyName) {
+async function waitForPlayer(lobbyName) {
   const PATH = `/lobbies/${lobbyName}/players`;
-  fb_onValue(PATH);
+  await fb_onValue(PATH);
+  console.log("start game");
+  //startGame();
 }
 
 async function joinLobby(lobbyName) {
@@ -125,6 +127,10 @@ async function joinLobby(lobbyName) {
 
   //tell host to start game
 
+  startGame();
+}
+
+function startGame() {
   document.body.removeChild(lobbyDiv);
   let game = document.createElement("script");
   game.src = "ttt_game.js";
