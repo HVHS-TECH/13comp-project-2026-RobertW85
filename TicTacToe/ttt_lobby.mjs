@@ -3,7 +3,7 @@ import {
   fb_read,
   fb_write,
   fb_onValue,
-} from "/fireBase/fb_io.mjs";
+} from "../FireBase/fb_io.mjs";
 
 let lobbyDiv = document.createElement("div");
 let lobbyTitle = document.createElement("h1");
@@ -57,30 +57,16 @@ async function refreshAvalibleLobbies() {
 
     let tableRow = document.createElement("tr");
     let lobbyName = document.createElement("td");
-    //let lobbyPlayers = document.createElement('td')
     let joinButton = document.createElement("button");
 
     lobbyName.innerHTML = Object.keys(lobbyList)[i];
 
-    /* no need to display lobby players as 0 player lobbies will not exist and 2 player lobbies are not joinable
-        console.log(lobbyList[Object.keys(lobbyList)[i]])
-        if (lobbyList[Object.keys(lobbyList)[i]].player1 != ""){
-            if (lobbyList[Object.keys(lobbyList)[i]].player2 != ""){
-                lobbyPlayers.innerHTML = "2/2"
-            }
-            else{
-                lobbyPlayers.innerHTML = "1/2"
-            }
-        }*/
-
-    //lobbyPlayers.innerHTML =
     joinButton.innerHTML = "Join";
     joinButton.onclick = () => {
       joinLobby(lobbyName.innerHTML);
     };
 
     tableRow.appendChild(lobbyName);
-    //tableRow.appendChild(lobbyPlayers)
     tableRow.appendChild(joinButton);
     lobbyTable.appendChild(tableRow);
   }
@@ -106,27 +92,19 @@ async function hostLobby() {
   let lobbyName = "lobby" + lobbyNumber;
   await fb_write(lobbyData, "/lobbies/" + lobbyName);
 
-  //when player joins
   waitForPlayer(lobbyName);
 }
 
 async function waitForPlayer(lobbyName) {
   const PATH = `/lobbies/${lobbyName}/players`;
   await fb_onValue(PATH);
-  console.log("start game");
-  //startGame();
+  startGame();
 }
 
 async function joinLobby(lobbyName) {
   console.log(lobbyName);
-  //let players = []
-  //players.push(await fb_read('/lobbies/'+lobbyName+'/players'))
-  //console.log(players)
   //since its two player joinng a non full lobby will make you the second player
-  await fb_write(userName, "/lobbies/" + lobbyName + "/players/1");
-
-  //tell host to start game
-
+  await fb_write(userName, `/lobbies/${lobbyName}/players/1`);
   startGame();
 }
 

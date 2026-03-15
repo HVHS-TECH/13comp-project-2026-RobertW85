@@ -1,6 +1,6 @@
 //2026 t1
 import {fb_authenticate, fb_initialize, fb_read}
-    from "/fireBase/fb_io.mjs"
+    from "./FireBase/fb_io.mjs"
 
 fb_initialize()
 if (sessionStorage.getItem("uid") != null){
