@@ -30,13 +30,7 @@ import {
 // EXPORT FUNCTIONS
 // List all the functions called by code or html outside of this module
 /**************************************************************/
-export {
-  fb_initialize,
-  fb_authenticate,
-  fb_write,
-  fb_read,
-  fb_onValue,
-};
+export { fb_initialize, fb_authenticate, fb_write, fb_read, fb_onValue };
 
 /**************************************************************/
 // EXPORT FUNCTIONS
@@ -100,18 +94,15 @@ async function fb_read(path) {
   }
 }
 
-
-//this just checks for players.length so needs to be updated later
 async function fb_onValue(_path) {
   return new Promise((resolve) => {
+    let Old;
     const REF = ref(FB_DB, _path);
     const LISTENER = onValue(REF, (snapshot) => {
-      //console.log(snapshot)
-      const PLAYERS = snapshot.val();
-      console.log(PLAYERS);
-      if (PLAYERS.length() >= 2) {
-        resolve();
+      if (snapshot.val() != Old && Old != null) {
+        resolve(snapshot.val());
       }
+      Old = snapshot.val();
     });
   });
 }

@@ -20,6 +20,7 @@ fb_initialize();
 let userName = await fb_read(
   "/userDetails/" + sessionStorage.getItem("uid") + "/username",
 );
+let uid = sessionStorage.getItem("uid");
 startup();
 
 function startup() {
@@ -82,35 +83,42 @@ async function hostLobby() {
   }
 
   lobbyData.lobbyName = "Lobby" + lobbyNumber;
-  lobbyData.players = [userName];
-  lobbyData.turn = 0;
+  lobbyData.players = [uid];
+  lobbyData.turn = null;
   lobbyData.bord = [
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0],
   ];
   let lobbyName = "lobby" + lobbyNumber;
-  await fb_write(lobbyData, "/lobbies/" + lobbyName);
+  await fb_write(lobbyData, `/lobbies/${lobbyName}`);
 
   waitForPlayer(lobbyName);
 }
 
 async function waitForPlayer(lobbyName) {
   const PATH = `/lobbies/${lobbyName}/players`;
-  await fb_onValue(PATH);
-  startGame();
+  console.log(await fb_onValue(PATH));
+
+  let players = await fb_read(PATH);
+  console.log(players);
+  let turn = players[Math.floor(Math.random() * 2)];
+  await fb_write(turn, `/lobbies/${lobbyName}/turn`);
+  startGame(lobbyName);
 }
 
 async function joinLobby(lobbyName) {
   console.log(lobbyName);
   //since its two player joinng a non full lobby will make you the second player
-  await fb_write(userName, `/lobbies/${lobbyName}/players/1`);
-  startGame();
+  await fb_write(uid, `/lobbies/${lobbyName}/players/1`);
+  startGame(lobbyName);
 }
 
-function startGame() {
+function startGame(lobbyName) {
+  sessionStorage.setItem("lobbyName", lobbyName);
   document.body.removeChild(lobbyDiv);
   let game = document.createElement("script");
-  game.src = "ttt_game.js";
+  game.type = "module";
+  game.src = "ttt_game.mjs";
   document.body.appendChild(game);
 }
