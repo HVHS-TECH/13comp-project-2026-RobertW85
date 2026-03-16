@@ -17,9 +17,6 @@ let lobbyData = {
 };
 
 fb_initialize();
-let userName = await fb_read(
-  "/userDetails/" + sessionStorage.getItem("uid") + "/username",
-);
 let uid = sessionStorage.getItem("uid");
 startup();
 
@@ -83,7 +80,7 @@ async function hostLobby() {
   }
 
   lobbyData.lobbyName = "Lobby" + lobbyNumber;
-  lobbyData.players = [uid];
+  lobbyData.players = [await getPlayerData()];
   lobbyData.turn = null;
   lobbyData.bord = [
     [0, 0, 0],
@@ -98,11 +95,12 @@ async function hostLobby() {
 
 async function waitForPlayer(lobbyName) {
   const PATH = `/lobbies/${lobbyName}/players`;
-  console.log(await fb_onValue(PATH));
+  await fb_onValue(PATH)
 
   let players = await fb_read(PATH);
   console.log(players);
-  let turn = players[Math.floor(Math.random() * 2)];
+  let turn = players[Math.floor(Math.random() * 2)].uid;
+  console.log(turn)
   await fb_write(turn, `/lobbies/${lobbyName}/turn`);
   startGame(lobbyName);
 }
@@ -110,8 +108,16 @@ async function waitForPlayer(lobbyName) {
 async function joinLobby(lobbyName) {
   console.log(lobbyName);
   //since its two player joinng a non full lobby will make you the second player
-  await fb_write(uid, `/lobbies/${lobbyName}/players/1`);
+  await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
   startGame(lobbyName);
+}
+
+async function getPlayerData(){
+  let playerData = {
+    uid:uid,
+    userName:await fb_read("/userDetails/" + sessionStorage.getItem("uid") + "/username")
+  }
+  return playerData
 }
 
 function startGame(lobbyName) {

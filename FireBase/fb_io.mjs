@@ -71,10 +71,10 @@ async function fb_authenticate() {
       }
     })();
   });
-}
+} 
 
 async function fb_write(input, path) {
-  console.log(input);
+  console.log(`Write ${input} at ${path}`);
   const dbReference = ref(FB_DB, path);
   await set(dbReference, input);
 }

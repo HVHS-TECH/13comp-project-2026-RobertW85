@@ -1,34 +1,45 @@
-import { fb_initialize, fb_read } from "../FireBase/fb_io.mjs";
-let canvas;
+import {fb_read,fb_write} from "../FireBase/fb_io.mjs";
+let canvas = createCanvas();
 let lineColor = (13, 161, 146);
 let backgroundColor = (20, 189, 172);
 
+let symbol;
+let symbolName;
 let nought;
 let cross;
-let boardarray = [
+let boardArray = [
   [null, null, null],
   [null, null, null],
   [null, null, null],
 ];
 
-fb_initialize();
+//fb_initialize();
+window.preload = preload
+window.setup = setup
+window.windowResized = windowResized
+
 let lobbyName = sessionStorage.getItem("lobbyName");
 let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
+let players = lobbyData.players
 let lobbyTurn = lobbyData.turn;
 let turn = false;
 let uid = sessionStorage.getItem("uid");
 if (uid == lobbyTurn) {
   turn = true;
+  symbol = cross
+  symbolName = "cross"
+}else{
+  symbol = nought
+  symbolName = "nought"
 }
 
 function preload() {
+  console.log('preload')
   nought = loadImage("nought.svg");
   cross = loadImage("cross.svg");
 }
 
 function setup() {
-  console.log("running");
-  //canvas = createCanvas()
   updateScreen();
 }
 
@@ -84,98 +95,90 @@ function refreshSprites(boardSize, center) {
   let spriteSize = boardSize / 50;
 
   //row 1
-  makeSprite(
-    center.x - boardSize * 2,
-    center.y - boardSize * 2,
-    spriteSize,
-    1,
-    1,
-  );
+  makeSprite(center.x - boardSize * 2,center.y - boardSize * 2,spriteSize,1,1);
   makeSprite(center.x, center.y - boardSize * 2, spriteSize, 1, 2);
-  makeSprite(
-    center.x + boardSize * 2,
-    center.y - boardSize * 2,
-    spriteSize,
-    1,
-    3,
-  );
+  makeSprite(center.x + boardSize * 2,center.y - boardSize * 2,spriteSize,1,3);
+
   //row 2
   makeSprite(center.x - boardSize * 2, center.y, spriteSize, 2, 1);
   makeSprite(center.x, center.y, spriteSize, 2, 2);
   makeSprite(center.x + boardSize * 2, center.y, spriteSize, 2, 3);
 
   //row 3
-  makeSprite(
-    center.x - boardSize * 2,
-    center.y + boardSize * 2,
-    spriteSize,
-    3,
-    1,
-  );
+  makeSprite(center.x - boardSize * 2,center.y + boardSize * 2,spriteSize,3,1);
   makeSprite(center.x, center.y + boardSize * 2, spriteSize, 3, 2);
-  makeSprite(
-    center.x + boardSize * 2,
-    center.y + boardSize * 2,
-    spriteSize,
-    3,
-    3,
-  );
+  makeSprite(center.x + boardSize * 2,center.y + boardSize * 2,spriteSize,3,3);
 }
 
 function makeSprite(x, y, size, row, column) {
   let sprite = new Sprite();
   sprite.color = backgroundColor;
-  sprite.scale = size * 1.8;
+  sprite.scale = size * 1.8;  
   sprite.position.x = x;
   sprite.position.y = y;
   sprite.collider = "static";
   sprite.row = row;
   sprite.column = column;
   sprite.update = function () {
-    if (this.mouse.presses() && turn == true) {
-      this.image = nought;
+    if (this.mouse.presses()){// && turn == true ) {
+      this.image = symbol;
       this.scale = size;
       print(this.row, this.column);
-      boardarray[this.row - 1][this.column - 1] = "nought";
-      checkWin(this.row, this.column, "nought");
+      boardArray[this.row - 1][this.column - 1] = symbolName;
+      makeTurn(this.row, this.column, symbolName)
     }
   };
 }
 
 //test if new placement will win
 // check row/column of x and y then both diagonals
-function checkWin(x, y, symbol) {
-  //check row in boardarray for horizontal win
+function checkWin(x, y, _symbol) {
+  //check row in boardArray for horizontal win
   if (
-    boardarray[x - 1][0] == symbol &&
-    boardarray[x - 1][1] == symbol &&
-    boardarray[x - 1][2] == symbol
+    boardArray[x - 1][0] == _symbol &&
+    boardArray[x - 1][1] == _symbol &&
+    boardArray[x - 1][2] == _symbol
   ) {
-    print("win", x, "row");
+    //print("win", x, "row");
   }
-  //check column in boardarray for vertical win
+  //check column in boardArray for vertical win
   if (
-    boardarray[0][y - 1] == symbol &&
-    boardarray[1][y - 1] == symbol &&
-    boardarray[2][y - 1] == symbol
+    boardArray[0][y - 1] == _symbol &&
+    boardArray[1][y - 1] == _symbol &&
+    boardArray[2][y - 1] == _symbol
   ) {
-    print("win", y, "column");
+    //print("win", y, "column");
   }
   //since diagonals only happen in 2 cases it is easy to be lazy
   //check diagonal from top-left to bottom-right
   if (
-    boardarray[0][0] == symbol &&
-    boardarray[1][1] == symbol &&
-    boardarray[2][2] == symbol
+    boardArray[0][0] == _symbol &&
+    boardArray[1][1] == _symbol &&
+    boardArray[2][2] == _symbol
   ) {
-    print("win", "diagonal");
+    //print("win", "diagonal");
   }
   //check diagonal from top-right to bottom-left
   if (
-    boardarray[0][2] == symbol &&
-    boardarray[1][1] == symbol &&
-    boardarray[2][0] == symbol
+    boardArray[0][2] == _symbol &&
+    boardArray[1][1] == _symbol &&
+    boardArray[2][0] == _symbol
   ) {
-    print("win", "diagonal");
+    //print("win", "diagonal");
   }
+}
+
+async function makeTurn(row,column,symbolName){
+  turn = false
+  await fb_write(boardArray, `/lobbies/${lobbyName}/bord`)
+  checkWin(row, column, symbolName);
+  console.log(players)
+
+  //change to handle new object system
+  /*if (players.findIndexOf(uid) == 0){
+    lobbyTurn = players[1]
+  }else{
+    lobbyTurn = players[0]
+  }*/
+  await fb_write(lobbyTurn, `/lobbies/${lobbyName}/turn`)
 }
