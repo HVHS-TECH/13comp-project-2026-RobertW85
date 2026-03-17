@@ -13,7 +13,7 @@ let lobbyData = {
   lobbyName: null,
   players: null,
   turn: null,
-  bord: null,
+  board: null,
 };
 
 fb_initialize();
@@ -71,6 +71,8 @@ async function refreshAvalibleLobbies() {
 }
 
 async function hostLobby() {
+  console.log("I am the host");
+  console.log("creating lobby");
   let lobbyList = await fb_read("/lobbies");
   let lobbyNumber;
   if (lobbyList != null) {
@@ -82,7 +84,7 @@ async function hostLobby() {
   lobbyData.lobbyName = "Lobby" + lobbyNumber;
   lobbyData.players = [await getPlayerData()];
   lobbyData.turn = null;
-  lobbyData.bord = [
+  lobbyData.board = [
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0],
@@ -94,33 +96,37 @@ async function hostLobby() {
 }
 
 async function waitForPlayer(lobbyName) {
+  console.log("waiting for players");
   const PATH = `/lobbies/${lobbyName}/players`;
-  await fb_onValue(PATH)
-
+  await fb_onValue(PATH);
   let players = await fb_read(PATH);
-  console.log(players);
+  //console.log(players);
   let turn = players[Math.floor(Math.random() * 2)].uid;
-  console.log(turn)
+  console.log(`Current turn:${turn}`);
   await fb_write(turn, `/lobbies/${lobbyName}/turn`);
   startGame(lobbyName);
 }
 
 async function joinLobby(lobbyName) {
+  console.log("I am the client");
+  console.log("Join Lobby");
   console.log(lobbyName);
-  //since its two player joinng a non full lobby will make you the second player
   await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
   startGame(lobbyName);
 }
 
-async function getPlayerData(){
+async function getPlayerData() {
   let playerData = {
-    uid:uid,
-    userName:await fb_read("/userDetails/" + sessionStorage.getItem("uid") + "/username")
-  }
-  return playerData
+    uid: uid,
+    userName: await fb_read(
+      `/userDetails/${sessionStorage.getItem("uid")}/username`,
+    ),
+  };
+  return playerData;
 }
 
 function startGame(lobbyName) {
+  console.log("starting game");
   sessionStorage.setItem("lobbyName", lobbyName);
   document.body.removeChild(lobbyDiv);
   let game = document.createElement("script");

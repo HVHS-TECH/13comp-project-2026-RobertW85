@@ -1,4 +1,4 @@
-import {fb_read,fb_write} from "../FireBase/fb_io.mjs";
+import { fb_read, fb_write } from "../FireBase/fb_io.mjs";
 let canvas = createCanvas();
 let lineColor = (13, 161, 146);
 let backgroundColor = (20, 189, 172);
@@ -14,32 +14,39 @@ let boardArray = [
 ];
 
 //fb_initialize();
-window.preload = preload
-window.setup = setup
-window.windowResized = windowResized
+window.preload = preload;
+window.setup = setup;
+window.windowResized = windowResized;
 
-let lobbyName = sessionStorage.getItem("lobbyName");
-let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
-let players = lobbyData.players
-let lobbyTurn = lobbyData.turn;
-let turn = false;
-let uid = sessionStorage.getItem("uid");
-if (uid == lobbyTurn) {
-  turn = true;
-  symbol = cross
-  symbolName = "cross"
-}else{
-  symbol = nought
-  symbolName = "nought"
-}
+let lobbyName;
+let lobbyData;
+let players;
+let lobbyTurn;
+let turn;
+let uid;
 
-function preload() {
-  console.log('preload')
+async function preload() {
+  console.log("preload");
   nought = loadImage("nought.svg");
   cross = loadImage("cross.svg");
 }
 
-function setup() {
+async function setup() {
+  console.log("setup");
+  let lobbyName = sessionStorage.getItem("lobbyName");
+  let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
+  let players = lobbyData.players;
+  let lobbyTurn = lobbyData.turn;
+  let turn = false;
+  let uid = sessionStorage.getItem("uid");
+  if (uid == lobbyTurn) {
+    turn = true;
+    symbol = cross;
+    symbolName = "cross";
+  } else {
+    symbol = nought;
+    symbolName = "nought";
+  }
   updateScreen();
 }
 
@@ -91,41 +98,63 @@ function updateScreen() {
 
 function refreshSprites(boardSize, center) {
   allSprites.remove();
-
   let spriteSize = boardSize / 50;
-
   //row 1
-  makeSprite(center.x - boardSize * 2,center.y - boardSize * 2,spriteSize,1,1);
+  makeSprite(
+    center.x - boardSize * 2,
+    center.y - boardSize * 2,
+    spriteSize,
+    1,
+    1,
+  );
   makeSprite(center.x, center.y - boardSize * 2, spriteSize, 1, 2);
-  makeSprite(center.x + boardSize * 2,center.y - boardSize * 2,spriteSize,1,3);
-
+  makeSprite(
+    center.x + boardSize * 2,
+    center.y - boardSize * 2,
+    spriteSize,
+    1,
+    3,
+  );
   //row 2
   makeSprite(center.x - boardSize * 2, center.y, spriteSize, 2, 1);
   makeSprite(center.x, center.y, spriteSize, 2, 2);
   makeSprite(center.x + boardSize * 2, center.y, spriteSize, 2, 3);
-
   //row 3
-  makeSprite(center.x - boardSize * 2,center.y + boardSize * 2,spriteSize,3,1);
+  makeSprite(
+    center.x - boardSize * 2,
+    center.y + boardSize * 2,
+    spriteSize,
+    3,
+    1,
+  );
   makeSprite(center.x, center.y + boardSize * 2, spriteSize, 3, 2);
-  makeSprite(center.x + boardSize * 2,center.y + boardSize * 2,spriteSize,3,3);
+  makeSprite(
+    center.x + boardSize * 2,
+    center.y + boardSize * 2,
+    spriteSize,
+    3,
+    3,
+  );
 }
 
 function makeSprite(x, y, size, row, column) {
   let sprite = new Sprite();
   sprite.color = backgroundColor;
-  sprite.scale = size * 1.8;  
+  sprite.scale = size * 1.8;
   sprite.position.x = x;
   sprite.position.y = y;
   sprite.collider = "static";
   sprite.row = row;
   sprite.column = column;
   sprite.update = function () {
-    if (this.mouse.presses()){// && turn == true ) {
+    if (this.mouse.presses()) {
+      // && turn == true ) {
+      console.log("Mouse preessed");
       this.image = symbol;
       this.scale = size;
       print(this.row, this.column);
       boardArray[this.row - 1][this.column - 1] = symbolName;
-      makeTurn(this.row, this.column, symbolName)
+      makeTurn(this.row, this.column, symbolName);
     }
   };
 }
@@ -168,17 +197,14 @@ function checkWin(x, y, _symbol) {
   }
 }
 
-async function makeTurn(row,column,symbolName){
-  turn = false
-  await fb_write(boardArray, `/lobbies/${lobbyName}/bord`)
+async function makeTurn(row, column, symbolName) {
+  turn = false;
+  await fb_write(boardArray, `/lobbies/${lobbyName}/board`);
   checkWin(row, column, symbolName);
-  console.log(players)
-
-  //change to handle new object system
-  /*if (players.findIndexOf(uid) == 0){
-    lobbyTurn = players[1]
-  }else{
-    lobbyTurn = players[0]
-  }*/
-  await fb_write(lobbyTurn, `/lobbies/${lobbyName}/turn`)
+  if (players[0].uid == uid) {
+    lobbyTurn = players[1].uid;
+  } else {
+    lobbyTurn = players[0].uid;
+  }
+  await fb_write(lobbyTurn, `/lobbies/${lobbyName}/turn`);
 }
