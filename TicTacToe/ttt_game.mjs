@@ -147,8 +147,7 @@ function makeSprite(x, y, size, row, column) {
   sprite.row = row;
   sprite.column = column;
   sprite.update = function () {
-    if (this.mouse.presses()) {
-      // && turn == true ) {
+    if (this.mouse.presses() && turn == true) {
       console.log("Mouse preessed");
       this.image = symbol;
       this.scale = size;
@@ -207,4 +206,10 @@ async function makeTurn(row, column, symbolName) {
     lobbyTurn = players[0].uid;
   }
   await fb_write(lobbyTurn, `/lobbies/${lobbyName}/turn`);
+  waitForTurn();
+}
+
+async function waitForTurn() {
+  const PATH = `/lobbies/${lobbyName}/turn`;
+  console.log(await fb_onValue(PATH));
 }
