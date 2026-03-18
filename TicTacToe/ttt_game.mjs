@@ -33,12 +33,12 @@ async function preload() {
 
 async function setup() {
   console.log("setup");
-  let lobbyName = sessionStorage.getItem("lobbyName");
-  let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
-  let players = lobbyData.players;
-  let lobbyTurn = lobbyData.turn;
-  let turn = false;
-  let uid = sessionStorage.getItem("uid");
+  lobbyName = sessionStorage.getItem("lobbyName");
+  lobbyData = await fb_read(`/lobbies/${lobbyName}`);
+  players = lobbyData.players;
+  lobbyTurn = lobbyData.turn;
+  turn = false;
+  uid = sessionStorage.getItem("uid");
   if (uid == lobbyTurn) {
     turn = true;
     symbol = cross;
