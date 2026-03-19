@@ -8,10 +8,12 @@ let symbolName;
 let nought;
 let cross;
 let boardArray = [
-  [null, null, null],
-  [null, null, null],
-  [null, null, null],
+  [0, 0, 0],
+  [0, 0, 0],
+  [0, 0, 0],
 ];
+let boardSize
+let center
 
 //fb_initialize();
 window.preload = preload;
@@ -23,6 +25,7 @@ let lobbyData;
 let players;
 let lobbyTurn;
 let turn;
+let turnText
 let uid;
 
 async function preload() {
@@ -61,8 +64,8 @@ function updateScreen() {
 
   let screenWidth = window.innerWidth;
   let screenHeight = window.innerHeight;
-  let boardSize = min(screenWidth, screenHeight) * 0.1;
-  let center = createVector(screenWidth / 2, screenHeight / 2);
+  boardSize = min(screenWidth, screenHeight) * 0.1;
+  center = createVector(screenWidth / 2, screenHeight / 2);
   let lineLength = boardSize * 2.7;
 
   stroke(lineColor);
@@ -94,14 +97,14 @@ function updateScreen() {
   );
 
   strokeWeight(0);
-  refreshSprites(boardSize, center);
+  refreshSprites();
   textSize(30)
   fill(lineColor)
-  let turnText = text(`Turn: ${turn}`, 50,50)
+  turnText = text(`Turn: ${turn}`, 50,50)
   
 }
 
-function refreshSprites(boardSize, center) {
+function refreshSprites() {
   allSprites.remove();
   let spriteSize = boardSize / 50;
   //row 1
@@ -152,7 +155,7 @@ function makeSprite(x, y, size, row, column) {
   sprite.row = row;
   sprite.column = column;
   sprite.update = function () {
-    if (this.mouse.presses() && turn == true) {
+    if (this.mouse.presses() && turn == true && this.image == null) {
       console.log("Mouse preessed");
       this.image = symbol;
       this.scale = size;
@@ -161,6 +164,17 @@ function makeSprite(x, y, size, row, column) {
       makeTurn(this.row, this.column, symbolName);
     }
   };
+
+  //console.log(row-1, column-1)
+  console.log(boardArray[row-1][column-1])
+  if (boardArray[row-1][column-1] != 0){
+    console.log("abnormality at ",row-1, column-1)
+    if (boardArray[row-1][column-1] == "nought"){
+      sprite.image = nought
+    }else{
+      sprite.image = cross
+    }
+  }
 }
 
 //test if new placement will win
@@ -203,6 +217,9 @@ function checkWin(x, y, _symbol) {
 
 async function makeTurn(row, column, symbolName) {
   turn = false;
+  textSize(30)
+  fill(lineColor)
+  turnText = text(`Turn: ${turn}`, 50,50)
   await fb_write(boardArray, `/lobbies/${lobbyName}/board`);
   checkWin(row, column, symbolName);
   if (players[0].uid == uid) {
@@ -215,7 +232,15 @@ async function makeTurn(row, column, symbolName) {
 }
 
 async function waitForTurn() {
+  console.log("wait for turn")
   const PATH = `/lobbies/${lobbyName}/turn`;
-  console.log(await fb_onValue(PATH));
+  await fb_onValue(PATH)
+  boardArray = await fb_read(`/lobbies/${lobbyName}/board`)
+  console.log(boardArray)
+  updateScreen
+  //console.log(await fb_onValue(PATH));
   turn = true
+  textSize(30)
+  fill(lineColor)
+  turnText = text(`Turn: ${turn}`, 50,50)
 }
