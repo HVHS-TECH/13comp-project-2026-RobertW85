@@ -1,4 +1,4 @@
-import { fb_read, fb_write } from "../FireBase/fb_io.mjs";
+import { fb_read, fb_write, fb_onValue } from "../FireBase/fb_io.mjs";
 let canvas = createCanvas();
 let lineColor = (13, 161, 146);
 let backgroundColor = (20, 189, 172);
@@ -46,6 +46,7 @@ async function setup() {
   } else {
     symbol = nought;
     symbolName = "nought";
+    waitForTurn()
   }
   updateScreen();
 }
@@ -94,6 +95,10 @@ function updateScreen() {
 
   strokeWeight(0);
   refreshSprites(boardSize, center);
+  textSize(30)
+  fill(lineColor)
+  let turnText = text(`Turn: ${turn}`, 50,50)
+  
 }
 
 function refreshSprites(boardSize, center) {
@@ -212,4 +217,5 @@ async function makeTurn(row, column, symbolName) {
 async function waitForTurn() {
   const PATH = `/lobbies/${lobbyName}/turn`;
   console.log(await fb_onValue(PATH));
+  turn = true
 }
