@@ -1,0 +1,11 @@
+#endScreenDiv{
+    top: 0px;
+    padding-bottom: 1vh;
+    padding-top: 1vh;
+    background-color: rgb(204, 204, 204);
+    position: absolute;
+    width: 100vw;
+    height: 20vh;
+    margin-top: 35vh;
+    justify-content: center;
+}

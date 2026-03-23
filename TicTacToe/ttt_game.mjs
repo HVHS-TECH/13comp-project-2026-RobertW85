@@ -31,7 +31,7 @@ let uid;
 
 let endGame;
 
-async function preload() {
+function preload() {
   console.log("preload");
   nought = loadImage("nought.svg");
   cross = loadImage("cross.svg");
@@ -106,13 +106,9 @@ function updateScreen() {
   turnText = text(`Turn: ${turn}`, 50, 50);
   symbolText = text(`Your Symbol: ${symbolName}`, 50, 100);
 
-  if (endGame != null) {
-    stroke(lineColor);
-    /*let endGameScreen = document.createElement("div")
-    endGameScreen.style.width = "2000px";
-    endGameScreen.style.height = "300px";
-    endGameScreen.style.backgroundcolor = `${lineColor}`;
-    endGameScreen.style.z-index = 1;*/
+  if (true == true) {
+    //endGame != null) {
+    document.getElementById("endScreenDiv").visibility = "visible";
   }
 }
 

@@ -9,5 +9,13 @@
 </head>
 
 <body>
+    <link rel="stylesheet" href="ttt_style.css">
     <script type="module" src="ttt_lobby.mjs"></script>
+    <div id='endScreenDiv' style="visibility:hidden;">
+        <h1  style="text-align: center;">Player... (crosses) wins!</h1>
+        <div style="display:flex; justify-content: center;">
+            <button id="leaveButton" style="font-size: 20px; padding:2vh;">Leave</button>
+            <button id="rematchButton" style="font-size: 20px; padding:2vh;">Rematch</button>
+        </div>
+    </div>
 </body>
