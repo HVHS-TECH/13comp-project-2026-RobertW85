@@ -71,7 +71,6 @@ async function refreshAvalibleLobbies() {
 }
 
 async function hostLobby() {
-  console.log("I am the host");
   console.log("creating lobby");
   let lobbyList = await fb_read("/lobbies");
   let lobbyNumber;
@@ -100,7 +99,6 @@ async function waitForPlayer(lobbyName) {
   const PATH = `/lobbies/${lobbyName}/players`;
   await fb_onValue(PATH);
   let players = await fb_read(PATH);
-  //console.log(players);
   let turn = players[Math.floor(Math.random() * 2)].uid;
   console.log(`Current turn:${turn}`);
   await fb_write(turn, `/lobbies/${lobbyName}/turn`);
@@ -108,9 +106,6 @@ async function waitForPlayer(lobbyName) {
 }
 
 async function joinLobby(lobbyName) {
-  console.log("I am the client");
-  console.log("Join Lobby");
-  console.log(lobbyName);
   await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
   startGame(lobbyName);
 }
@@ -126,7 +121,6 @@ async function getPlayerData() {
 }
 
 function startGame(lobbyName) {
-  console.log("starting game");
   sessionStorage.setItem("lobbyName", lobbyName);
   document.body.removeChild(lobbyDiv);
   let game = document.createElement("script");
