@@ -99,14 +99,27 @@ async function waitForPlayer(lobbyName) {
   const PATH = `/lobbies/${lobbyName}/players`;
   await fb_onValue(PATH);
   let players = await fb_read(PATH);
-  let turn = players[Math.floor(Math.random() * 2)].uid;
+  let startingPlayer = Math.floor(Math.random() * 2);
+  let turn = players[startingPlayer].uid;
   console.log(`Current turn:${turn}`);
+  //set starting player symbol
+  await fb_write(
+    "cross",
+    `/lobbies/${lobbyName}/players/${startingPlayer}/symbol`,
+  );
+  //set last player symbol
+  await fb_write(
+    "nought",
+    `/lobbies/${lobbyName}/players/${Math.abs(startingPlayer - 1)}/symbol`,
+  );
   await fb_write(turn, `/lobbies/${lobbyName}/turn`);
+
   startGame(lobbyName);
 }
 
 async function joinLobby(lobbyName) {
   await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
+  await fb_read(`/lobbies/${lobbyName}/turn`);
   startGame(lobbyName);
 }
 

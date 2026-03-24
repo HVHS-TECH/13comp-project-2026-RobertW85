@@ -28,8 +28,7 @@ let turn;
 let turnText;
 let symbolText;
 let uid;
-
-let endGame;
+let canMove;
 
 function preload() {
   console.log("preload");
@@ -45,6 +44,7 @@ async function setup() {
   lobbyTurn = lobbyData.turn;
   turn = false;
   uid = sessionStorage.getItem("uid");
+  console.log(`My uid:${uid}, Turn:${lobbyTurn}`);
   if (uid == lobbyTurn) {
     turn = true;
     symbol = cross;
@@ -55,6 +55,7 @@ async function setup() {
     waitForTurn();
   }
   updateScreen();
+  console.log(document.getElementById("endScreenDiv").children);
 }
 
 function windowResized() {
@@ -105,15 +106,11 @@ function updateScreen() {
   fill(lineColor);
   turnText = text(`Turn: ${turn}`, 50, 50);
   symbolText = text(`Your Symbol: ${symbolName}`, 50, 100);
-
-  if (true == true) {
-    //endGame != null) {
-    document.getElementById("endScreenDiv").visibility = "visible";
-  }
 }
 
 function refreshSprites() {
   allSprites.remove();
+  canMove = false;
   let spriteSize = boardSize / 50;
   //row 1
   makeSprite(
@@ -180,6 +177,8 @@ function makeSprite(x, y, size, row, column) {
       sprite.image = cross;
       sprite.scale = size;
     }
+  } else {
+    canMove = true;
   }
 }
 
@@ -248,14 +247,29 @@ async function waitForTurn() {
   let winCheck = await fb_read(`/lobbies/${lobbyName}/winner`);
   if (winCheck != undefined) {
     console.log(`${winCheck} wins`);
-    endGame = symbolName;
-    updateScreen();
+    endGame();
   }
 }
 
 async function winningMove() {
   console.log("win");
-  await fb_write(symbolName, `/lobbies/${lobbyName}/winner`);
-  endGame = symbolName;
-  updateScreen();
+  let userName = await fb_read(
+    `/userDetails/${sessionStorage.getItem("uid")}/username`,
+  );
+  let winInfo = { symbol: symbolName, userName: userName };
+  await fb_write(winInfo, `/lobbies/${lobbyName}/winner`);
+  endGame();
+}
+
+async function endGame() {
+  document.getElementById("endScreenDiv").style.visibility = "visible";
+  let winInfo = await fb_read(`/lobbies/${lobbyName}/winner`);
+  let plural;
+  if (winInfo.symbol == "cross") {
+    plural = "es";
+  } else {
+    plural = "s";
+  }
+  document.getElementById("endScreenDiv").children[0].innerHTML =
+    `${winInfo.userName} (${winInfo.symbol}${plural}) wins!`;
 }
