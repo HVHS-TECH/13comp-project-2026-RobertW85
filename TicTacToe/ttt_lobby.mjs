@@ -1,19 +1,22 @@
 import {
-  fb_initialize,
-  fb_read,
-  fb_write,
-  fb_onValue,
+    fb_initialize,
+    fb_read,
+    fb_write,
+    fb_onValue,
 } from "../FireBase/fb_io.mjs";
+
+export { startLobbyScreen };
 
 let lobbyDiv = document.createElement("div");
 let lobbyTitle = document.createElement("h1");
 let lobbyTable = document.createElement("table");
-
+let buttonDiv = document.createElement("div");
+//let test = 1;
 let lobbyData = {
-  lobbyName: null,
-  players: null,
-  turn: null,
-  board: null,
+    lobbyName: null,
+    players: null,
+    turn: null,
+    board: null,
 };
 
 fb_initialize();
@@ -21,123 +24,134 @@ let uid = sessionStorage.getItem("uid");
 startup();
 
 function startup() {
-  let buttonDiv = document.createElement("div");
-  let hostButton = document.createElement("button");
-  let refreshButton = document.createElement("button");
+    startLobbyScreen();
+}
 
-  document.body.appendChild(lobbyDiv);
-  lobbyDiv.appendChild(lobbyTitle);
-  lobbyDiv.appendChild(buttonDiv);
-  buttonDiv.appendChild(hostButton);
-  buttonDiv.appendChild(refreshButton);
-  lobbyDiv.appendChild(lobbyTable);
+function startLobbyScreen() {
+    console.log("start up lobby");
+    let hostButton = document.createElement("button");
+    let refreshButton = document.createElement("button");
 
-  hostButton.innerHTML = "Host";
-  hostButton.onclick = hostLobby;
-  refreshButton.innerHTML = "refresh";
-  refreshButton.onclick = refreshAvalibleLobbies;
-  lobbyTitle.innerHTML = "Tic tac toe Lobby";
+    document.body.appendChild(lobbyDiv);
+    lobbyDiv.appendChild(lobbyTitle);
+    lobbyDiv.appendChild(buttonDiv);
+    buttonDiv.appendChild(hostButton);
+    buttonDiv.appendChild(refreshButton);
+    lobbyDiv.appendChild(lobbyTable);
 
-  refreshAvalibleLobbies();
+    hostButton.innerHTML = "Host";
+    hostButton.onclick = hostLobby;
+    refreshButton.innerHTML = "refresh";
+    refreshButton.onclick = refreshAvalibleLobbies;
+    lobbyTitle.innerHTML = "Tic tac toe Lobby";
+
+    refreshAvalibleLobbies();
 }
 
 async function refreshAvalibleLobbies() {
-  lobbyTable.innerHTML = "";
+    lobbyTable.innerHTML = "";
 
-  let lobbyList = await fb_read("/lobbies");
-  if (lobbyList == null) {
-    return;
-  }
-  for (let i = 0; i < Object.keys(lobbyList).length; i++) {
-    if (lobbyList[Object.keys(lobbyList)[i]].players.length >= 2) {
-      continue;
+    let lobbyList = await fb_read("/lobbies");
+    if (lobbyList == null) {
+        return;
     }
+    for (let i = 0; i < Object.keys(lobbyList).length; i++) {
+        if (lobbyList[Object.keys(lobbyList)[i]].players.length >= 2) {
+            continue;
+        }
 
-    let tableRow = document.createElement("tr");
-    let lobbyName = document.createElement("td");
-    let joinButton = document.createElement("button");
+        let tableRow = document.createElement("tr");
+        let lobbyName = document.createElement("td");
+        let joinButton = document.createElement("button");
 
-    lobbyName.innerHTML = Object.keys(lobbyList)[i];
+        lobbyName.innerHTML = Object.keys(lobbyList)[i];
 
-    joinButton.innerHTML = "Join";
-    joinButton.onclick = () => {
-      joinLobby(lobbyName.innerHTML);
-    };
+        joinButton.innerHTML = "Join";
+        joinButton.onclick = () => {
+            joinLobby(lobbyName.innerHTML);
+        };
 
-    tableRow.appendChild(lobbyName);
-    tableRow.appendChild(joinButton);
-    lobbyTable.appendChild(tableRow);
-  }
+        tableRow.appendChild(lobbyName);
+        tableRow.appendChild(joinButton);
+        lobbyTable.appendChild(tableRow);
+    }
 }
 
 async function hostLobby() {
-  console.log("creating lobby");
-  let lobbyList = await fb_read("/lobbies");
-  let lobbyNumber;
-  if (lobbyList != null) {
-    lobbyNumber = Object.keys(lobbyList).length + 1;
-  } else {
-    lobbyNumber = 1;
-  }
+    console.log("creating lobby");
+    let lobbyList = await fb_read("/lobbies");
+    let lobbyNumber;
+    if (lobbyList != null) {
+        lobbyNumber = Object.keys(lobbyList).length + 1;
+    } else {
+        lobbyNumber = 1;
+    }
 
-  lobbyData.lobbyName = "Lobby" + lobbyNumber;
-  lobbyData.players = [await getPlayerData()];
-  lobbyData.turn = null;
-  lobbyData.board = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0],
-  ];
-  let lobbyName = "lobby" + lobbyNumber;
-  await fb_write(lobbyData, `/lobbies/${lobbyName}`);
+    lobbyData.lobbyName = "Lobby" + lobbyNumber;
+    lobbyData.players = [await getPlayerData()];
+    lobbyData.turn = null;
+    lobbyData.board = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+    ];
+    let lobbyName = "lobby" + lobbyNumber;
+    await fb_write(lobbyData, `/lobbies/${lobbyName}`);
 
-  waitForPlayer(lobbyName);
+    waitForPlayer(lobbyName);
 }
 
 async function waitForPlayer(lobbyName) {
-  console.log("waiting for players");
-  const PATH = `/lobbies/${lobbyName}/players`;
-  await fb_onValue(PATH);
-  let players = await fb_read(PATH);
-  let startingPlayer = Math.floor(Math.random() * 2);
-  let turn = players[startingPlayer].uid;
-  console.log(`Current turn:${turn}`);
-  //set starting player symbol
-  await fb_write(
-    "cross",
-    `/lobbies/${lobbyName}/players/${startingPlayer}/symbol`,
-  );
-  //set last player symbol
-  await fb_write(
-    "nought",
-    `/lobbies/${lobbyName}/players/${Math.abs(startingPlayer - 1)}/symbol`,
-  );
-  await fb_write(turn, `/lobbies/${lobbyName}/turn`);
+    console.log("waiting for players");
+    const PATH = `/lobbies/${lobbyName}/players`;
+    await fb_onValue(PATH);
+    let players = await fb_read(PATH);
+    let startingPlayer = Math.floor(Math.random() * 2);
+    let turn = players[startingPlayer].uid;
+    console.log(`Current turn:${turn}`);
+    //set starting player symbol
+    await fb_write(
+        "cross",
+        `/lobbies/${lobbyName}/players/${startingPlayer}/symbol`,
+    );
+    //set last player symbol
+    await fb_write(
+        "nought",
+        `/lobbies/${lobbyName}/players/${Math.abs(startingPlayer - 1)}/symbol`,
+    );
+    await fb_write(turn, `/lobbies/${lobbyName}/turn`);
 
-  startGame(lobbyName);
+    startGame(lobbyName);
 }
 
 async function joinLobby(lobbyName) {
-  await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
-  await fb_read(`/lobbies/${lobbyName}/turn`);
-  startGame(lobbyName);
+    await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
+    await fb_read(`/lobbies/${lobbyName}/turn`);
+    startGame(lobbyName);
 }
 
 async function getPlayerData() {
-  let playerData = {
-    uid: uid,
-    userName: await fb_read(
-      `/userDetails/${sessionStorage.getItem("uid")}/username`,
-    ),
-  };
-  return playerData;
+    let playerData = {
+        uid: uid,
+        userName: await fb_read(
+            `/userDetails/${sessionStorage.getItem("uid")}/username`,
+        ),
+    };
+    return playerData;
 }
 
 function startGame(lobbyName) {
-  sessionStorage.setItem("lobbyName", lobbyName);
-  document.body.removeChild(lobbyDiv);
-  let game = document.createElement("script");
-  game.type = "module";
-  game.src = "ttt_game.mjs";
-  document.body.appendChild(game);
+    sessionStorage.setItem("lobbyName", lobbyName);
+
+    //clean up because of removing this script
+    //make for loop removing each child of lobbyDiv, make it remove childen in side the button div during this loop
+
+    document.removeChild(lobbyDiv);
+
+    let game = document.createElement("script");
+    game.type = "module";
+    game.src = "ttt_game.mjs";
+    game.id = "game";
+    document.body.appendChild(game);
+    document.getElementById("lobby_script").remove();
 }

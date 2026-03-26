@@ -1,4 +1,5 @@
 import { fb_read, fb_write, fb_onValue } from "../FireBase/fb_io.mjs";
+import { startLobbyScreen } from "./ttt_lobby.mjs";
 let canvas = createCanvas();
 let lineColor = (13, 161, 146);
 let backgroundColor = (20, 189, 172);
@@ -58,7 +59,6 @@ async function setup() {
         waitForTurn();
     }
     updateScreen();
-    console.log(document.getElementById("endScreenDiv").children);
 }
 
 function windowResized() {
@@ -147,6 +147,9 @@ function refreshSprites() {
         3,
         3,
     );
+    if (!canMove) {
+        endGame("draw");
+    }
 }
 
 function makeSprite(x, y, size, row, column) {
@@ -233,7 +236,7 @@ async function makeTurn(row, column, symbolName) {
 }
 
 async function waitForTurn() {
-    console.log("wait for turn");
+    //console.log("wait for turn");
     const PATH = `/lobbies/${lobbyName}/turn`;
     await fb_onValue(PATH);
     boardArray = await fb_read(`/lobbies/${lobbyName}/board`);
@@ -242,25 +245,42 @@ async function waitForTurn() {
     let winCheck = await fb_read(`/lobbies/${lobbyName}/winner`);
     if (winCheck != undefined) {
         console.log(`${winCheck} wins`);
-        endGame();
+        endGame("win");
     }
 }
 
 async function winningMove() {
-    console.log("win");
     let userName = await fb_read(
         `/userDetails/${sessionStorage.getItem("uid")}/username`,
     );
     let winInfo = { symbol: symbolName, userName: userName };
     await fb_write(winInfo, `/lobbies/${lobbyName}/winner`);
-    endGame();
+    endGame("win");
 }
 
-async function endGame() {
+async function endGame(outcome) {
     document.getElementById("endScreenDiv").style.visibility = "visible";
-    let winInfo = await fb_read(`/lobbies/${lobbyName}/winner`);
-    let plural;
-    winInfo.symbol == "cross" ? (plural = "es") : (plural = "s");
-    document.getElementById("endScreenDiv").children[0].innerHTML =
-        `${winInfo.userName} (${winInfo.symbol}${plural}) wins!`;
+    if (outcome == "draw") {
+        document.getElementById("endGameHeader").innerHTML = `YOU draw`;
+    } else {
+        let winInfo = await fb_read(`/lobbies/${lobbyName}/winner`);
+        let plural;
+        winInfo.symbol == "cross" ? (plural = "es") : (plural = "s");
+        document.getElementById("endGameHeader").innerHTML =
+            `${winInfo.userName} (${winInfo.symbol}${plural}) wins!`;
+    }
+    document.getElementById("rematchButton").onclick = () => rematch();
+    document.getElementById("leaveButton").onclick = () => leave();
+}
+
+function rematch() {
+    console.log("rematch");
+}
+
+function leave() {
+    console.log("leave");
+    document.getElementById("endScreenDiv").style.visibility = "hidden";
+    document.getElementsByClassName("q5-maxed")[0].remove();
+    startLobbyScreen();
+    document.getElementById("game").remove();
 }
