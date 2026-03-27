@@ -19,14 +19,10 @@ let canMove;
 
 let uid;
 let lobbyName;
-let lobbyData;
 let players;
 let lobbyTurn;
 let turn;
-let turnText;
-let symbolText;
 
-//fb_initialize();
 window.preload = preload;
 window.setup = setup;
 window.windowResized = windowResized;
@@ -37,10 +33,13 @@ function preload() {
     cross = loadImage("cross.svg");
 }
 
-async function setup() {
-    console.log("setup");
+function setup() {
+    startGame();
+}
+
+async function startGame() {
     lobbyName = sessionStorage.getItem("lobbyName");
-    lobbyData = await fb_read(`/lobbies/${lobbyName}`);
+    let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
     players = lobbyData.players;
     lobbyTurn = lobbyData.turn;
     turn = false;
@@ -103,8 +102,8 @@ function updateScreen() {
     refreshSprites();
     textSize(30);
     fill(lineColor);
-    turnText = text(`Turn: ${turn}`, 50, 50);
-    symbolText = text(`Your Symbol: ${symbolName}`, 50, 100);
+    text(`Turn: ${turn}`, 50, 50);
+    text(`Your Symbol: ${symbolName}`, 50, 100);
 }
 
 function refreshSprites() {
@@ -201,7 +200,7 @@ async function checkWin(x, y, _symbol) {
     ) {
         winningMove();
     }
-    //since diagonals only happen in 2 cases it is easy to be lazy
+    //since diagonals only happen in 2 cases check manually
     //check diagonal from top-left to bottom-right
     if (
         boardArray[0][0] == _symbol &&
@@ -237,8 +236,7 @@ async function makeTurn(row, column, symbolName) {
 
 async function waitForTurn() {
     //console.log("wait for turn");
-    const PATH = `/lobbies/${lobbyName}/turn`;
-    await fb_onValue(PATH);
+    await fb_onValue(`/lobbies/${lobbyName}/turn`);
     boardArray = await fb_read(`/lobbies/${lobbyName}/board`);
     turn = true;
     updateScreen();

@@ -14,16 +14,16 @@ let FB_DB;
 // Import all the methods you want to call from the firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import {
-  getDatabase,
-  ref,
-  set,
-  get,
-  onValue,
+    getDatabase,
+    ref,
+    set,
+    get,
+    onValue,
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 /**************************************************************/
@@ -37,72 +37,72 @@ export { fb_initialize, fb_authenticate, fb_write, fb_read, fb_onValue };
 // List all the functions called by code or html outside of this module
 /**************************************************************/
 function fb_initialize() {
-  console.log("fb_initialize");
-  const FB_Cfg = {
-    apiKey: "AIzaSyBMIIDBNTsiyjzbIqdMcWDZF2bKbgzsMRo",
-    authDomain: "fir-refresher-f1f18.firebaseapp.com",
-    databaseURL:
-      "https://fir-refresher-f1f18-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "fir-refresher-f1f18",
-    storageBucket: "fir-refresher-f1f18.firebasestorage.app",
-    messagingSenderId: "365813686783",
-    appId: "1:365813686783:web:bd17c674d2988f20f787ca",
-    measurementId: "G-T28VLJSKEQ",
-  };
-  const FB_APP = initializeApp(FB_Cfg);
-  FB_DB = getDatabase(FB_APP);
-  console.info(FB_DB);
+    console.log("fb_initialize");
+    const FB_Cfg = {
+        apiKey: "AIzaSyBMIIDBNTsiyjzbIqdMcWDZF2bKbgzsMRo",
+        authDomain: "fir-refresher-f1f18.firebaseapp.com",
+        databaseURL:
+            "https://fir-refresher-f1f18-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "fir-refresher-f1f18",
+        storageBucket: "fir-refresher-f1f18.firebasestorage.app",
+        messagingSenderId: "365813686783",
+        appId: "1:365813686783:web:bd17c674d2988f20f787ca",
+        measurementId: "G-T28VLJSKEQ",
+    };
+    const FB_APP = initializeApp(FB_Cfg);
+    FB_DB = getDatabase(FB_APP);
+    console.info(FB_DB);
 }
 
 async function fb_authenticate() {
-  const AUTH = getAuth();
-  const PROVIDER = new GoogleAuthProvider();
+    const AUTH = getAuth();
+    const PROVIDER = new GoogleAuthProvider();
 
-  return new Promise((resolve) => {
-    (async () => {
-      PROVIDER.setCustomParameters({
-        prompt: "select_account",
-      });
-      try {
-        const RESULT = await signInWithPopup(AUTH, PROVIDER);
-        resolve(RESULT);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  });
-} 
+    return new Promise((resolve) => {
+        (async () => {
+            PROVIDER.setCustomParameters({
+                prompt: "select_account",
+            });
+            try {
+                const RESULT = await signInWithPopup(AUTH, PROVIDER);
+                resolve(RESULT);
+            } catch (error) {
+                console.log(error);
+            }
+        })();
+    });
+}
 
 async function fb_write(input, path) {
-  console.log(`Write ${input} at ${path}`);
-  const dbReference = ref(FB_DB, path);
-  await set(dbReference, input);
+    console.log(`Write ${input} at ${path}`);
+    const dbReference = ref(FB_DB, path);
+    await set(dbReference, input);
 }
 
 async function fb_read(path) {
-  const dbReference = ref(FB_DB, path);
-  try {
-    const snapshot = await get(dbReference);
-    var fb_data = snapshot.val();
-    if (fb_data != null) {
-      return fb_data;
-    } else {
-      console.log("✅ No record found");
+    const dbReference = ref(FB_DB, path);
+    try {
+        const snapshot = await get(dbReference);
+        var fb_data = snapshot.val();
+        if (fb_data != null) {
+            return fb_data;
+        } else {
+            console.log("✅ No record found");
+        }
+    } catch (error) {
+        console.log(error);
     }
-  } catch (error) {
-    console.log(error);
-  }
 }
 
 async function fb_onValue(_path) {
-  return new Promise((resolve) => {
-    let Old;
-    const REF = ref(FB_DB, _path);
-    const LISTENER = onValue(REF, (snapshot) => {
-      if (snapshot.val() != Old && Old != null) {
-        resolve(snapshot.val());
-      }
-      Old = snapshot.val();
+    return new Promise((resolve) => {
+        let old;
+        const REF = ref(FB_DB, _path);
+        onValue(REF, (snapshot) => {
+            if (snapshot.val() != old && old != null) {
+                resolve(snapshot.val());
+            }
+            old = snapshot.val();
+        });
     });
-  });
 }

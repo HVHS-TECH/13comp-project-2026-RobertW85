@@ -1,28 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <head>
-    <!--coded in 2026 t1-->
-    <title>Home</title>
-    <link rel="stylesheet" href="style.css">
+  <!--coded in 2026 t1-->
+  <title>Home</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <script type="module" src="FireBase/fb_io.mjs"></script>
-    <script type="module" src="index.mjs"></script>
-    <ul id="navUl">
-        <li class="navButton">Title</li>
-        <li class="navButton">Admin</li>
-        <li class="navButton">About</li>
-        <li class="navButton">Faq</li>
-        <li class="navButton">Sign in</li>
-    </ul>
+  <script type="module" src="FireBase/fb_io.mjs"></script>
+  <script type="module" src="index.mjs"></script>
+  <ul id="navUl">
+    <li class="navButton">Title</li>
+    <li class="navButton">Admin</li>
+    <li class="navButton">About</li>
+    <li class="navButton">Faq</li>
+    <li class="navButton">Sign in</li>
+  </ul>
 
-    <h1>Title</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore </p>
+  <h1>Title</h1>
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore
+  </p>
 
-    <button disabled onclick="location.href='Rouge/rg.html'" class="gameButton">Rouge Game </button>
-    <button disabled onclick="location.href='TicTacToe/ttt.html'" class="gameButton">Tic Tac Toe Game</button>
-    
-    <div id="blockerDiv">
-        <button id="signInButton" onclick=signIn()>Sign in to access</button>
-    </div>
+  <button disabled onclick="location.href = 'Rouge/rg.html'" class="gameButton">
+    Rouge Game
+  </button>
+  <button
+    disabled
+    onclick="location.href = 'TicTacToe/ttt.html'"
+    class="gameButton"
+  >
+    Tic Tac Toe Game
+  </button>
+
+  <div id="blockerDiv">
+    <button id="signInButton" onclick="signIn()">Sign in to access</button>
+  </div>
 </body>

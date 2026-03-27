@@ -5,19 +5,7 @@ import {
     fb_onValue,
 } from "../FireBase/fb_io.mjs";
 
-export { startLobbyScreen };
-
-let lobbyDiv = document.createElement("div");
-let lobbyTitle = document.createElement("h1");
-let lobbyTable = document.createElement("table");
-let buttonDiv = document.createElement("div");
-//let test = 1;
-let lobbyData = {
-    lobbyName: null,
-    players: null,
-    turn: null,
-    board: null,
-};
+let lobbyTable, lobbyDiv;
 
 fb_initialize();
 let uid = sessionStorage.getItem("uid");
@@ -27,8 +15,12 @@ function startup() {
     startLobbyScreen();
 }
 
-function startLobbyScreen() {
+export function startLobbyScreen() {
     console.log("start up lobby");
+    lobbyDiv = document.createElement("div");
+    let lobbyTitle = document.createElement("h1");
+    lobbyTable = document.createElement("table");
+    let buttonDiv = document.createElement("div");
     let hostButton = document.createElement("button");
     let refreshButton = document.createElement("button");
 
@@ -87,28 +79,28 @@ async function hostLobby() {
         lobbyNumber = 1;
     }
 
-    lobbyData.lobbyName = "Lobby" + lobbyNumber;
-    lobbyData.players = [await getPlayerData()];
-    lobbyData.turn = null;
-    lobbyData.board = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-    ];
-    let lobbyName = "lobby" + lobbyNumber;
-    await fb_write(lobbyData, `/lobbies/${lobbyName}`);
+    let lobbyData = {
+        name: `lobby${lobbyNumber}`,
+        players: [await getPlayerData()],
+        board: [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+        ],
+    };
 
+    let lobbyName = `lobby${lobbyNumber}`;
+    await fb_write(lobbyData, `/lobbies/${lobbyName}`);
     waitForPlayer(lobbyName);
 }
 
 async function waitForPlayer(lobbyName) {
-    console.log("waiting for players");
-    const PATH = `/lobbies/${lobbyName}/players`;
-    await fb_onValue(PATH);
-    let players = await fb_read(PATH);
+    //console.log("waiting for players");
+    await fb_onValue(`/lobbies/${lobbyName}/players`);
     let startingPlayer = Math.floor(Math.random() * 2);
+    let players = await fb_read(`/lobbies/${lobbyName}/players`);
     let turn = players[startingPlayer].uid;
-    console.log(`Current turn:${turn}`);
+    //console.log(`Current turn:${turn}`);
     //set starting player symbol
     await fb_write(
         "cross",
@@ -126,7 +118,6 @@ async function waitForPlayer(lobbyName) {
 
 async function joinLobby(lobbyName) {
     await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
-    await fb_read(`/lobbies/${lobbyName}/turn`);
     startGame(lobbyName);
 }
 
@@ -146,12 +137,16 @@ function startGame(lobbyName) {
     //clean up because of removing this script
     //make for loop removing each child of lobbyDiv, make it remove childen in side the button div during this loop
 
-    document.removeChild(lobbyDiv);
+    document.body.removeChild(lobbyDiv);
+
+    if (document.getElementById(game) != null) {
+        console.log("game already exsits");
+    }
 
     let game = document.createElement("script");
     game.type = "module";
     game.src = "ttt_game.mjs";
     game.id = "game";
     document.body.appendChild(game);
-    document.getElementById("lobby_script").remove();
+    //document.getElementById("lobby_script").remove();
 }

@@ -3,9 +3,7 @@ import { fb_authenticate, fb_initialize, fb_read } from "./FireBase/fb_io.mjs";
 
 fb_initialize();
 if (sessionStorage.getItem("uid") != null) {
-  if (
-    (await fb_read("/userDetails/" + sessionStorage.getItem("uid"))) != null
-  ) {
+  if ((await fb_read("/userDetails/" + sessionStorage.getItem("uid"))) != null) {
     login();
   }
 }
@@ -26,11 +24,7 @@ async function signIn() {
 function login() {
   //console.log("login")
   document.getElementById("blockerDiv").remove();
-  for (
-    let i = 0;
-    i < document.getElementsByClassName("gameButton").length;
-    i++
-  ) {
+  for (let i = 0; i < document.getElementsByClassName("gameButton").length; i++) {
     document.getElementsByClassName("gameButton")[i].disabled = false;
   }
 }
