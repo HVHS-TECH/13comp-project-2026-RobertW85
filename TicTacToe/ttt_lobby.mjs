@@ -139,7 +139,7 @@ function startGame(lobbyName) {
 
     document.body.removeChild(lobbyDiv);
 
-    if (document.getElementById(game) != null) {
+    if (document.getElementById("game") != null) {
         console.log("game already exsits");
     }
 
