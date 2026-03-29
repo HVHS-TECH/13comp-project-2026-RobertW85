@@ -1,6 +1,6 @@
 import { fb_read, fb_write, fb_onValue } from "../FireBase/fb_io.mjs";
 import { startLobbyScreen } from "./ttt_lobby.mjs";
-let canvas = createCanvas();
+
 let lineColor = (13, 161, 146);
 let backgroundColor = (20, 189, 172);
 
@@ -23,6 +23,8 @@ let players;
 let lobbyTurn;
 let turn;
 
+
+
 window.preload = preload;
 window.setup = setup;
 window.windowResized = windowResized;
@@ -33,11 +35,26 @@ function preload() {
     cross = loadImage("cross.svg");
 }
 
-function setup() {
-    startGame();
+async function setup(){
+    while (document.getElementsByClassName('q5Canvas') == null){await new Promise(resolve => setTimeout(resolve, 100));}
+    console.log('canvas detected')
+    document.getElementsByClassName('q5Canvas')[0].visibility = 'hidden'
+
+    // while (document.getElementById('q5Canvas') == null){await new Promise(resolve => setTimeout(resolve, 100));}
+    // document.getElementById('q5Canvas').visibility = false
+
+    // while (document.getElementsByClassName("q5-maxed").length == 0 && document.getElementsByClassName("q5-normal").length == 0){
+    //      await new Promise(resolve => setTimeout(resolve, 100));
+    // }
+    // if (document.getElementsByClassName("q5-normal").length != 0){
+    //     console.log(`making ${document.getElementsByClassName("q5-normal")[0]} invis`)
+    //     document.getElementsByClassName("q5-normal")[0].visibility = false
+    // }
 }
 
-async function startGame() {
+export async function ttt_startGame() {
+    console.log("start game")
+    document.getElementsByClassName('q5Canvas')[0].visibility = 'visible'
     lobbyName = sessionStorage.getItem("lobbyName");
     let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
     players = lobbyData.players;
@@ -66,6 +83,7 @@ function windowResized() {
 }
 
 function updateScreen() {
+    console.log('updateScreen')
     background(backgroundColor);
     let screenWidth = window.innerWidth;
     let screenHeight = window.innerHeight;
@@ -257,7 +275,6 @@ async function winningMove() {
 }
 
 async function endGame(outcome) {
-    document.getElementById("endScreenDiv").style.visibility = "visible";
     if (outcome == "draw") {
         document.getElementById("endGameHeader").innerHTML = `YOU draw`;
     } else {
@@ -267,6 +284,7 @@ async function endGame(outcome) {
         document.getElementById("endGameHeader").innerHTML =
             `${winInfo.userName} (${winInfo.symbol}${plural}) wins!`;
     }
+    document.getElementById("endScreenDiv").style.visibility = "visible";
     document.getElementById("rematchButton").onclick = () => rematch();
     document.getElementById("leaveButton").onclick = () => leave();
 }
@@ -280,5 +298,5 @@ function leave() {
     document.getElementById("endScreenDiv").style.visibility = "hidden";
     document.getElementsByClassName("q5-maxed")[0].remove();
     startLobbyScreen();
-    document.getElementById("game").remove();
+    //document.getElementById("game").remove();
 }

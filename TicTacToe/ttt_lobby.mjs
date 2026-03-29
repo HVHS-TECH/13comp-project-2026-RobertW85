@@ -4,6 +4,9 @@ import {
     fb_write,
     fb_onValue,
 } from "../FireBase/fb_io.mjs";
+import {
+  ttt_startGame
+}from "./ttt_game.mjs";
 
 let lobbyTable, lobbyDiv;
 
@@ -97,6 +100,7 @@ async function hostLobby() {
 async function waitForPlayer(lobbyName) {
     //console.log("waiting for players");
     await fb_onValue(`/lobbies/${lobbyName}/players`);
+    console.log("player joined lobby")
     let startingPlayer = Math.floor(Math.random() * 2);
     let players = await fb_read(`/lobbies/${lobbyName}/players`);
     let turn = players[startingPlayer].uid;
@@ -132,21 +136,27 @@ async function getPlayerData() {
 }
 
 function startGame(lobbyName) {
+    console.log("starting game")
     sessionStorage.setItem("lobbyName", lobbyName);
 
     //clean up because of removing this script
     //make for loop removing each child of lobbyDiv, make it remove childen in side the button div during this loop
 
     document.body.removeChild(lobbyDiv);
+    ttt_startGame()
+    // console.log(document.getElementById("game"))
+    // if (document.getElementById("game") != null) {
+    //     console.log("game already exsits");
+    //     ttt_startGame()
+    // }else{
+    //   let game = document.createElement("script");
+    //   game.type = "module";
+    //   game.src = "ttt_game.mjs";
+    //   game.id = "game";
+    //   document.body.appendChild(game);
 
-    if (document.getElementById("game") != null) {
-        console.log("game already exsits");
-    }
+    // }
 
-    let game = document.createElement("script");
-    game.type = "module";
-    game.src = "ttt_game.mjs";
-    game.id = "game";
-    document.body.appendChild(game);
+    
     //document.getElementById("lobby_script").remove();
 }
