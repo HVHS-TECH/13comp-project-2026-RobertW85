@@ -30,7 +30,14 @@ import {
 // EXPORT FUNCTIONS
 // List all the functions called by code or html outside of this module
 /**************************************************************/
-export { fb_initialize, fb_authenticate, fb_write, fb_read, fb_onValue };
+export {
+    fb_initialize,
+    fb_authenticate,
+    fb_write,
+    fb_read,
+    fb_onValue,
+    fb_readSorted,
+};
 
 /**************************************************************/
 // EXPORT FUNCTIONS
@@ -87,7 +94,7 @@ async function fb_read(path) {
         if (fb_data != null) {
             return fb_data;
         } else {
-            console.log("✅ No record found");
+            console.log("No record found");
         }
     } catch (error) {
         console.log(error);
@@ -105,4 +112,26 @@ async function fb_onValue(_path) {
             old = snapshot.val();
         });
     });
+}
+
+async function fb_readSorted(path, key, amount) {
+    const dbReference = query(
+        ref(FB_GAMEDB, path),
+        orderByChild(key),
+        limitToLast(amount),
+    );
+    try {
+        const snapshot = await get(dbReference);
+        if (snapshot.val() != null) {
+            var result = [];
+            snapshot.forEach((child) => {
+                result.push(child.val());
+            });
+            return result.reverse();
+        } else {
+            console.log("No record found goes here");
+        }
+    } catch (error) {
+        console.log(error);
+    }
 }

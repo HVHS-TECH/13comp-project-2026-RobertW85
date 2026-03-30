@@ -34,9 +34,7 @@ function preload() {
 }
 
 async function setup() {
-    while (document.getElementsByClassName("q5Canvas") == null) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-    }
+    while (document.getElementsByClassName("q5Canvas") == null) { await new Promise((resolve) => setTimeout(resolve, 100)); }
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
 }
 
@@ -74,12 +72,7 @@ export async function ttt_startGame() {
 }
 
 function windowResized() {
-    if (
-        document.getElementsByClassName("q5Canvas")[0].style.visibility ==
-        "hidden"
-    ) {
-        return;
-    }
+    if (document.getElementsByClassName("q5Canvas")[0].style.visibility == "hidden") { return; }
     resizeCanvas(window.innerWidth, window.innerHeight);
     updateScreen();
 }
@@ -94,30 +87,10 @@ function updateScreen() {
     let lineLength = boardSize * 2.7;
     stroke(lineColor);
     strokeWeight(boardSize * 0.2);
-    line(
-        center.x - lineLength,
-        center.y - boardSize,
-        center.x + lineLength,
-        center.y - boardSize,
-    );
-    line(
-        center.x - lineLength,
-        center.y + boardSize,
-        center.x + lineLength,
-        center.y + boardSize,
-    );
-    line(
-        center.x - boardSize,
-        center.y - lineLength,
-        center.x - boardSize,
-        center.y + lineLength,
-    );
-    line(
-        center.x + boardSize,
-        center.y - lineLength,
-        center.x + boardSize,
-        center.y + lineLength,
-    );
+    line(center.x - lineLength, center.y - boardSize, center.x + lineLength, center.y - boardSize,);
+    line(center.x - lineLength, center.y + boardSize, center.x + lineLength, center.y + boardSize,);
+    line(center.x - boardSize, center.y - lineLength, center.x - boardSize, center.y + lineLength,);
+    line(center.x + boardSize, center.y - lineLength, center.x + boardSize, center.y + lineLength,);
     strokeWeight(0);
     refreshSprites();
     textSize(30);
@@ -131,41 +104,17 @@ function refreshSprites() {
     canMove = false;
     let spriteSize = boardSize / 50;
     //row 1
-    makeSprite(
-        center.x - boardSize * 2,
-        center.y - boardSize * 2,
-        spriteSize,
-        1,
-        1,
-    );
+    makeSprite(center.x - boardSize * 2, center.y - boardSize * 2, spriteSize, 1, 1,);
     makeSprite(center.x, center.y - boardSize * 2, spriteSize, 1, 2);
-    makeSprite(
-        center.x + boardSize * 2,
-        center.y - boardSize * 2,
-        spriteSize,
-        1,
-        3,
-    );
+    makeSprite(center.x + boardSize * 2, center.y - boardSize * 2, spriteSize, 1, 3,);
     //row 2
     makeSprite(center.x - boardSize * 2, center.y, spriteSize, 2, 1);
     makeSprite(center.x, center.y, spriteSize, 2, 2);
     makeSprite(center.x + boardSize * 2, center.y, spriteSize, 2, 3);
     //row 3
-    makeSprite(
-        center.x - boardSize * 2,
-        center.y + boardSize * 2,
-        spriteSize,
-        3,
-        1,
-    );
+    makeSprite(center.x - boardSize * 2, center.y + boardSize * 2, spriteSize, 3, 1,);
     makeSprite(center.x, center.y + boardSize * 2, spriteSize, 3, 2);
-    makeSprite(
-        center.x + boardSize * 2,
-        center.y + boardSize * 2,
-        spriteSize,
-        3,
-        3,
-    );
+    makeSprite(center.x + boardSize * 2, center.y + boardSize * 2, spriteSize, 3, 3,);
     if (!canMove) {
         endGame("draw");
     }
@@ -205,36 +154,20 @@ function makeSprite(x, y, size, row, column) {
 // check row/column of x and y then both diagonals
 async function checkWin(x, y, _symbol) {
     //check row in boardArray for horizontal win
-    if (
-        boardArray[x - 1][0] == _symbol &&
-        boardArray[x - 1][1] == _symbol &&
-        boardArray[x - 1][2] == _symbol
-    ) {
+    if (boardArray[x - 1][0] == _symbol && boardArray[x - 1][1] == _symbol && boardArray[x - 1][2] == _symbol) {
         winningMove();
     }
     //check column in boardArray for vertical win
-    if (
-        boardArray[0][y - 1] == _symbol &&
-        boardArray[1][y - 1] == _symbol &&
-        boardArray[2][y - 1] == _symbol
-    ) {
+    if (boardArray[0][y - 1] == _symbol && boardArray[1][y - 1] == _symbol && boardArray[2][y - 1] == _symbol) {
         winningMove();
     }
     //since diagonals only happen in 2 cases check manually
     //check diagonal from top-left to bottom-right
-    if (
-        boardArray[0][0] == _symbol &&
-        boardArray[1][1] == _symbol &&
-        boardArray[2][2] == _symbol
-    ) {
+    if (boardArray[0][0] == _symbol && boardArray[1][1] == _symbol && boardArray[2][2] == _symbol) {
         winningMove();
     }
     //check diagonal from top-right to bottom-left
-    if (
-        boardArray[0][2] == _symbol &&
-        boardArray[1][1] == _symbol &&
-        boardArray[2][0] == _symbol
-    ) {
+    if (boardArray[0][2] == _symbol && boardArray[1][1] == _symbol && boardArray[2][0] == _symbol) {
         winningMove();
     }
 }
@@ -268,9 +201,7 @@ async function waitForTurn() {
 }
 
 async function winningMove() {
-    let userName = await fb_read(
-        `/userDetails/${sessionStorage.getItem("uid")}/username`,
-    );
+    let userName = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`,);
     let winInfo = { symbol: symbolName, userName: userName };
     await fb_write(winInfo, `/lobbies/${lobbyName}/winner`);
     endGame("win");

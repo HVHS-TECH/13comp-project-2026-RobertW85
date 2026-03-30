@@ -1,26 +1,26 @@
-#navUl{
+#navUl {
     list-style-type: none;
     margin: 0;
     padding: 0;
     display: flex;
 }
 
-.navButton{
+.navButton {
     padding: 2vh 2vh;
 }
 
-body{
+body {
     margin-left: 8vw;
     margin-right: 8vw;
 }
 
-.gameButton{
+.gameButton {
     border: 0;
     width: 25vw;
     height: 25vh;
 }
 
-div{
+div {
     padding-bottom: 1vh;
     padding-top: 1vh;
     background-color: rgb(204, 204, 204);
@@ -31,16 +31,20 @@ div{
     justify-content: center;
 }
 
-#signInButton{
+#signInButton {
     border: 0;
     padding: 2%;
 }
 
-#submitReg{
+#submitReg {
     border-radius: 100%;
     height: 10vh;
     width: 10vh;
     background-color: red;
     color: white;
     font-size: large;
+}
+
+button {
+    border: 0;
 }
