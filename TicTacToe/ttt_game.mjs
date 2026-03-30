@@ -23,8 +23,6 @@ let players;
 let lobbyTurn;
 let turn;
 
-
-
 window.preload = preload;
 window.setup = setup;
 window.windowResized = windowResized;
@@ -35,32 +33,28 @@ function preload() {
     cross = loadImage("cross.svg");
 }
 
-async function setup(){
-    while (document.getElementsByClassName('q5Canvas') == null){await new Promise(resolve => setTimeout(resolve, 100));}
-    console.log('canvas detected')
-    document.getElementsByClassName('q5Canvas')[0].visibility = 'hidden'
-
-    // while (document.getElementById('q5Canvas') == null){await new Promise(resolve => setTimeout(resolve, 100));}
-    // document.getElementById('q5Canvas').visibility = false
-
-    // while (document.getElementsByClassName("q5-maxed").length == 0 && document.getElementsByClassName("q5-normal").length == 0){
-    //      await new Promise(resolve => setTimeout(resolve, 100));
-    // }
-    // if (document.getElementsByClassName("q5-normal").length != 0){
-    //     console.log(`making ${document.getElementsByClassName("q5-normal")[0]} invis`)
-    //     document.getElementsByClassName("q5-normal")[0].visibility = false
-    // }
+async function setup() {
+    while (document.getElementsByClassName("q5Canvas") == null) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
 }
 
 export async function ttt_startGame() {
-    console.log("start game")
-    document.getElementsByClassName('q5Canvas')[0].visibility = 'visible'
+    console.log("start game");
+    console.log(document.getElementsByClassName("q5Canvas"));
+    resizeCanvas(window.innerWidth, window.innerHeight);
     lobbyName = sessionStorage.getItem("lobbyName");
     let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
     players = lobbyData.players;
     lobbyTurn = lobbyData.turn;
     turn = false;
     uid = sessionStorage.getItem("uid");
+    boardArray = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+    ];
     while (lobbyTurn == undefined) {
         lobbyTurn = await fb_read(`/lobbies/${lobbyName}/turn`);
     }
@@ -74,16 +68,24 @@ export async function ttt_startGame() {
         symbolName = "nought";
         waitForTurn();
     }
+
     updateScreen();
+    document.getElementsByClassName("q5Canvas")[0].style.visibility = "visible";
 }
 
 function windowResized() {
+    if (
+        document.getElementsByClassName("q5Canvas")[0].style.visibility ==
+        "hidden"
+    ) {
+        return;
+    }
     resizeCanvas(window.innerWidth, window.innerHeight);
     updateScreen();
 }
 
 function updateScreen() {
-    console.log('updateScreen')
+    console.log("updateScreen");
     background(backgroundColor);
     let screenWidth = window.innerWidth;
     let screenHeight = window.innerHeight;
@@ -296,7 +298,8 @@ function rematch() {
 function leave() {
     console.log("leave");
     document.getElementById("endScreenDiv").style.visibility = "hidden";
-    document.getElementsByClassName("q5-maxed")[0].remove();
+    document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
+    resizeCanvas(1, 1);
     startLobbyScreen();
     //document.getElementById("game").remove();
 }
