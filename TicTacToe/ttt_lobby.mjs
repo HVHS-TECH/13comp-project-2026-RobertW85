@@ -62,9 +62,7 @@ async function refreshAvalibleLobbies() {
         lobbyName.innerHTML = Object.keys(lobbyList)[i];
 
         joinButton.innerHTML = "Join";
-        joinButton.onclick = () => {
-            joinLobby(lobbyName.innerHTML);
-        };
+        joinButton.onclick = () => {joinLobby(lobbyName.innerHTML);};
 
         tableRow.appendChild(lobbyName);
         tableRow.appendChild(joinButton);
