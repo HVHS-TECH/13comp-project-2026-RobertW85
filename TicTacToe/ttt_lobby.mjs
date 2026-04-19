@@ -1,57 +1,44 @@
-import {
-    fb_initialize,
-    fb_read,
-    fb_write,
-    fb_onValue,
-} from "../FireBase/fb_io.mjs";
-import {
-    ttt_startGame
-} from "./ttt_game.mjs";
+import { fb_initialize,fb_read,fb_write,fb_onValue } from "../FireBase/fb_io.mjs";
+import { ttt_startGame } from "./ttt_game.mjs";
 
 let lobbyTable, lobbyDiv;
 
 fb_initialize();
 let uid = sessionStorage.getItem("uid");
-startup();
-
-function startup() {
-    startLobbyScreen();
-}
+startLobbyScreen();
 
 export function startLobbyScreen() {
     console.log("start up lobby");
     lobbyDiv = document.createElement("div");
-    let lobbyTitle = document.createElement("h1");
     lobbyTable = document.createElement("table");
+    let lobbyTitle = document.createElement("h1");
     let buttonDiv = document.createElement("div");
     let hostButton = document.createElement("button");
     let refreshButton = document.createElement("button");
 
     document.body.appendChild(lobbyDiv);
-    lobbyDiv.appendChild(lobbyTitle);
-    lobbyDiv.appendChild(buttonDiv);
-    buttonDiv.appendChild(hostButton);
-    buttonDiv.appendChild(refreshButton);
-    lobbyDiv.appendChild(lobbyTable);
-
+    buttonDiv.append(hostButton,refreshButton);
+    lobbyDiv.append(lobbyTitle,buttonDiv,lobbyTable);
+    
     hostButton.innerHTML = "Host";
     hostButton.onclick = hostLobby;
     refreshButton.innerHTML = "refresh";
-    refreshButton.onclick = refreshAvalibleLobbies;
+    refreshButton.onclick = refreshAvailableLobbies;
     lobbyTitle.innerHTML = "Tic tac toe Lobby";
 
-    refreshAvalibleLobbies();
+    refreshAvailableLobbies();
 }
 
-async function refreshAvalibleLobbies() {
+async function refreshAvailableLobbies() {
     lobbyTable.innerHTML = "";
 
-    let lobbyList = await fb_read("/lobbies");
-    if (lobbyList == null) {
+    const LOBBYLIST = await fb_read("/lobbies");
+    if (LOBBYLIST == null) {
         return;
     }
-    for (let i = 0; i < Object.keys(lobbyList).length; i++) {
-        if (lobbyList[Object.keys(lobbyList)[i]].players.length >= 2) {
+    const LOBBYLISTKEYS = Object.keys(LOBBYLIST)
+    for (let i = 0; i < LOBBYLISTKEYS.length; i++) {
+        if (LOBBYLIST[LOBBYLISTKEYS[i]].players.length >= 2) {
             continue;
         }
 
@@ -59,13 +46,12 @@ async function refreshAvalibleLobbies() {
         let lobbyName = document.createElement("td");
         let joinButton = document.createElement("button");
 
-        lobbyName.innerHTML = Object.keys(lobbyList)[i];
+        lobbyName.innerHTML = LOBBYLISTKEYS[i];
 
         joinButton.innerHTML = "Join";
         joinButton.onclick = () => {joinLobby(lobbyName.innerHTML);};
 
-        tableRow.appendChild(lobbyName);
-        tableRow.appendChild(joinButton);
+        tableRow.append(lobbyName,joinButton);
         lobbyTable.appendChild(tableRow);
     }
 }
@@ -80,7 +66,6 @@ async function hostLobby() {
     } else {
         lobbyNumber = 1;
     }
-
     let lobbyData = {
         name: `lobby${lobbyNumber}`,
         players: [await getPlayerData()],
@@ -90,7 +75,6 @@ async function hostLobby() {
             [0, 0, 0],
         ],
     };
-
     let lobbyName = `lobby${lobbyNumber}`;
     await fb_write(lobbyData, `/lobbies/${lobbyName}`);
     waitForPlayer(lobbyName);
@@ -105,17 +89,10 @@ async function waitForPlayer(lobbyName) {
     let turn = players[startingPlayer].uid;
     //console.log(`Current turn:${turn}`);
     //set starting player symbol
-    await fb_write(
-        "cross",
-        `/lobbies/${lobbyName}/players/${startingPlayer}/symbol`,
-    );
+    await fb_write("cross",`/lobbies/${lobbyName}/players/${startingPlayer}/symbol`);
     //set last player symbol
-    await fb_write(
-        "nought",
-        `/lobbies/${lobbyName}/players/${Math.abs(startingPlayer - 1)}/symbol`,
-    );
+    await fb_write("nought",`/lobbies/${lobbyName}/players/${Math.abs(startingPlayer - 1)}/symbol`);
     await fb_write(turn, `/lobbies/${lobbyName}/turn`);
-
     startGame(lobbyName);
 }
 
@@ -128,9 +105,7 @@ async function joinLobby(lobbyName) {
 async function getPlayerData() {
     let playerData = {
         uid: uid,
-        userName: await fb_read(
-            `/userDetails/${sessionStorage.getItem("uid")}/username`,
-        ),
+        userName: await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`)
     };
     return playerData;
 }

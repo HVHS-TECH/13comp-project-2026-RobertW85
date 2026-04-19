@@ -13,18 +13,8 @@ let FB_DB;
 /**************************************************************/
 // Import all the methods you want to call from the firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import {
-    getDatabase,
-    ref,
-    set,
-    get,
-    onValue,
-} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithPopup,
-} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { getDatabase,ref,set,get,onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getAuth,GoogleAuthProvider,signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 /**************************************************************/
 // EXPORT FUNCTIONS

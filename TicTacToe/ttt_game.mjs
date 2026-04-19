@@ -4,23 +4,31 @@ import { startLobbyScreen } from "./ttt_lobby.mjs";
 let lineColor = (13, 161, 146);
 let backgroundColor = (20, 189, 172);
 
-let symbol;
-let symbolName;
-let nought;
-let cross;
-let boardArray = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0],
-];
-let boardSize;
+//screen cords
 let center;
-let canMove;
+let boardSize;
+const LAYOUT = {
+    boardScale: 0.1,
+    lineLengthScale: 2.7,
+    lineWidthScale: 0.2,
+    spriteScale: 0.036,
+    imageScale: 0.02
+}
 
-let uid;
-let lobbyName;
+//assets
+let noughtImage;
+let crossImage;
+
+//lobby info
+let boardArray;
+let canMove;
 let players;
-let lobbyTurn;
+let lobbyName;
+
+//player info
+let uid;
+let symbolImage;
+let symbolName;
 let turn;
 
 window.preload = preload;
@@ -28,9 +36,8 @@ window.setup = setup;
 window.windowResized = windowResized;
 
 function preload() {
-    console.log("preload");
-    nought = loadImage("nought.svg");
-    cross = loadImage("cross.svg");
+    noughtImage = loadImage("nought.svg");
+    crossImage = loadImage("cross.svg");
 }
 
 async function setup() {
@@ -40,29 +47,30 @@ async function setup() {
 
 export async function ttt_startGame() {
     console.log("start game");
-    console.log(document.getElementsByClassName("q5Canvas"));
+    //console.log(document.getElementsByClassName("q5Canvas"));
     resizeCanvas(window.innerWidth, window.innerHeight);
     lobbyName = sessionStorage.getItem("lobbyName");
     let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
     players = lobbyData.players;
-    lobbyTurn = lobbyData.turn;
-    turn = false;
     uid = sessionStorage.getItem("uid");
     boardArray = [
         [0, 0, 0],
         [0, 0, 0],
         [0, 0, 0],
     ];
+
+    let lobbyTurn;
     while (lobbyTurn == undefined) {
         lobbyTurn = await fb_read(`/lobbies/${lobbyName}/turn`);
     }
-    console.log(`My uid:${uid}, Turn:${lobbyTurn}`);
+    //console.log(`My uid:${uid}, Turn:${lobbyTurn}`);
     if (uid == lobbyTurn) {
         turn = true;
-        symbol = cross;
+        symbolImage = crossImage;
         symbolName = "cross";
     } else {
-        symbol = nought;
+        turn = false;
+        symbolImage = noughtImage;
         symbolName = "nought";
         waitForTurn();
     }
@@ -78,19 +86,17 @@ function windowResized() {
 }
 
 function updateScreen() {
-    console.log("updateScreen");
-    background(backgroundColor);
+    //console.log("updateScreen");
+
+    //resize
     let screenWidth = window.innerWidth;
     let screenHeight = window.innerHeight;
-    boardSize = min(screenWidth, screenHeight) * 0.1;
+    boardSize = min(screenWidth, screenHeight) * LAYOUT.boardScale;
     center = createVector(screenWidth / 2, screenHeight / 2);
-    let lineLength = boardSize * 2.7;
-    stroke(lineColor);
-    strokeWeight(boardSize * 0.2);
-    line(center.x - lineLength, center.y - boardSize, center.x + lineLength, center.y - boardSize,);
-    line(center.x - lineLength, center.y + boardSize, center.x + lineLength, center.y + boardSize,);
-    line(center.x - boardSize, center.y - lineLength, center.x - boardSize, center.y + lineLength,);
-    line(center.x + boardSize, center.y - lineLength, center.x + boardSize, center.y + lineLength,);
+    
+    //redraw
+    background(backgroundColor);
+    drawLines()
     strokeWeight(0);
     refreshSprites();
     textSize(30);
@@ -99,22 +105,32 @@ function updateScreen() {
     text(`Your Symbol: ${symbolName}`, 50, 100);
 }
 
+function drawLines(){
+    let lineLength = boardSize * LAYOUT.lineLengthScale;
+    let lineWidth = boardSize * LAYOUT.lineWidthScale;
+    stroke(lineColor);
+    strokeWeight(lineWidth);
+    line(center.x - lineLength, center.y - boardSize, center.x + lineLength, center.y - boardSize);
+    line(center.x - lineLength, center.y + boardSize, center.x + lineLength, center.y + boardSize);
+    line(center.x - boardSize, center.y - lineLength, center.x - boardSize, center.y + lineLength);
+    line(center.x + boardSize, center.y - lineLength, center.x + boardSize, center.y + lineLength);
+}
+
 function refreshSprites() {
     allSprites.remove();
     canMove = false;
-    let spriteSize = boardSize / 50;
     //row 1
-    makeSprite(center.x - boardSize * 2, center.y - boardSize * 2, spriteSize, 1, 1,);
-    makeSprite(center.x, center.y - boardSize * 2, spriteSize, 1, 2);
-    makeSprite(center.x + boardSize * 2, center.y - boardSize * 2, spriteSize, 1, 3,);
+    makeSprite(center.x - boardSize * 2, center.y - boardSize * 2, boardSize, 1, 1,);
+    makeSprite(center.x, center.y - boardSize * 2, boardSize, 1, 2);
+    makeSprite(center.x + boardSize * 2, center.y - boardSize * 2, boardSize, 1, 3,);
     //row 2
-    makeSprite(center.x - boardSize * 2, center.y, spriteSize, 2, 1);
-    makeSprite(center.x, center.y, spriteSize, 2, 2);
-    makeSprite(center.x + boardSize * 2, center.y, spriteSize, 2, 3);
+    makeSprite(center.x - boardSize * 2, center.y, boardSize, 2, 1);
+    makeSprite(center.x, center.y, boardSize, 2, 2);
+    makeSprite(center.x + boardSize * 2, center.y, boardSize, 2, 3);
     //row 3
-    makeSprite(center.x - boardSize * 2, center.y + boardSize * 2, spriteSize, 3, 1,);
-    makeSprite(center.x, center.y + boardSize * 2, spriteSize, 3, 2);
-    makeSprite(center.x + boardSize * 2, center.y + boardSize * 2, spriteSize, 3, 3,);
+    makeSprite(center.x - boardSize * 2, center.y + boardSize * 2, boardSize, 3, 1,);
+    makeSprite(center.x, center.y + boardSize * 2, boardSize, 3, 2);
+    makeSprite(center.x + boardSize * 2, center.y + boardSize * 2, boardSize, 3, 3,);
     if (!canMove) {
         endGame("draw");
     }
@@ -122,52 +138,47 @@ function refreshSprites() {
 
 function makeSprite(x, y, size, row, column) {
     let sprite = new Sprite();
-    sprite.color = backgroundColor;
-    sprite.scale = size * 1.8;
-    sprite.position.x = x;
-    sprite.position.y = y;
-    sprite.collider = "static";
-    sprite.row = row;
-    sprite.column = column;
+    Object.assign(sprite, {
+        color: backgroundColor,
+        scale: size*LAYOUT.spriteScale,
+        collider: "static",
+        row: row,
+        column: column
+    })
+    sprite.position = {x,y};
     sprite.update = function () {
         if (this.mouse.presses() && turn == true && this.image == null) {
-            this.image = symbol;
-            this.scale = size;
+            this.image = symbolImage;
+            this.scale = size*LAYOUT.imageScale;
             boardArray[this.row - 1][this.column - 1] = symbolName;
             makeTurn(this.row, this.column, symbolName);
         }
     };
     if (boardArray[row - 1][column - 1] != 0) {
-        if (boardArray[row - 1][column - 1] == "nought") {
-            sprite.image = nought;
-            sprite.scale = size;
-        } else {
-            sprite.image = cross;
-            sprite.scale = size;
-        }
+        boardArray[row - 1][column - 1] == "nought" ? sprite.image = noughtImage : sprite.image = crossImage;
+        sprite.scale = size*LAYOUT.imageScale;
     } else {
         canMove = true;
     }
 }
 
 //test if new placement will win
-// check row/column of x and y then both diagonals
-async function checkWin(x, y, _symbol) {
+async function checkWin(x, y, symbol) {
     //check row in boardArray for horizontal win
-    if (boardArray[x - 1][0] == _symbol && boardArray[x - 1][1] == _symbol && boardArray[x - 1][2] == _symbol) {
+    if (boardArray[x - 1][0] == symbol && boardArray[x - 1][1] == symbol && boardArray[x - 1][2] == symbol) {
         winningMove();
     }
     //check column in boardArray for vertical win
-    if (boardArray[0][y - 1] == _symbol && boardArray[1][y - 1] == _symbol && boardArray[2][y - 1] == _symbol) {
+    if (boardArray[0][y - 1] == symbol && boardArray[1][y - 1] == symbol && boardArray[2][y - 1] == symbol) {
         winningMove();
     }
     //since diagonals only happen in 2 cases check manually
     //check diagonal from top-left to bottom-right
-    if (boardArray[0][0] == _symbol && boardArray[1][1] == _symbol && boardArray[2][2] == _symbol) {
+    if (boardArray[0][0] == symbol && boardArray[1][1] == symbol && boardArray[2][2] == symbol) {
         winningMove();
     }
     //check diagonal from top-right to bottom-left
-    if (boardArray[0][2] == _symbol && boardArray[1][1] == _symbol && boardArray[2][0] == _symbol) {
+    if (boardArray[0][2] == symbol && boardArray[1][1] == symbol && boardArray[2][0] == symbol) {
         winningMove();
     }
 }
@@ -178,11 +189,8 @@ async function makeTurn(row, column, symbolName) {
     fill(lineColor);
     await fb_write(boardArray, `/lobbies/${lobbyName}/board`);
     checkWin(row, column, symbolName);
-    players[0].uid == uid
-        ? (lobbyTurn = players[1].uid)
-        : (lobbyTurn = players[0].uid);
+    let lobbyTurn = players[0].uid == uid ? players[1].uid : players[0].uid;
     await fb_write(lobbyTurn, `/lobbies/${lobbyName}/turn`);
-    turn = false;
     updateScreen();
     waitForTurn();
 }
@@ -190,6 +198,7 @@ async function makeTurn(row, column, symbolName) {
 async function waitForTurn() {
     //console.log("wait for turn");
     await fb_onValue(`/lobbies/${lobbyName}/turn`);
+    //begin turn
     boardArray = await fb_read(`/lobbies/${lobbyName}/board`);
     turn = true;
     updateScreen();
@@ -232,5 +241,4 @@ function leave() {
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
     resizeCanvas(1, 1);
     startLobbyScreen();
-    //document.getElementById("game").remove();
 }
