@@ -26,17 +26,13 @@ async function login(uid) {
     console.log("admin")
     let adminButton = document.createElement("button");
     adminButton.innerHTML = 'Admin';
-    adminButton.onclick = admin;
+    adminButton.onclick = () => {window.location.href = "/Admin/admin.html"};
     document.getElementById('navUl').appendChild(adminButton);
   }
   document.getElementById("blockerDiv").remove();
   for (let i = 0; i < document.getElementsByClassName("gameButton").length; i++) {
     document.getElementsByClassName("gameButton")[i].disabled = false;
   }
-}
-
-function admin(){
-  window.location.href = "/Admin/admin.html"
 }
 
 window.signIn = signIn;

@@ -926,30 +926,31 @@ function middlePopup(title, content) {
 
     document.body.appendChild(screenBackground);
 
-    //populateLeaderBoard()
+    populateLeaderBoard()
 }
 
 /*************************************************
 populateLeaderBoard(result)
 *************************************************/
-function populateLeaderBoard() {
-    fb_readSorted("/Games/Rogue/Scores", "score", 3).then((result) => {
-        let lb_Table = document.createElement("table");
-        for (let i = 0; i < result.length; i++) {
-            if (result[i].gameName) {
-                //console.log(result[i])
-                let lb_Entry = document.createElement("tr");
-                let Name = document.createElement("td");
-                Name.innerHTML = result[i].gameName.slice(0, 5);
-                lb_Entry.appendChild(Name);
-                let Score = document.createElement("td");
-                Score.innerHTML = result[i].score;
-                lb_Entry.appendChild(Score);
-                lb_Table.appendChild(lb_Entry);
-            }
-        }
-        document.getElementById("leaderBoard").appendChild(lb_Table);
-    });
+async function populateLeaderBoard() {
+    let list = await fb_readSorted("/Games/Rogue/Scores", "score", 3)
+    console.log(list)
+    //     let lb_Table = document.createElement("table");
+    //     for (let i = 0; i < result.length; i++) {
+    //         if (result[i].gameName) {
+    //             //console.log(result[i])
+    //             let lb_Entry = document.createElement("tr");
+    //             let Name = document.createElement("td");
+    //             Name.innerHTML = result[i].gameName.slice(0, 5);
+    //             lb_Entry.appendChild(Name);
+    //             let Score = document.createElement("td");
+    //             Score.innerHTML = result[i].score;
+    //             lb_Entry.appendChild(Score);
+    //             lb_Table.appendChild(lb_Entry);
+    //         }
+    //     }
+    //     document.getElementById("leaderBoard").appendChild(lb_Table);
+    // });
 }
 
 /*************************************************

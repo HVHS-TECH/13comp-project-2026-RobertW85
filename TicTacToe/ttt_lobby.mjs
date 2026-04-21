@@ -15,11 +15,14 @@ export function startLobbyScreen() {
     let buttonDiv = document.createElement("div");
     let hostButton = document.createElement("button");
     let refreshButton = document.createElement("button");
+    let backButton = document.createElement("button");
 
     document.body.appendChild(lobbyDiv);
-    buttonDiv.append(hostButton,refreshButton);
+    buttonDiv.append(backButton, hostButton,refreshButton);
     lobbyDiv.append(lobbyTitle,buttonDiv,lobbyTable);
     
+    backButton.innerHTML = "Back";
+    backButton.onclick = () => {history.back()};
     hostButton.innerHTML = "Host";
     hostButton.onclick = hostLobby;
     refreshButton.innerHTML = "refresh";
@@ -49,7 +52,7 @@ async function refreshAvailableLobbies() {
         lobbyName.innerHTML = LOBBYLISTKEYS[i];
 
         joinButton.innerHTML = "Join";
-        joinButton.onclick = () => {joinLobby(lobbyName.innerHTML);};
+        joinButton.onclick = () => {joinLobby(lobbyName.innerHTML)};
 
         tableRow.append(lobbyName,joinButton);
         lobbyTable.appendChild(tableRow);
