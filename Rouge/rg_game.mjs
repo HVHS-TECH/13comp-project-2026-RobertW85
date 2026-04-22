@@ -182,6 +182,9 @@ function realSetup() {
     runStarted = Date.now();
     document.getElementById("level").innerText =
         "Rank: " + PLAYERLEVELS[player.level - 1];
+
+
+    //endGame("win")
 }
 
 /*************************************************
@@ -853,32 +856,29 @@ function calculateScore() {
         "/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score",
     ).then(async (result) => {
         if (!result) {
+
+            console.log("no previous score")
+
             //no previous score
-            fb_write(
-                score,
-                "/Games/Rogue/Scores/" +
-                sessionStorage.getItem("uid") +
-                "/score",
-            );
-            //set name for score entry
-            fb_read(
-                "/userDetails/" + sessionStorage.getItem("uid") + "/gameName",
-            ).then(async (nameResult) => {
-                console.log(nameResult);
-                await fb_write(nameResult, `/Games/Rogue/Scores/ ${sessionStorage.getItem("uid")} /gameName`);
-                populateLeaderBoard();
-            });
+            let entry = { score: score, gameName: await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`) }
+
+            await fb_write(entry, "/Games/Rogue/Scores/" + sessionStorage.getItem("uid"))
+
+            // await fb_write(score, "/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score");
+            // //set name for score entry
+            // fb_read(
+            //     "/userDetails/" + sessionStorage.getItem("uid") + "/gameName",
+            // ).then(async (nameResult) => {
+            //     console.log(nameResult);
+            //     await fb_write(nameResult, `/Games/Rogue/Scores/ ${sessionStorage.getItem("uid")} /gameName`);
+            //     populateLeaderBoard();
+            // });
         } else if (result < score) {
             //update high score
-            await fb_write(
-                score,
-                "/Games/Rogue/Scores/" +
-                sessionStorage.getItem("uid") +
-                "/score",
-            );
-            populateLeaderBoard();
+            await fb_write(score, "/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score",);
         }
     });
+    populateLeaderBoard();
 }
 
 /*************************************************
@@ -926,31 +926,30 @@ function middlePopup(title, content) {
 
     document.body.appendChild(screenBackground);
 
-    populateLeaderBoard()
+    //populateLeaderBoard()
 }
 
 /*************************************************
-populateLeaderBoard(result)
+populateLeaderBoard()
 *************************************************/
 async function populateLeaderBoard() {
     let list = await fb_readSorted("/Games/Rogue/Scores", "score", 3)
+    let lb_Table = document.createElement("table");
     console.log(list)
-    //     let lb_Table = document.createElement("table");
-    //     for (let i = 0; i < result.length; i++) {
-    //         if (result[i].gameName) {
-    //             //console.log(result[i])
-    //             let lb_Entry = document.createElement("tr");
-    //             let Name = document.createElement("td");
-    //             Name.innerHTML = result[i].gameName.slice(0, 5);
-    //             lb_Entry.appendChild(Name);
-    //             let Score = document.createElement("td");
-    //             Score.innerHTML = result[i].score;
-    //             lb_Entry.appendChild(Score);
-    //             lb_Table.appendChild(lb_Entry);
-    //         }
-    //     }
-    //     document.getElementById("leaderBoard").appendChild(lb_Table);
-    // });
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].gameName) {
+            console.log(list[i])
+            let lb_Entry = document.createElement("tr");
+            let Name = document.createElement("td");
+            Name.innerHTML = list[i].gameName.slice(0, 5);
+            lb_Entry.appendChild(Name);
+            let Score = document.createElement("td");
+            Score.innerHTML = list[i].score;
+            lb_Entry.appendChild(Score);
+            lb_Table.appendChild(lb_Entry);
+        }
+    }
+    document.getElementById("leaderBoard").appendChild(lb_Table);
 }
 
 /*************************************************

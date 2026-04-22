@@ -13,8 +13,8 @@ let FB_DB;
 /**************************************************************/
 // Import all the methods you want to call from the firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase,ref,set,get,onValue,query,orderByChild,limitToLast } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-import { getAuth,GoogleAuthProvider,signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { getDatabase, ref, set, get, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 /**************************************************************/
 // EXPORT FUNCTIONS
@@ -104,17 +104,21 @@ async function fb_onValue(_path) {
     });
 }
 
+//used only for rogue leaderbord and will need to be changed 
 async function fb_readSorted(path, key, amount) {
-    const dbReference = query(ref(FB_DB, path),orderByChild(key),limitToLast(amount));
+    const dbReference = query(ref(FB_DB, path), orderByChild(key), limitToLast(amount));
     const snapshot = await get(dbReference);
-    console.log(snapshot)
-    // if (snapshot.val() != null) {
-    //     var result = [];
-    //     snapshot.forEach((child) => {
-    //         result.push(child.val());
-    //     });
-    //     return result.reverse();
-    // } else {
-    //     console.log("No record found goes here");
-    // }
+    if (snapshot.val() != null) {
+        var result = [];
+        snapshot.forEach((child) => {
+            //let entries = Object.entries(child.val())
+            //let key = child.key
+            //let value = entries[0][1]
+            //result.push([key, value]);
+            result.push(child.val())
+        });
+        return result.reverse();
+    } else {
+        console.log("No record found goes here");
+    }
 }
