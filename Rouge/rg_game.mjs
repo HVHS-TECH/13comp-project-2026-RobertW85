@@ -829,10 +829,10 @@ win and lose, could be the same function
 
 async function endGame(result) {
     playing = false;
-    calculateScore();
-    let oldScore = await fb_read("/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score",);
-    if (oldScore != null) {
-        middlePopup(`${result}`, `Score: ${int(score)} \n High Score: ${int(oldScore)}`);
+    await calculateScore();
+    let writtenScore = await fb_read("/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score",);
+    if (writtenScore != null) {
+        middlePopup(`${result}`, `Score: ${int(score)} \n High Score: ${int(writtenScore)}`);
     } else {
         middlePopup(`${result}`, `Score: ${int(score)} \n High Score: ${score}`);
     }
@@ -844,7 +844,7 @@ Score is (money + xp) * time
 lower time is better, score starts *2 then lowers to a min of *0.5 based on time
 No differnce between win/lose but If there was a leaderboard any win would be better than a loss
 *************************************************/
-function calculateScore() {
+async function calculateScore() {
     let timeMultiplier = 2 - int((Date.now() - runStarted) / 1000) / 60; //score is timed by 2 - amount of minutes limit of 0.5
     if (timeMultiplier < 0.5) {
         timeMultiplier = 0.5;
@@ -856,29 +856,16 @@ function calculateScore() {
         "/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score",
     ).then(async (result) => {
         if (!result) {
-
-            console.log("no previous score")
-
             //no previous score
             let entry = { score: score, gameName: await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`) }
-
             await fb_write(entry, "/Games/Rogue/Scores/" + sessionStorage.getItem("uid"))
-
-            // await fb_write(score, "/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score");
-            // //set name for score entry
-            // fb_read(
-            //     "/userDetails/" + sessionStorage.getItem("uid") + "/gameName",
-            // ).then(async (nameResult) => {
-            //     console.log(nameResult);
-            //     await fb_write(nameResult, `/Games/Rogue/Scores/ ${sessionStorage.getItem("uid")} /gameName`);
-            //     populateLeaderBoard();
-            // });
         } else if (result < score) {
             //update high score
             await fb_write(score, "/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score",);
         }
     });
-    populateLeaderBoard();
+    return
+    //populateLeaderBoard();
 }
 
 /*************************************************
@@ -926,7 +913,7 @@ function middlePopup(title, content) {
 
     document.body.appendChild(screenBackground);
 
-    //populateLeaderBoard()
+    populateLeaderBoard()
 }
 
 /*************************************************
