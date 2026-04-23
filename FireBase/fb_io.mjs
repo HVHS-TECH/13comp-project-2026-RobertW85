@@ -27,6 +27,7 @@ export {
     fb_read,
     fb_onValue,
     fb_readSorted,
+    fb_remove
 };
 
 /**************************************************************/
@@ -121,4 +122,9 @@ async function fb_readSorted(path, key, amount) {
     } else {
         console.log("No record found goes here");
     }
+}
+
+async function fb_remove(path) {
+    const REF = ref(FB_DB, path)
+    await REF.remove()
 }

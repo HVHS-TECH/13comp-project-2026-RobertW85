@@ -1,6 +1,5 @@
 //Term 1 2026
-
-import { fb_read, fb_initialize } from "../FireBase/fb_io.mjs"
+import { fb_read, fb_initialize, fb_write, fb_remove } from "../FireBase/fb_io.mjs"
 
 fb_initialize()
 
@@ -21,6 +20,7 @@ function tttButton() {
 }
 
 async function fillTable(path) {
+    document.getElementsByTagName("table")[0].innerHTML = ''
     let data = await fb_read(path)
     //console.log(data)
     for (let i = 0; i < Object.keys(data).length; i++) {
@@ -30,12 +30,21 @@ async function fillTable(path) {
             //console.log("key: ", Object.keys(userInfo)[j])
             //console.log("value: ", userInfo[Object.keys(userInfo)[j]])
             let key_TD = document.createElement("td")
-            let value_TD = document.createElement("input")
+            let value_IN = document.createElement("input")
             key_TD.innerHTML = Object.keys(userInfo)[j]
-            value_TD.value = userInfo[Object.keys(userInfo)[j]]
-            tr.appendChild(key_TD)
-            tr.appendChild(value_TD)
+            value_IN.value = userInfo[Object.keys(userInfo)[j]]
+            value_IN.id = key_TD.innerHTML
+            tr.append(key_TD, value_IN)
+            value_IN.addEventListener("change", function (e) {
+                //console.log(`path:${Object.keys(data)[i]} key:${this.id} value:${e.target.value}`)
+                fb_write(e.target.value, `${path}/${userInfo}/${this.id}`)
+            })
         }
-        document.body.appendChild(tr)
+        let remove_BT = document.createElement("button")
+        remove_BT.innerHTML = "DELETE"
+        remove_BT.onclick = () => { fb_remove(`${path}/${userInfo}`) }
+        tr.appendChild(remove_BT)
+        //console.log(document.getElementsByTagName("table")[0])
+        document.getElementsByTagName("table")[0].appendChild(tr)
     }
 }
