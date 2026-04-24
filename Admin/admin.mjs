@@ -16,7 +16,7 @@ function rgButton() {
 }
 
 function tttButton() {
-    //fillTable("/userDetails")
+    fillTable("/Games/TTT/MMR")
 }
 
 async function fillTable(path) {

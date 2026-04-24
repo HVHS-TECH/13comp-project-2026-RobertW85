@@ -93,7 +93,7 @@ function updateScreen() {
     let screenHeight = window.innerHeight;
     boardSize = min(screenWidth, screenHeight) * LAYOUT.boardScale;
     center = createVector(screenWidth / 2, screenHeight / 2);
-    
+
     //redraw
     background(backgroundColor);
     drawLines()
@@ -105,7 +105,7 @@ function updateScreen() {
     text(`Your Symbol: ${symbolName}`, 50, 100);
 }
 
-function drawLines(){
+function drawLines() {
     let lineLength = boardSize * LAYOUT.lineLengthScale;
     let lineWidth = boardSize * LAYOUT.lineWidthScale;
     stroke(lineColor);
@@ -140,23 +140,23 @@ function makeSprite(x, y, size, row, column) {
     let sprite = new Sprite();
     Object.assign(sprite, {
         color: backgroundColor,
-        scale: size*LAYOUT.spriteScale,
+        scale: size * LAYOUT.spriteScale,
         collider: "static",
         row: row,
         column: column
     })
-    sprite.position = {x,y};
+    sprite.position = { x, y };
     sprite.update = function () {
         if (this.mouse.presses() && turn == true && this.image == null) {
             this.image = symbolImage;
-            this.scale = size*LAYOUT.imageScale;
+            this.scale = size * LAYOUT.imageScale;
             boardArray[this.row - 1][this.column - 1] = symbolName;
             makeTurn(this.row, this.column, symbolName);
         }
     };
     if (boardArray[row - 1][column - 1] != 0) {
         boardArray[row - 1][column - 1] == "nought" ? sprite.image = noughtImage : sprite.image = crossImage;
-        sprite.scale = size*LAYOUT.imageScale;
+        sprite.scale = size * LAYOUT.imageScale;
     } else {
         canMove = true;
     }
@@ -211,7 +211,7 @@ async function waitForTurn() {
 
 async function winningMove() {
     let userName = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`,);
-    let winInfo = { symbol: symbolName, userName: userName };
+    let winInfo = { symbol: symbolName, userName: userName, uid: sessionStorage.getItem("uid") };
     await fb_write(winInfo, `/lobbies/${lobbyName}/winner`);
     endGame("win");
 }
@@ -225,6 +225,7 @@ async function endGame(outcome) {
         winInfo.symbol == "cross" ? (plural = "es") : (plural = "s");
         document.getElementById("endGameHeader").innerHTML =
             `${winInfo.userName} (${winInfo.symbol}${plural}) wins!`;
+        calcMmr(winInfo.uid)
     }
     document.getElementById("endScreenDiv").style.visibility = "visible";
     document.getElementById("rematchButton").onclick = () => rematch();
@@ -241,4 +242,13 @@ function leave() {
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
     resizeCanvas(1, 1);
     startLobbyScreen();
+}
+
+async function calcMmr(winner) {
+    //elo = await fb_read(`/Games/TTT/MMR/${winner}`)
+    if (sessionStorage.getItem("uid") != winner) {
+        console.log("remove MMR")
+    } else {
+        console.log("give MMR")
+    }
 }
