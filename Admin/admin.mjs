@@ -12,7 +12,7 @@ function userButton() {
 }
 
 function rgButton() {
-    fillTable("/Games/Rogue/Scores/")
+    fillTable("/Games/Rogue/Scores")
 }
 
 function tttButton() {
@@ -22,7 +22,6 @@ function tttButton() {
 async function fillTable(path) {
     document.getElementsByTagName("table")[0].innerHTML = ''
     let data = await fb_read(path)
-    //console.log(data)
     for (let i = 0; i < Object.keys(data).length; i++) {
         let tr = document.createElement("tr")
         let userInfo = data[Object.keys(data)[i]]
@@ -37,16 +36,17 @@ async function fillTable(path) {
             tr.append(key_TD, value_IN)
             value_IN.addEventListener("change", function (e) {
                 //console.log(`path:${Object.keys(data)[i]} key:${this.id} value:${e.target.value}`)
-                fb_write(e.target.value, `${path}/${userInfo}/${this.id}`)
+                console.log(this)
+                fb_write(e.target.value, `${path}/${Object.keys(data)[i]}/${this.id}`)
             })
         }
         let remove_BT = document.createElement("button")
-        remove_BT.innerHTML = "DELETE"
-        remove_BT.onclick = () => { fb_remove(`${path}/${userInfo}`) }
-        console.log(userInfo)
-        console.log(`${path}/${data[Object.keys(data)[i]]}`)
         tr.appendChild(remove_BT)
-        //console.log(document.getElementsByTagName("table")[0])
+        remove_BT.textContent = "DELETE"
+        remove_BT.addEventListener("click", function () {
+            fb_remove(`${path}/${Object.keys(data)[i]}`);
+            this.parentElement.remove()
+        })
         document.getElementsByTagName("table")[0].appendChild(tr)
     }
 }

@@ -13,7 +13,7 @@ let FB_DB;
 /**************************************************************/
 // Import all the methods you want to call from the firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase, ref, set, get, onValue, query, orderByChild, limitToLast, remove  } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getDatabase, ref, set, get, onValue, query, orderByChild, limitToLast, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 /**************************************************************/
@@ -121,5 +121,6 @@ async function fb_readSorted(path, key, amount) {
 }
 
 async function fb_remove(path) {
+    console.log(`remove ${path}`)
     await remove(ref(FB_DB, path))
 }
