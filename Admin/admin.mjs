@@ -43,6 +43,8 @@ async function fillTable(path) {
         let remove_BT = document.createElement("button")
         remove_BT.innerHTML = "DELETE"
         remove_BT.onclick = () => { fb_remove(`${path}/${userInfo}`) }
+        console.log(userInfo)
+        console.log(`${path}/${data[Object.keys(data)[i]]}`)
         tr.appendChild(remove_BT)
         //console.log(document.getElementsByTagName("table")[0])
         document.getElementsByTagName("table")[0].appendChild(tr)
