@@ -204,7 +204,6 @@ async function waitForTurn() {
     updateScreen();
     let winCheck = await fb_read(`/lobbies/${lobbyName}/winner`);
     if (winCheck != undefined) {
-        console.log(`${winCheck} wins`);
         endGame("win");
     }
 }
@@ -245,10 +244,21 @@ function leave() {
 }
 
 async function calcMmr(winner) {
-    //elo = await fb_read(`/Games/TTT/MMR/${winner}`)
-    if (sessionStorage.getItem("uid") != winner) {
-        console.log("remove MMR")
-    } else {
-        console.log("give MMR")
-    }
+    const BASEMMRCHANGE = 10
+    const UID = sessionStorage.getItem('uid')
+    let uidLoser = players[0].uid == winner ? players[1].uid : players[0].uid
+    let uidWinner = players[0].uid == uidLoser ? players[1].uid : players[0].uid
+    let winnerMMR = await fb_read(`/Games/TTT/MMR/${uidWinner}`)
+    let loserMMR = await fb_read(`/Games/TTT/MMR/${uidLoser}`)
+    if (winnerMMR == null) { winnerMMR = 100 }
+    if (loserMMR == null) { loserMMR = 100 }
+    let averageMMR = (winnerMMR + loserMMR) / 2
+
+    //loser with more mmr means they lose more and you gain more
+    //winner with more mmr means they gain less and you lose less
+    let MMRChange = BASEMMRCHANGE * (loserMMR / averageMMR)
+    //console.log(`win, mmrChange:${mmrChange}, winnerMMR${winnerMMR}, loserMMR${loserMMR}, averageMMR${averageMMR}`)
+    let newMMR = UID == uidWinner ? winnerMMR + MMRChange : loserMMR - MMRChange
+
+    await fb_write(newMMR, `/Games/TTT/MMR/${UID}`)
 }
