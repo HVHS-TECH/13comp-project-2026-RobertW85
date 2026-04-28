@@ -183,8 +183,8 @@ function realSetup() {
     document.getElementById("level").innerText =
         "Rank: " + PLAYERLEVELS[player.level - 1];
 
-
-    //endGame("win")
+    player.money = 10
+    endGame("win")
 }
 
 /*************************************************
@@ -920,7 +920,7 @@ function middlePopup(title, content) {
 populateLeaderBoard()
 *************************************************/
 async function populateLeaderBoard() {
-    let list = await fb_readSorted("/Games/Rogue/Scores", "score", 3)
+    let list = await fb_readSorted("/Games/Rogue/Scores", "score", 10)
     let lb_Table = document.createElement("table");
     console.log(list)
     for (let i = 0; i < list.length; i++) {

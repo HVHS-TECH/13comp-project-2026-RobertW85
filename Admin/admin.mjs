@@ -32,10 +32,22 @@ async function fillTable(path) {
                 //console.log("value: ", Info[Object.keys(Info)[j]])
                 let key_TD = document.createElement("td")
                 let value_IN = document.createElement("input")
+                let type_SL = document.createElement("select")
                 key_TD.innerHTML = Object.keys(Info)[j]
                 value_IN.value = Info[Object.keys(Info)[j]]
                 value_IN.id = key_TD.innerHTML
-                tr.append(key_TD, value_IN)
+
+                //type options:
+                //original type: typeof Info[Object.keys(Info)[j]]
+                let string_OP = document.createElement("option")
+                string_OP.value = "string"
+                let int_OP = document.createElement("option")
+                int_OP.value = "int"
+
+                type_SL.append(string_OP, int_OP)
+
+
+                tr.append(key_TD, value_IN, type_SL)
                 value_IN.addEventListener("change", function (e) {
                     //console.log(`path:${Object.keys(data)[i]} key:${this.id} value:${e.target.value}`)
                     console.log(this)
