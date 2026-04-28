@@ -22,21 +22,37 @@ function tttButton() {
 async function fillTable(path) {
     document.getElementsByTagName("table")[0].innerHTML = ''
     let data = await fb_read(path)
+    
     for (let i = 0; i < Object.keys(data).length; i++) {
         let tr = document.createElement("tr")
-        let userInfo = data[Object.keys(data)[i]]
-        for (let j = 0; j < Object.keys(userInfo).length; j++) {
-            //console.log("key: ", Object.keys(userInfo)[j])
-            //console.log("value: ", userInfo[Object.keys(userInfo)[j]])
+        let Info = data[Object.keys(data)[i]]
+        if (typeof Info === 'object'){
+            for (let j = 0; j < Object.keys(Info).length; j++) {
+                //console.log("key: ", Object.keys(Info)[j])
+                //console.log("value: ", Info[Object.keys(Info)[j]])
+                let key_TD = document.createElement("td")
+                let value_IN = document.createElement("input")
+                key_TD.innerHTML = Object.keys(Info)[j]
+                value_IN.value = Info[Object.keys(Info)[j]]
+                value_IN.id = key_TD.innerHTML
+                tr.append(key_TD, value_IN)
+                value_IN.addEventListener("change", function (e) {
+                    //console.log(`path:${Object.keys(data)[i]} key:${this.id} value:${e.target.value}`)
+                    console.log(this)
+                    fb_write(e.target.value, `${path}/${Object.keys(data)[i]}/${this.id}`)
+                })
+            }
+        }else{ //should simplify the if else since its mostly the same
+            console.log(Object.entries(data)[i])
             let key_TD = document.createElement("td")
             let value_IN = document.createElement("input")
-            key_TD.innerHTML = Object.keys(userInfo)[j]
-            value_IN.value = userInfo[Object.keys(userInfo)[j]]
+            key_TD.innerHTML = Object.entries(data)[i][0]
+            value_IN.value = Object.entries(data)[i][1]
             value_IN.id = key_TD.innerHTML
             tr.append(key_TD, value_IN)
             value_IN.addEventListener("change", function (e) {
-                //console.log(`path:${Object.keys(data)[i]} key:${this.id} value:${e.target.value}`)
-                console.log(this)
+            //console.log(`path:${Object.keys(data)[i]} key:${this.id} value:${e.target.value}`)
+            console.log(this)
                 fb_write(e.target.value, `${path}/${Object.keys(data)[i]}/${this.id}`)
             })
         }
