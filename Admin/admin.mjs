@@ -22,11 +22,12 @@ function tttButton() {
 async function fillTable(path) {
     document.getElementsByTagName("table")[0].innerHTML = ''
     let data = await fb_read(path)
-    
+    if (data == null) { return }
+
     for (let i = 0; i < Object.keys(data).length; i++) {
         let tr = document.createElement("tr")
         let Info = data[Object.keys(data)[i]]
-        if (typeof Info === 'object'){
+        if (typeof Info === 'object') {
             for (let j = 0; j < Object.keys(Info).length; j++) {
                 //console.log("key: ", Object.keys(Info)[j])
                 //console.log("value: ", Info[Object.keys(Info)[j]])
@@ -41,20 +42,26 @@ async function fillTable(path) {
                 //original type: typeof Info[Object.keys(Info)[j]]
                 let string_OP = document.createElement("option")
                 string_OP.value = "string"
+                string_OP.innerHTML = "string"
                 let int_OP = document.createElement("option")
                 int_OP.value = "int"
-
+                int_OP.innerHTML = "int"
                 type_SL.append(string_OP, int_OP)
-
+                type_SL.id = `${key_TD.innerHTML}_sl`
 
                 tr.append(key_TD, value_IN, type_SL)
                 value_IN.addEventListener("change", function (e) {
+                    let valueType = document.getElementById(`${this.id}_sl`).value
                     //console.log(`path:${Object.keys(data)[i]} key:${this.id} value:${e.target.value}`)
-                    console.log(this)
-                    fb_write(e.target.value, `${path}/${Object.keys(data)[i]}/${this.id}`)
+                    let value = e.target.value
+                    if (valueType == 'int') {
+                        value = parseInt(value)
+                        if (isNaN(value)) { console.log("is nan"); return }
+                    }
+                    fb_write(value, `${path}/${Object.keys(data)[i]}/${this.id}`)
                 })
             }
-        }else{ //should simplify the if else since its mostly the same
+        } else { //should simplify the if else since its mostly the same
             console.log(Object.entries(data)[i])
             let key_TD = document.createElement("td")
             let value_IN = document.createElement("input")
@@ -63,8 +70,8 @@ async function fillTable(path) {
             value_IN.id = key_TD.innerHTML
             tr.append(key_TD, value_IN)
             value_IN.addEventListener("change", function (e) {
-            //console.log(`path:${Object.keys(data)[i]} key:${this.id} value:${e.target.value}`)
-            console.log(this)
+                //console.log(`path:${Object.keys(data)[i]} key:${this.id} value:${e.target.value}`)
+                console.log(this)
                 fb_write(e.target.value, `${path}/${Object.keys(data)[i]}/${this.id}`)
             })
         }

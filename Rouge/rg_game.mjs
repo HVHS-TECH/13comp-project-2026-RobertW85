@@ -920,7 +920,7 @@ function middlePopup(title, content) {
 populateLeaderBoard()
 *************************************************/
 async function populateLeaderBoard() {
-    let list = await fb_readSorted("/Games/Rogue/Scores", "score", 10)
+    let list = await fb_readSorted("/Games/Rogue/Scores", "score", 3)
     let lb_Table = document.createElement("table");
     console.log(list)
     for (let i = 0; i < list.length; i++) {

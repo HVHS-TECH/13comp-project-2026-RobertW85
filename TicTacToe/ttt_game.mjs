@@ -30,6 +30,7 @@ let uid;
 let symbolImage;
 let symbolName;
 let turn;
+let userName;
 
 window.preload = preload;
 window.setup = setup;
@@ -43,6 +44,7 @@ function preload() {
 async function setup() {
     while (document.getElementsByClassName("q5Canvas") == null) { await new Promise((resolve) => setTimeout(resolve, 100)); }
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
+    userName = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`,);
 }
 
 export async function ttt_startGame() {
@@ -209,7 +211,6 @@ async function waitForTurn() {
 }
 
 async function winningMove() {
-    let userName = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`,);
     let winInfo = { symbol: symbolName, userName: userName, uid: sessionStorage.getItem("uid") };
     await fb_write(winInfo, `/lobbies/${lobbyName}/winner`);
     endGame("win");
@@ -245,7 +246,6 @@ function leave() {
 
 async function calcMmr(winner) {
     const BASEMMRCHANGE = 10
-    const UID = sessionStorage.getItem('uid')
     let uidLoser = players[0].uid == winner ? players[1].uid : players[0].uid
     let uidWinner = players[0].uid == uidLoser ? players[1].uid : players[0].uid
     let winnerMMR = await fb_read(`/Games/TTT/MMR/${uidWinner}`)
@@ -258,7 +258,12 @@ async function calcMmr(winner) {
     //winner with more mmr means they gain less and you lose less
     let MMRChange = BASEMMRCHANGE * (loserMMR / averageMMR)
     //console.log(`win, mmrChange:${mmrChange}, winnerMMR${winnerMMR}, loserMMR${loserMMR}, averageMMR${averageMMR}`)
-    let newMMR = UID == uidWinner ? winnerMMR + MMRChange : loserMMR - MMRChange
+    let newMMR = uid == uidWinner ? winnerMMR + MMRChange : loserMMR - MMRChange
 
-    await fb_write(newMMR, `/Games/TTT/MMR/${UID}`)
+    if (await fb_read(`/Games/TTT/MMR/${uid}`) == null) {
+        console.log("write mmr to new player")
+        await fb_write({ MMR: newMMR, userName: userName }, `/Games/TTT/MMR/${uid}`)
+    } else {
+        await fb_write(newMMR, `/Games/TTT/MMR/${uid}/MMR`)
+    }
 }

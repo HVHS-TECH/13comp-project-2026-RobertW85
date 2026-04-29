@@ -1,4 +1,4 @@
-import { fb_initialize,fb_read,fb_write,fb_onValue } from "../FireBase/fb_io.mjs";
+import { fb_initialize, fb_read, fb_write, fb_onValue, fb_readSorted } from "../FireBase/fb_io.mjs";
 import { ttt_startGame } from "./ttt_game.mjs";
 
 let lobbyTable, lobbyDiv;
@@ -16,17 +16,20 @@ export function startLobbyScreen() {
     let hostButton = document.createElement("button");
     let refreshButton = document.createElement("button");
     let backButton = document.createElement("button");
+    let leaderBoardButton = document.createElement("button");
 
     document.body.appendChild(lobbyDiv);
-    buttonDiv.append(backButton, hostButton,refreshButton);
-    lobbyDiv.append(lobbyTitle,buttonDiv,lobbyTable);
-    
+    buttonDiv.append(backButton, hostButton, refreshButton, leaderBoardButton);
+    lobbyDiv.append(lobbyTitle, buttonDiv, lobbyTable);
+
     backButton.innerHTML = "Back";
-    backButton.onclick = () => {history.back()};
+    backButton.onclick = () => { history.back() };
     hostButton.innerHTML = "Host";
     hostButton.onclick = hostLobby;
     refreshButton.innerHTML = "refresh";
     refreshButton.onclick = refreshAvailableLobbies;
+    leaderBoardButton.innerHTML = "leaderboard";
+    leaderBoardButton.onclick = displayLeaderBoard;
     lobbyTitle.innerHTML = "Tic tac toe Lobby";
 
     refreshAvailableLobbies();
@@ -52,9 +55,9 @@ async function refreshAvailableLobbies() {
         lobbyName.innerHTML = LOBBYLISTKEYS[i];
 
         joinButton.innerHTML = "Join";
-        joinButton.onclick = () => {joinLobby(lobbyName.innerHTML)};
+        joinButton.onclick = () => { joinLobby(lobbyName.innerHTML) };
 
-        tableRow.append(lobbyName,joinButton);
+        tableRow.append(lobbyName, joinButton);
         lobbyTable.appendChild(tableRow);
     }
 }
@@ -92,9 +95,9 @@ async function waitForPlayer(lobbyName) {
     let turn = players[startingPlayer].uid;
     //console.log(`Current turn:${turn}`);
     //set starting player symbol
-    await fb_write("cross",`/lobbies/${lobbyName}/players/${startingPlayer}/symbol`);
+    await fb_write("cross", `/lobbies/${lobbyName}/players/${startingPlayer}/symbol`);
     //set last player symbol
-    await fb_write("nought",`/lobbies/${lobbyName}/players/${Math.abs(startingPlayer - 1)}/symbol`);
+    await fb_write("nought", `/lobbies/${lobbyName}/players/${Math.abs(startingPlayer - 1)}/symbol`);
     await fb_write(turn, `/lobbies/${lobbyName}/turn`);
     startGame(lobbyName);
 }
@@ -117,4 +120,20 @@ function startGame(lobbyName) {
     console.log("starting game")
     sessionStorage.setItem("lobbyName", lobbyName);
     ttt_startGame()
+}
+
+async function displayLeaderBoard() {
+    let scores = await fb_readSorted("/Games/TTT/MMR", "MMR", 3)
+    let display = document.getElementById('LeaderBoard')
+    display.style.display = 'block'
+    for (let i = 0; i < scores.length; i++) {
+        console.log(scores[i])
+        let entry = document.createElement('tr')
+        let name = document.createElement('p')
+        let score = document.createElement('p')
+        name.innerHTML = scores[i].userName
+        score.innerHTML = scores[i].MMR
+        entry.append(name, score)
+        document.getElementById('leaderBoardContent').append(entry)
+    }
 }
