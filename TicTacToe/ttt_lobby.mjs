@@ -123,17 +123,24 @@ function startGame(lobbyName) {
 }
 
 async function displayLeaderBoard() {
+    document.getElementById('leaderBoardContent_tb').innerHTML = ''
     let scores = await fb_readSorted("/Games/TTT/MMR", "MMR", 3)
-    let display = document.getElementById('LeaderBoard')
-    display.style.display = 'block'
+    let display = document.getElementById('leaderBoard_di')
     for (let i = 0; i < scores.length; i++) {
         console.log(scores[i])
         let entry = document.createElement('tr')
-        let name = document.createElement('p')
-        let score = document.createElement('p')
+        let name = document.createElement('td')
+        let score = document.createElement('td')
         name.innerHTML = scores[i].userName
         score.innerHTML = scores[i].MMR
         entry.append(name, score)
-        document.getElementById('leaderBoardContent').append(entry)
+        document.getElementById('leaderBoardContent_tb').append(entry)
+    }
+    display.style.display = 'block'
+}
+
+window.onclick = function (event) {
+    if (event.target == document.getElementById('leaderBoard_di')) {
+        document.getElementById('leaderBoard_di').style.display = "none";
     }
 }

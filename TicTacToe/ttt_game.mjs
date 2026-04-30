@@ -218,18 +218,18 @@ async function winningMove() {
 
 async function endGame(outcome) {
     if (outcome == "draw") {
-        document.getElementById("endGameHeader").innerHTML = `YOU draw`;
+        document.getElementById("endGameHeader_h1").innerHTML = `YOU draw`;
     } else {
         let winInfo = await fb_read(`/lobbies/${lobbyName}/winner`);
         let plural;
         winInfo.symbol == "cross" ? (plural = "es") : (plural = "s");
-        document.getElementById("endGameHeader").innerHTML =
+        document.getElementById("endGameHeader_h1").innerHTML =
             `${winInfo.userName} (${winInfo.symbol}${plural}) wins!`;
         calcMmr(winInfo.uid)
     }
-    document.getElementById("endScreenDiv").style.visibility = "visible";
-    document.getElementById("rematchButton").onclick = () => rematch();
-    document.getElementById("leaveButton").onclick = () => leave();
+    document.getElementById("endScreen_di").style.visibility = "visible";
+    document.getElementById("rematchButton_bt").onclick = () => rematch();
+    document.getElementById("leaveButton_bt").onclick = () => leave();
 }
 
 function rematch() {
@@ -238,7 +238,7 @@ function rematch() {
 
 function leave() {
     console.log("leave");
-    document.getElementById("endScreenDiv").style.visibility = "hidden";
+    document.getElementById("endScreen_di").style.visibility = "hidden";
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
     resizeCanvas(1, 1);
     startLobbyScreen();
@@ -250,8 +250,8 @@ async function calcMmr(winner) {
     let uidWinner = players[0].uid == uidLoser ? players[1].uid : players[0].uid
     let winnerMMR = await fb_read(`/Games/TTT/MMR/${uidWinner}`)
     let loserMMR = await fb_read(`/Games/TTT/MMR/${uidLoser}`)
-    if (winnerMMR == null) { winnerMMR = 100 }
-    if (loserMMR == null) { loserMMR = 100 }
+    if (winnerMMR == (null || NaN)) { winnerMMR = 100 }
+    if (loserMMR == (null || NaN)) { loserMMR = 100 }
     let averageMMR = (winnerMMR + loserMMR) / 2
 
     //loser with more mmr means they lose more and you gain more
