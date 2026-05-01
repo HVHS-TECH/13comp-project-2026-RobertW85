@@ -1,3 +1,10 @@
+/**
+*p5.play: ttt_game.mjs
+*
+*@description features: turn based multiplayer game with scoring system
+*Writen by Robert Watt
+*Term 1-2 2026
+*/
 import { fb_read, fb_write, fb_onValue } from "../FireBase/fb_io.mjs";
 import { startLobbyScreen } from "./ttt_lobby.mjs";
 
@@ -36,17 +43,26 @@ window.preload = preload;
 window.setup = setup;
 window.windowResized = windowResized;
 
+/**
+ * load images
+ */
 function preload() {
     noughtImage = loadImage("nought.svg");
     crossImage = loadImage("cross.svg");
 }
 
+/**
+ * @returns{void}
+ */
 async function setup() {
     while (document.getElementsByClassName("q5Canvas") == null) { await new Promise((resolve) => setTimeout(resolve, 100)); }
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
     userName = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`,);
 }
 
+/**
+ * @returns{void}
+ */
 export async function ttt_startGame() {
     console.log("start game");
     //console.log(document.getElementsByClassName("q5Canvas"));

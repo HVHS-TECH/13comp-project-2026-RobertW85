@@ -1,14 +1,21 @@
+/***************************
+Js: ttt_lobby.mjs
+
+ttt_lobby, features: join or host turn based multiplayer games and display a leaderBoard
+Writen by Robert Watt
+Term 1-2 2026
+***************************/
 import { fb_initialize, fb_read, fb_write, fb_onValue, fb_readSorted } from "../FireBase/fb_io.mjs";
 import { ttt_startGame } from "./ttt_game.mjs";
 
 let lobbyTable, lobbyDiv;
-
-fb_initialize();
 let uid = sessionStorage.getItem("uid");
+fb_initialize();
 startLobbyScreen();
 
+//run at the start and by ttt_game when the game is over
+//will create the main elements of the lobby
 export function startLobbyScreen() {
-    console.log("start up lobby");
     lobbyDiv = document.createElement("div");
     lobbyTable = document.createElement("table");
     let lobbyTitle = document.createElement("h1");
@@ -29,49 +36,42 @@ export function startLobbyScreen() {
     refreshButton.innerHTML = "refresh";
     refreshButton.onclick = refreshAvailableLobbies;
     leaderBoardButton.innerHTML = "leaderboard";
-    leaderBoardButton.onclick = displayLeaderBoard;
+    leaderBoardButton.onclick = () => { displayLeaderBoard(5) };
     lobbyTitle.innerHTML = "Tic tac toe Lobby";
-
     refreshAvailableLobbies();
 }
 
+//called by startLobbyScreen and refreshButton
+//refreshAvailableLobbies will display every lobby in '/lobbies' that is joinable
+//information for each lobby is stored in a table row appeneded to lobbyTable
 async function refreshAvailableLobbies() {
     lobbyTable.innerHTML = "";
-
     const LOBBYLIST = await fb_read("/lobbies");
-    if (LOBBYLIST == null) {
-        return;
-    }
+    if (LOBBYLIST == null) { return; }
     const LOBBYLISTKEYS = Object.keys(LOBBYLIST)
     for (let i = 0; i < LOBBYLISTKEYS.length; i++) {
-        if (LOBBYLIST[LOBBYLISTKEYS[i]].players.length >= 2) {
-            continue;
-        }
-
+        if (LOBBYLIST[LOBBYLISTKEYS[i]].players.length >= 2) { continue; }
         let tableRow = document.createElement("tr");
         let lobbyName = document.createElement("td");
         let joinButton = document.createElement("button");
-
         lobbyName.innerHTML = LOBBYLISTKEYS[i];
-
         joinButton.innerHTML = "Join";
-        joinButton.onclick = () => { joinLobby(lobbyName.innerHTML) };
-
+        joinButton.onclick = () => { joinLobby(LOBBYLISTKEYS[i]) };
         tableRow.append(lobbyName, joinButton);
         lobbyTable.appendChild(tableRow);
     }
 }
 
+//called when hostButton is pressed
+//it will find a unique name for the lobby
+//set up lobby information in firebase '/lobbies/'
+//then wait for a player to join
 async function hostLobby() {
-    console.log("creating lobby");
     document.body.removeChild(lobbyDiv);
     let lobbyList = await fb_read("/lobbies");
     let lobbyNumber;
-    if (lobbyList != null) {
-        lobbyNumber = Object.keys(lobbyList).length + 1;
-    } else {
-        lobbyNumber = 1;
-    }
+    if (lobbyList != null) { lobbyNumber = Object.keys(lobbyList).length + 1; }
+    else { lobbyNumber = 1; }
     let lobbyData = {
         name: `lobby${lobbyNumber}`,
         players: [await getPlayerData()],
@@ -86,14 +86,15 @@ async function hostLobby() {
     waitForPlayer(lobbyName);
 }
 
+//the second half of hostlobby()
+//will wait until a player joins then will decide a starting player
+//starting player will have cross as their symbol
+//turn is stored as the uid of the player whose turn it is
 async function waitForPlayer(lobbyName) {
-    //console.log("waiting for players");
     await fb_onValue(`/lobbies/${lobbyName}/players`);
-    console.log("player joined lobby")
     let startingPlayer = Math.floor(Math.random() * 2);
     let players = await fb_read(`/lobbies/${lobbyName}/players`);
     let turn = players[startingPlayer].uid;
-    //console.log(`Current turn:${turn}`);
     //set starting player symbol
     await fb_write("cross", `/lobbies/${lobbyName}/players/${startingPlayer}/symbol`);
     //set last player symbol
@@ -102,12 +103,15 @@ async function waitForPlayer(lobbyName) {
     startGame(lobbyName);
 }
 
+//called when pressing a joinButton
+//since the player joining a lobby will always be the last it will start the game
 async function joinLobby(lobbyName) {
     await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
     document.body.removeChild(lobbyDiv);
     startGame(lobbyName);
 }
 
+//used to write player information when joining a lobby
 async function getPlayerData() {
     let playerData = {
         uid: uid,
@@ -116,18 +120,20 @@ async function getPlayerData() {
     return playerData;
 }
 
+//run by both players once a lobby is full
+//lobbyName is important for mulitplayer in ttt
 function startGame(lobbyName) {
-    console.log("starting game")
     sessionStorage.setItem("lobbyName", lobbyName);
     ttt_startGame()
 }
 
-async function displayLeaderBoard() {
+//used when leaderBoardButton is pressed, size is the amount of players scores displayed
+//will make a modal div visible and populate it with data
+async function displayLeaderBoard(size) {
     document.getElementById('leaderBoardContent_tb').innerHTML = ''
-    let scores = await fb_readSorted("/Games/TTT/MMR", "MMR", 3)
-    let display = document.getElementById('leaderBoard_di')
+    let scores = await fb_readSorted("/Games/TTT/MMR", "MMR", size)
+    //create table row for each players top scores, containing their username and score
     for (let i = 0; i < scores.length; i++) {
-        console.log(scores[i])
         let entry = document.createElement('tr')
         let name = document.createElement('td')
         let score = document.createElement('td')
@@ -136,9 +142,10 @@ async function displayLeaderBoard() {
         entry.append(name, score)
         document.getElementById('leaderBoardContent_tb').append(entry)
     }
-    display.style.display = 'block'
+    document.getElementById('leaderBoard_di').style.display = 'block'
 }
 
+//used to hide leaderboard
 window.onclick = function (event) {
     if (event.target == document.getElementById('leaderBoard_di')) {
         document.getElementById('leaderBoard_di').style.display = "none";
