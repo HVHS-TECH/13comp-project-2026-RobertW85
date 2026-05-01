@@ -228,8 +228,8 @@ async function endGame(outcome) {
         calcMmr(winInfo.uid)
     }
     document.getElementById("endScreen_di").style.visibility = "visible";
-    document.getElementById("rematchButton_bt").onclick = () => rematch();
-    document.getElementById("leaveButton_bt").onclick = () => leave();
+    document.getElementById("rematch_bt").onclick = () => rematch();
+    document.getElementById("leave_bt").onclick = () => leave();
 }
 
 function rematch() {
@@ -250,8 +250,8 @@ async function calcMmr(winner) {
     let uidWinner = players[0].uid == uidLoser ? players[1].uid : players[0].uid
     let winnerMMR = await fb_read(`/Games/TTT/MMR/${uidWinner}`)
     let loserMMR = await fb_read(`/Games/TTT/MMR/${uidLoser}`)
-    if (winnerMMR == (null || NaN)) { winnerMMR = 100 }
-    if (loserMMR == (null || NaN)) { loserMMR = 100 }
+    if (winnerMMR == (null)) { winnerMMR = 100 }
+    if (loserMMR == (null)) { loserMMR = 100 }
     let averageMMR = (winnerMMR + loserMMR) / 2
 
     //loser with more mmr means they lose more and you gain more
@@ -262,6 +262,7 @@ async function calcMmr(winner) {
 
     if (await fb_read(`/Games/TTT/MMR/${uid}`) == null) {
         console.log("write mmr to new player")
+        console.log(typeof newMMR)
         await fb_write({ MMR: newMMR, userName: userName }, `/Games/TTT/MMR/${uid}`)
     } else {
         await fb_write(newMMR, `/Games/TTT/MMR/${uid}/MMR`)
