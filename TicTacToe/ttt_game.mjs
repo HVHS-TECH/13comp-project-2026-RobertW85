@@ -1,10 +1,9 @@
 /**
-*p5.play: ttt_game.mjs
-*
-*@description features: turn based multiplayer game with scoring system
-*Writen by Robert Watt
-*Term 1-2 2026
-*/
+ * p5.play: ttt_game.mjs
+ * @description features: turn based multiplayer game with scoring system
+ * Writen by Robert Watt
+ * Term 1-2 2026
+ */
 import { fb_read, fb_write, fb_onValue } from "../FireBase/fb_io.mjs";
 import { startLobbyScreen } from "./ttt_lobby.mjs";
 
@@ -41,7 +40,7 @@ let userName;
 
 window.preload = preload;
 window.setup = setup;
-window.windowResized = windowResized;
+window.windowResized = updateScreen;
 
 /**
  * load images
@@ -52,6 +51,8 @@ function preload() {
 }
 
 /**
+ * automatically hides defualt canvas
+ * sets userName
  * @returns{void}
  */
 async function setup() {
@@ -61,11 +62,11 @@ async function setup() {
 }
 
 /**
+ * exported so that the game can be started by the lobby mulitple times
+ * resets variables and displays game ui
  * @returns{void}
  */
 export async function ttt_startGame() {
-    console.log("start game");
-    //console.log(document.getElementsByClassName("q5Canvas"));
     resizeCanvas(window.innerWidth, window.innerHeight);
     lobbyName = sessionStorage.getItem("lobbyName");
     let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
@@ -76,12 +77,12 @@ export async function ttt_startGame() {
         [0, 0, 0],
         [0, 0, 0],
     ];
-
-    let lobbyTurn;
+    let lobbyTurn = await fb_read(`/lobbies/${lobbyName}/turn`);
+    //wait incase lobby creator has not completed lobby setup
     while (lobbyTurn == undefined) {
         lobbyTurn = await fb_read(`/lobbies/${lobbyName}/turn`);
     }
-    //console.log(`My uid:${uid}, Turn:${lobbyTurn}`);
+    //set turn
     if (uid == lobbyTurn) {
         turn = true;
         symbolImage = crossImage;
@@ -92,18 +93,17 @@ export async function ttt_startGame() {
         symbolName = "nought";
         waitForTurn();
     }
-
     updateScreen();
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "visible";
 }
 
-function windowResized() {
+/**
+ * changes size of canvas
+ * redraws sprites and lines
+ */
+function updateScreen() {
     if (document.getElementsByClassName("q5Canvas")[0].style.visibility == "hidden") { return; }
     resizeCanvas(window.innerWidth, window.innerHeight);
-    updateScreen();
-}
-
-function updateScreen() {
     //console.log("updateScreen");
 
     //resize
@@ -123,6 +123,9 @@ function updateScreen() {
     text(`Your Symbol: ${symbolName}`, 50, 100);
 }
 
+/**
+ * draws 4 lines for the grid
+ */
 function drawLines() {
     let lineLength = boardSize * LAYOUT.lineLengthScale;
     let lineWidth = boardSize * LAYOUT.lineWidthScale;
@@ -134,6 +137,9 @@ function drawLines() {
     line(center.x + boardSize, center.y - lineLength, center.x + boardSize, center.y + lineLength);
 }
 
+/**
+ * removes all sprites then makes 9 sprites for the board
+ */
 function refreshSprites() {
     allSprites.remove();
     canMove = false;
@@ -154,6 +160,15 @@ function refreshSprites() {
     }
 }
 
+/**
+ * creates a sprite at x,y
+ * the sprites image is dependant on row,column of boardArray
+ * @param {float} x 
+ * @param {float} y 
+ * @param {float} size 
+ * @param {int} row 
+ * @param {int} column 
+ */
 function makeSprite(x, y, size, row, column) {
     let sprite = new Sprite();
     Object.assign(sprite, {
@@ -180,14 +195,20 @@ function makeSprite(x, y, size, row, column) {
     }
 }
 
-//test if new placement will win
-async function checkWin(x, y, symbol) {
+/**
+ * when a move is made check if it will win the game
+ * @param {int} row 
+ * @param {int} column
+ * @param {string} symbol 
+ * @returns {void}
+ */
+async function checkWin(row, column, symbol) {
     //check row in boardArray for horizontal win
-    if (boardArray[x - 1][0] == symbol && boardArray[x - 1][1] == symbol && boardArray[x - 1][2] == symbol) {
+    if (boardArray[row - 1][0] == symbol && boardArray[row- 1][1] == symbol && boardArray[row - 1][2] == symbol) {
         winningMove();
     }
     //check column in boardArray for vertical win
-    if (boardArray[0][y - 1] == symbol && boardArray[1][y - 1] == symbol && boardArray[2][y - 1] == symbol) {
+    if (boardArray[0][column - 1] == symbol && boardArray[1][column - 1] == symbol && boardArray[2][column - 1] == symbol) {
         winningMove();
     }
     //since diagonals only happen in 2 cases check manually
@@ -201,6 +222,15 @@ async function checkWin(x, y, symbol) {
     }
 }
 
+/**
+ * updates the lobbies board after making a move
+ * checks if the move is a wni
+ * ends turn
+ * @param {int} row 
+ * @param {int} column 
+ * @param {string} symbolName 
+ * @returns {void}
+ */
 async function makeTurn(row, column, symbolName) {
     turn = false;
     textSize(30);
@@ -213,8 +243,13 @@ async function makeTurn(row, column, symbolName) {
     waitForTurn();
 }
 
+/**
+ * waits for turn
+ * reads new board
+ * checks if there is a winner
+ * @returns {void}
+ */
 async function waitForTurn() {
-    //console.log("wait for turn");
     await fb_onValue(`/lobbies/${lobbyName}/turn`);
     //begin turn
     boardArray = await fb_read(`/lobbies/${lobbyName}/board`);
@@ -226,12 +261,20 @@ async function waitForTurn() {
     }
 }
 
+/**
+ * writes symbol, userName and uid to database after winning
+ * @returns {void}
+ */
 async function winningMove() {
     let winInfo = { symbol: symbolName, userName: userName, uid: sessionStorage.getItem("uid") };
     await fb_write(winInfo, `/lobbies/${lobbyName}/winner`);
     endGame("win");
 }
 
+/**
+ * displays endScreen_di
+ * @param {string} outcome 
+ */
 async function endGame(outcome) {
     if (outcome == "draw") {
         document.getElementById("endGameHeader_h1").innerHTML = `YOU draw`;
@@ -252,14 +295,21 @@ function rematch() {
     console.log("rematch");
 }
 
+/**
+ * hides the game and starts lobby script
+ */
 function leave() {
-    console.log("leave");
     document.getElementById("endScreen_di").style.visibility = "hidden";
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
     resizeCanvas(1, 1);
     startLobbyScreen();
 }
 
+/**
+ * will update scoreboard values of each player depending on the difference of points
+ * @param {string} winner 
+ * @returns {void}
+ */
 async function calcMmr(winner) {
     const BASEMMRCHANGE = 10
     let uidLoser = players[0].uid == winner ? players[1].uid : players[0].uid
@@ -269,7 +319,6 @@ async function calcMmr(winner) {
     if (winnerMMR == (null)) { winnerMMR = 100 }
     if (loserMMR == (null)) { loserMMR = 100 }
     let averageMMR = (winnerMMR + loserMMR) / 2
-
     //loser with more mmr means they lose more and you gain more
     //winner with more mmr means they gain less and you lose less
     let MMRChange = BASEMMRCHANGE * (loserMMR / averageMMR)

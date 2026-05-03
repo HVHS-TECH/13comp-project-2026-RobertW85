@@ -1,10 +1,9 @@
-/***************************
-Js: ttt_lobby.mjs
-
-ttt_lobby, features: join or host turn based multiplayer games and display a leaderBoard
-Writen by Robert Watt
-Term 1-2 2026
-***************************/
+/**
+ * Js: ttt_lobby.mjs
+ * @description features: join or host turn based multiplayer games and display a leaderBoard
+ * Writen by Robert Watt
+ * Term 1-2 2026
+ */
 import { fb_initialize, fb_read, fb_write, fb_onValue, fb_readSorted } from "../FireBase/fb_io.mjs";
 import { ttt_startGame } from "./ttt_game.mjs";
 
@@ -13,8 +12,9 @@ let uid = sessionStorage.getItem("uid");
 fb_initialize();
 startLobbyScreen();
 
-//run at the start and by ttt_game when the game is over
-//will create the main elements of the lobby
+/**
+ * create the main elements of the lobby
+ */
 export function startLobbyScreen() {
     lobbyDiv = document.createElement("div");
     lobbyTable = document.createElement("table");
@@ -41,9 +41,11 @@ export function startLobbyScreen() {
     refreshAvailableLobbies();
 }
 
-//called by startLobbyScreen and refreshButton
-//refreshAvailableLobbies will display every lobby in '/lobbies' that is joinable
-//information for each lobby is stored in a table row appeneded to lobbyTable
+/**
+ * display every lobby in '/lobbies' that is joinable
+ * information for each lobby is stored in a table row appeneded to lobbyTable
+ * @returns {void}
+ */
 async function refreshAvailableLobbies() {
     lobbyTable.innerHTML = "";
     const LOBBYLIST = await fb_read("/lobbies");
@@ -62,10 +64,11 @@ async function refreshAvailableLobbies() {
     }
 }
 
-//called when hostButton is pressed
-//it will find a unique name for the lobby
-//set up lobby information in firebase '/lobbies/'
-//then wait for a player to join
+/** 
+ * find a unique name for the lobby
+ * set up lobby information in firebase '/lobbies/'
+ * then wait for a player to join
+ */
 async function hostLobby() {
     document.body.removeChild(lobbyDiv);
     let lobbyList = await fb_read("/lobbies");
@@ -86,10 +89,13 @@ async function hostLobby() {
     waitForPlayer(lobbyName);
 }
 
-//the second half of hostlobby()
-//will wait until a player joins then will decide a starting player
-//starting player will have cross as their symbol
-//turn is stored as the uid of the player whose turn it is
+/**
+ * will wait until a player joins then will decide a starting player
+ * starting player will have cross as their symbol
+ * turn is stored as the uid of the player whose turn it is
+ * @param {string} lobbyName 
+ * @returns {void}
+ */
 async function waitForPlayer(lobbyName) {
     await fb_onValue(`/lobbies/${lobbyName}/players`);
     let startingPlayer = Math.floor(Math.random() * 2);
@@ -103,15 +109,19 @@ async function waitForPlayer(lobbyName) {
     startGame(lobbyName);
 }
 
-//called when pressing a joinButton
-//since the player joining a lobby will always be the last it will start the game
+/**
+ * the player joining a lobby will be the last, it will start the game
+ * @returns {void}
+ */
 async function joinLobby(lobbyName) {
     await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
     document.body.removeChild(lobbyDiv);
     startGame(lobbyName);
 }
 
-//used to write player information when joining a lobby
+/**
+ * used to write player information when joining a lobby
+ */
 async function getPlayerData() {
     let playerData = {
         uid: uid,
@@ -120,15 +130,19 @@ async function getPlayerData() {
     return playerData;
 }
 
-//run by both players once a lobby is full
-//lobbyName is important for mulitplayer in ttt
+/**
+ * run by both players once a lobby is full
+ * lobbyName is important for mulitplayer in ttt
+ */
 function startGame(lobbyName) {
     sessionStorage.setItem("lobbyName", lobbyName);
     ttt_startGame()
 }
 
-//used when leaderBoardButton is pressed, size is the amount of players scores displayed
-//will make a modal div visible and populate it with data
+/**
+ * used when leaderBoardButton is pressed, size is the amount of players scores displayed
+ * will make a modal div visible and populate it with data
+ */
 async function displayLeaderBoard(size) {
     document.getElementById('leaderBoardContent_tb').innerHTML = ''
     let scores = await fb_readSorted("/Games/TTT/MMR", "MMR", size)
