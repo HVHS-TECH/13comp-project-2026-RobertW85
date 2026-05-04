@@ -1,25 +1,16 @@
-//**************************************************************/
-// fb_io.mjs
-// Generalised firebase routines
-// Written by Robert, Term 1 2026
-//
-// All variables & function begin with fb_  all const with FB_
-// Diagnostic code lines have a comment appended to them //DIAG
-/**************************************************************/
+/**
+ * fb_io.mjs
+ * Generalised firebase routines
+ * Written by Robert, Term 1-2 2026
+ *
+ * All variables & function begin with fb_  all const with FB_
+ */
 let FB_DB;
 
-/**************************************************************/
-// Import all external constants & functions required
-/**************************************************************/
-// Import all the methods you want to call from the firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase, ref, set, get, onValue, query, orderByChild, limitToLast, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getDatabase, ref, set, get, onValue, query, orderByChild, limitToLast, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-/**************************************************************/
-// EXPORT FUNCTIONS
-// List all the functions called by code or html outside of this module
-/**************************************************************/
 export {
     fb_initialize,
     fb_authenticate,
@@ -27,13 +18,14 @@ export {
     fb_read,
     fb_onValue,
     fb_readSorted,
-    fb_remove
+    fb_remove,
+    fb_removeOnDisconnect
 };
 
-/**************************************************************/
-// EXPORT FUNCTIONS
-// List all the functions called by code or html outside of this module
-/**************************************************************/
+/**
+ * needed to be run at the start of any page using fb
+ * will set FB_DB for other functions
+ */
 function fb_initialize() {
     console.log("fb_initialize");
     const FB_Cfg = {
@@ -52,6 +44,10 @@ function fb_initialize() {
     console.info(FB_DB);
 }
 
+/**
+ * get user's email account and google information
+ * @returns Object, email information
+ */
 async function fb_authenticate() {
     const AUTH = getAuth();
     const PROVIDER = new GoogleAuthProvider();
@@ -71,12 +67,22 @@ async function fb_authenticate() {
     });
 }
 
+/**
+ * write input to path in database
+ * @param {*} input 
+ * @param {string} path 
+ */
 async function fb_write(input, path) {
     console.log(`Write ${input} at ${path}`);
     const dbReference = ref(FB_DB, path);
     await set(dbReference, input);
 }
 
+/**
+ * read a path and return data from database
+ * @param {string} path 
+ * @returns any
+ */
 async function fb_read(path) {
     const dbReference = ref(FB_DB, path);
     try {
@@ -92,10 +98,15 @@ async function fb_read(path) {
     }
 }
 
-async function fb_onValue(_path) {
+/**
+ * will resolve when the path is changed
+ * @param {string} path 
+ * @returns void
+ */
+async function fb_onValue(path) {
     return new Promise((resolve) => {
         let old;
-        const REF = ref(FB_DB, _path);
+        const REF = ref(FB_DB, path);
         onValue(REF, (snapshot) => {
             if (snapshot.val() != old && old != null) {
                 resolve(snapshot.val());
@@ -105,7 +116,13 @@ async function fb_onValue(_path) {
     });
 }
 
-//used only for rogue leaderbord and will need to be changed 
+/**
+ * read a path and return an ordered amount of entrys
+ * @param {string} path 
+ * @param {string} key 
+ * @param {int} amount 
+ * @returns Array
+ */
 async function fb_readSorted(path, key, amount) {
     const dbReference = query(ref(FB_DB, path), orderByChild(key), limitToLast(amount));
     const snapshot = await get(dbReference);
@@ -121,7 +138,19 @@ async function fb_readSorted(path, key, amount) {
     }
 }
 
+/**
+ * used by admin to remove paths
+ * @param {string} path 
+ */
 async function fb_remove(path) {
     console.log(`remove ${path}`)
     await remove(ref(FB_DB, path))
+}
+
+/**
+ * remove path when user disconnects
+ */
+async function fb_removeOnDisconnect(path) {
+    const REF = ref(FB_DB, path);
+    onDisconnect(REF).remove()
 }

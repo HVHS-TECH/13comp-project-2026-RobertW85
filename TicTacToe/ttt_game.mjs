@@ -4,7 +4,7 @@
  * Writen by Robert Watt
  * Term 1-2 2026
  */
-import { fb_read, fb_write, fb_onValue } from "../FireBase/fb_io.mjs";
+import { fb_read, fb_write, fb_onValue, fb_removeOnDisconnect } from "../FireBase/fb_io.mjs";
 import { startLobbyScreen } from "./ttt_lobby.mjs";
 
 let lineColor = (13, 161, 146);
@@ -93,8 +93,9 @@ export async function ttt_startGame() {
         symbolName = "nought";
         waitForTurn();
     }
-    updateScreen();
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "visible";
+    updateScreen()
+    //fb_removeOnDisconnect(`/lobbies/${lobbyName}/players`)
 }
 
 /**
@@ -104,7 +105,6 @@ export async function ttt_startGame() {
 function updateScreen() {
     if (document.getElementsByClassName("q5Canvas")[0].style.visibility == "hidden") { return; }
     resizeCanvas(window.innerWidth, window.innerHeight);
-    //console.log("updateScreen");
 
     //resize
     let screenWidth = window.innerWidth;
@@ -204,7 +204,7 @@ function makeSprite(x, y, size, row, column) {
  */
 async function checkWin(row, column, symbol) {
     //check row in boardArray for horizontal win
-    if (boardArray[row - 1][0] == symbol && boardArray[row- 1][1] == symbol && boardArray[row - 1][2] == symbol) {
+    if (boardArray[row - 1][0] == symbol && boardArray[row - 1][1] == symbol && boardArray[row - 1][2] == symbol) {
         winningMove();
     }
     //check column in boardArray for vertical win
@@ -314,20 +314,14 @@ async function calcMmr(winner) {
     const BASEMMRCHANGE = 10
     let uidLoser = players[0].uid == winner ? players[1].uid : players[0].uid
     let uidWinner = players[0].uid == uidLoser ? players[1].uid : players[0].uid
-    let winnerMMR = await fb_read(`/Games/TTT/MMR/${uidWinner}`)
-    let loserMMR = await fb_read(`/Games/TTT/MMR/${uidLoser}`)
+    let winnerMMR = await fb_read(`/Games/TTT/MMR/${uidWinner}/MMR`)
+    let loserMMR = await fb_read(`/Games/TTT/MMR/${uidLoser}/MMR`)
     if (winnerMMR == (null)) { winnerMMR = 100 }
     if (loserMMR == (null)) { loserMMR = 100 }
     let averageMMR = (winnerMMR + loserMMR) / 2
-    //loser with more mmr means they lose more and you gain more
-    //winner with more mmr means they gain less and you lose less
     let MMRChange = BASEMMRCHANGE * (loserMMR / averageMMR)
-    //console.log(`win, mmrChange:${mmrChange}, winnerMMR${winnerMMR}, loserMMR${loserMMR}, averageMMR${averageMMR}`)
     let newMMR = uid == uidWinner ? winnerMMR + MMRChange : loserMMR - MMRChange
-
     if (await fb_read(`/Games/TTT/MMR/${uid}`) == null) {
-        console.log("write mmr to new player")
-        console.log(typeof newMMR)
         await fb_write({ MMR: newMMR, userName: userName }, `/Games/TTT/MMR/${uid}`)
     } else {
         await fb_write(newMMR, `/Games/TTT/MMR/${uid}/MMR`)
