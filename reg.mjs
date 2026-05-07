@@ -6,79 +6,90 @@ fb_initialize();
  */
 async function submit() {
     let userDetails = {
-        address: await validateAdress(document.getElementById("addressInput").value),
-        phone: await validatePhoneNumber(document.getElementById("phoneInput").value),
-        age: await validateAge(document.getElementById("ageInput").value),
-        username: await validateUserName(document.getElementById("usernameInput").value),
+        address: await validateAdress('address_in'),
+        phone: await validatePhoneNumber('phoneNumber_in'),
+        age: await validateAge('age_in'),
+        username: await validateUserName('userName_in'),
         uid: sessionStorage.getItem("uid"),
         email: sessionStorage.getItem("email"),
         photoURL: sessionStorage.getItem("photoURL"),
         displayName: sessionStorage.getItem("displayName"),
     };
-    for (let i =0; i < Object.values(userDetails).length; i++){if (Object.values(userDetails)[i] == undefined){return}}
-    console.log("valid")
+    for (let i = 0; i < Object.values(userDetails).length; i++) { if (Object.values(userDetails)[i] == undefined) { return } }
     //await fb_write(userDetails, "/userDetails/" + userDetails.uid);
     //window.location.href = "index.html";
 }
 
-async function validateAdress(address){
+async function validateAdress(addressId) {
+    let address = document.getElementById(addressId).value
     address = address.trim()
-    if (await checkEmpty(address, 'address')){return}
+    if (await checkEmpty(addressId, address)) { return }
     return address
 }
 
-async function validatePhoneNumber(phoneNumber){
-    phoneNumber = Number(phoneNumber)
-    if (await checkEmpty(phoneNumber, 'phoneNumber')){return}
-    if (isNaN(phoneNumber)){
-        errorMessage(phoneNumber, 'phone number is not a number')
+async function validatePhoneNumber(phoneNumberID) {
+    let phoneNumber = Number(document.getElementById(phoneNumberID).value)
+    if (await checkEmpty(phoneNumberID, phoneNumber)) { return }
+    if (isNaN(phoneNumber)) {
+        errorMessage(phoneNumberID, 'phone number is not a number')
         return
     }
-    if (phoneNumber != parseInt(phoneNumber)){
-        errorMessage(phoneNumber, 'phone number is not valid')
+    if (phoneNumber != parseInt(phoneNumber)) {
+        errorMessage('phoneInput', 'phone number is not valid')
         return
     }
     return phoneNumber
 }
 
-async function validateAge(age){
+async function validateAge(ageID) {
+    let age = document.getElementById(ageID).value
     age = parseInt(Number(age))
-    if (await checkEmpty(age, 'age')){return}
-    if (isNaN(age)){
-        errorMessage(age, 'age is not a number')
+    if (await checkEmpty(ageID, age)) { return }
+    if (isNaN(age)) {
+        errorMessage(ageID, 'age is not a number')
         return
     }
-    if (age > 122 || age < 5){
-        errorMessage(age, 'enter your real age')
+    if (age > 122 || age < 5) {
+        errorMessage(ageID, 'enter your real age')
         return
     }
     return age
 }
 
-async function validateUserName(userName){  
+async function validateUserName(userNameID) {
+    let userName = document.getElementById(userNameID).value
     userName = userName.trim()
-    if (await checkEmpty(userName, 'userName')){return}
-    if (userName.length > 20){
-        errorMessage(userName, 'username is too long!')
+    if (await checkEmpty(userNameID, userName)) { return }
+    if (userName.length > 20) {
+        errorMessage(userNameID, 'username is too long!')
         return
     }
-   if (userName.length < 4){
-        errorMessage(userName, 'username is too short!')
+    if (userName.length < 4) {
+        errorMessage(userNameID, 'username is too short!')
         return
-   }
+    }
     return userName
 }
 
-async function checkEmpty(input, inputName){
-    if (input == ''){
-        let aN = inputName[0] == 'a' ? 'an' : 'a'
-        errorMessage(inputName, `enter ${aN} ${inputName}`)
+async function checkEmpty(id, value) {
+    if (value == '') {
+        let aN = id[0] == 'a' ? 'an' : 'a'
+        let idName = id.slice(0, -3)
+        errorMessage(id, `enter ${aN} ${idName}`)
         return true
     }
     return false
 }
 
-function errorMessage(inputName, message){
-    console.log(message)
+function errorMessage(inputID, message) {
+    let element = document.getElementById(inputID)
+    let err_p = document.createElement('p')
+    err_p.innerHTML = message
+
+    let form = element.parentElement
+    let formChildren = Array.from(form.children)
+    console.log(`${inputID} is index: ${formChildren.indexOf(element)}`)
+    //form.insertBefore(err_p, form[formChildren.indexOf(element)])
+    element.after(err_p)
 }
 window.submit = submit;
