@@ -15,7 +15,15 @@ async function signIn() {
   sessionStorage.setItem("photoURL", result.user.photoURL);
   sessionStorage.setItem("displayName", result.user.displayName);
   if (await fb_read("/userDetails/" + result.user.uid) == null) {
-    window.location.href = "reg.html";
+    //window.location.href = "reg.html";
+    if (document.getElementById('reg_sc') == null) {
+      let reg_sc = document.createElement('script')
+      reg_sc.src = "reg.mjs"
+      reg_sc.type = "module"
+      reg_sc.id = 'reg_sc'
+      document.body.appendChild(reg_sc)
+    }
+    document.getElementById('registration_di').style.display = 'block'
   } else {
     login(result.user.uid);
   }
@@ -26,7 +34,7 @@ async function login(uid) {
     console.log("admin")
     let adminButton = document.createElement("button");
     adminButton.innerHTML = 'Admin';
-    adminButton.onclick = () => {window.location.href = "/Admin/admin.html"};
+    adminButton.onclick = () => { window.location.href = "/Admin/admin.html" };
     document.getElementById('navUl').appendChild(adminButton);
   }
   document.getElementById("blockerDiv").remove();

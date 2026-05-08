@@ -5,6 +5,8 @@ fb_initialize();
  * will write user details if all inputs are valid
  */
 async function submit() {
+    document.querySelectorAll('.errorMessages').forEach(element => { element.remove() })
+
     let userDetails = {
         address: await validateAdress('address_in'),
         phone: await validatePhoneNumber('phoneNumber_in'),
@@ -17,7 +19,7 @@ async function submit() {
     };
     for (let i = 0; i < Object.values(userDetails).length; i++) { if (Object.values(userDetails)[i] == undefined) { return } }
     //await fb_write(userDetails, "/userDetails/" + userDetails.uid);
-    //window.location.href = "index.html";
+    document.getElementById('registration_di').style.display = "none";
 }
 
 async function validateAdress(addressId) {
@@ -85,11 +87,15 @@ function errorMessage(inputID, message) {
     let element = document.getElementById(inputID)
     let err_p = document.createElement('p')
     err_p.innerHTML = message
-
+    err_p.className = 'errorMessages'
     let form = element.parentElement
     let formChildren = Array.from(form.children)
-    console.log(`${inputID} is index: ${formChildren.indexOf(element)}`)
-    //form.insertBefore(err_p, form[formChildren.indexOf(element)])
     element.after(err_p)
 }
 window.submit = submit;
+
+window.onclick = function (event) {
+    if (event.target == document.getElementById('registration_di')) {
+        document.getElementById('registration_di').style.display = "none";
+    }
+}

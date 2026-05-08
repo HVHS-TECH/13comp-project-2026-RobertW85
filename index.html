@@ -4,6 +4,7 @@
   <!--coded in 2026 t1-->
   <title>Home</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
 </head>
 
 <body>
@@ -30,5 +31,24 @@
 
   <div id="blockerDiv">
     <button id="signInButton" onclick="signIn()">Sign in to access</button>
+  </div>
+
+  <div id="registration_di" class="w3-modal">
+    <div class="w3-modal-content w3-card-4">
+      <header class="w3-container w3-gray">
+        <h2>Register!</h2>
+      </header>
+      <form>
+        <input placeholder="Address" id="address_in"></input>
+        <br>
+        <input placeholder="Phone number" id="phoneNumber_in"></input>
+        <br>
+        <input placeholder="Age" id="age_in"></input>
+        <br>
+        <input placeholder="User name" id="userName_in"></input>
+        <br>
+      </form>
+      <button id="submitReg" onclick=submit()>Done!!!!</button>
+    </div>
   </div>
 </body>
