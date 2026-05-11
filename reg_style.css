@@ -9,4 +9,15 @@
     background-color: red;
     color: white;
     font-size: large;
+    position: sticky;
+    align-self: center;
+}
+
+#reg_fo{
+    display: flex;
+    flex-direction:column;
+}
+
+input{
+    width: 100%;
 }
