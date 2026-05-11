@@ -11,16 +11,18 @@ body {
     height: 25vh;
 }
 
-#signInButton {
+#signIn_bt {
     border: 0;
     padding: 2%;
     width: 20vw;
     position: absolute;
-    left:40vw;
-    right:40vw;
-    top:30vh;
+    left: 40vw;
+    right: 40vw;
+    top: 30vh;
 }
 
 button {
     border: 0;
 }
+
+#admin_bt {}

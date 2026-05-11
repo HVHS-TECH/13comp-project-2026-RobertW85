@@ -46,7 +46,7 @@ function fb_initialize() {
 
 /**
  * get user's email account and google information
- * @returns Object, email information
+ * @returns {Object} email information
  */
 async function fb_authenticate() {
     const AUTH = getAuth();
@@ -81,7 +81,7 @@ async function fb_write(input, path) {
 /**
  * read a path and return data from database
  * @param {string} path 
- * @returns any
+ * @returns {any}
  */
 async function fb_read(path) {
     const dbReference = ref(FB_DB, path);
@@ -108,8 +108,8 @@ async function fb_onValue(path) {
         let old;
         const REF = ref(FB_DB, path);
         onValue(REF, (snapshot) => {
-            if (snapshot.val() != old && old != null) {
-                resolve(snapshot.val());
+            if (old != null) {
+                resolve();
             }
             old = snapshot.val();
         });
@@ -120,7 +120,7 @@ async function fb_onValue(path) {
  * read a path and return an ordered amount of entrys
  * @param {string} path 
  * @param {string} key 
- * @param {int} amount 
+ * @param {int} amount
  * @returns Array
  */
 async function fb_readSorted(path, key, amount) {

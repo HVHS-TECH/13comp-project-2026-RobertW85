@@ -2,28 +2,28 @@
 
 <head>
   <!--coded in 2026 t1-->
-  <title>Home</title> 
+  <title>Home</title>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="reg_style.css" />
-  
+
 </head>
 
 <body>
   <script type="module" src="FireBase/fb_io.mjs"></script>
   <script type="module" src="index.mjs"></script>
 
-  <button style="visibility: hidden" disabled onclick="location.href = 'Rouge/rg.html'" class="gameButton">
+  <button style="display: none;" disabled onclick="location.href = 'Rouge/rg.html'" class="gameButton">
     Rouge Game
   </button>
-  <button style="visibility: hidden" disabled onclick="location.href = 'TicTacToe/ttt.html'" class="gameButton">
+  <button style="display: none;" disabled onclick="location.href = 'TicTacToe/ttt.html'" class="gameButton">
     Tic Tac Toe Game
   </button>
-  
-  <button id="signInButton" onclick="signIn()">Sign in</button>
+
+  <button id="signIn_bt" onclick="signIn()">Sign in</button>
 
   <div id="registration_di" class="w3-modal">
-    <div class="w3-modal-content w3-card-4">
+    <div id="registrationInner_di" class="w3-modal-content w3-card-4">
       <header class="w3-container" style="text-align: center;">
         <h2>Register</h2>
       </header>

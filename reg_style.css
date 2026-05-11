@@ -10,14 +10,20 @@
     color: white;
     font-size: large;
     position: sticky;
-    align-self: center;
+    align-items: center;
+    margin: 0 auto;
+    display: block;
 }
 
-#reg_fo{
+#reg_fo {
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
 }
 
-input{
+input {
     width: 100%;
+}
+
+#registrationInner_di {
+    padding-bottom: 20px;
 }
