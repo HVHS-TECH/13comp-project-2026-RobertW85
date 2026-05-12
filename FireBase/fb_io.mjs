@@ -19,7 +19,8 @@ export {
     fb_waitForChange,
     fb_readSorted,
     fb_remove,
-    fb_removeOnDisconnect
+    fb_removeOnDisconnect,
+    fb_onValue
 };
 
 /**
@@ -91,7 +92,7 @@ async function fb_read(path) {
         if (fb_data != null) {
             return fb_data;
         } else {
-            console.log("No record found");
+            console.log(`No record found:${path}`);
         }
     } catch (error) {
         console.log(error);
@@ -114,6 +115,14 @@ async function fb_waitForChange(path) {
             old = snapshot.val();
         });
     });
+}
+
+/**
+ * 
+ */
+async function fb_onValue(path,func){
+    const REF = ref(FB_DB, path)
+    onValue(REF, func)
 }
 
 /**

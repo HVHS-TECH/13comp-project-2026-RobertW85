@@ -4,7 +4,7 @@
  * Writen by Robert Watt
  * Term 1-2 2026
  */
-import { fb_read, fb_write, fb_waitForChange, fb_removeOnDisconnect, fb_remove } from "../FireBase/fb_io.mjs";
+import { fb_read, fb_write, fb_waitForChange, fb_removeOnDisconnect, fb_remove, fb_onValue} from "../FireBase/fb_io.mjs";
 import { startLobbyScreen } from "./ttt_lobby.mjs";
 
 let lineColor = (13, 161, 146);
@@ -84,6 +84,12 @@ export async function ttt_startGame() {
     }
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "visible";
     updateScreen()
+    await fb_onValue(`/lobbies/${lobbyName}`, async(data)=>{
+        //console.log(data.val())
+        if (data.val() == null){
+            console.log("player has left the lobby")
+        }
+    })
     fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
 }
 
@@ -316,4 +322,9 @@ async function calcMmr(winner) {
     } else {
         await fb_write(newMMR, `/Games/TTT/MMR/${uid}/MMR`)
     }
+}
+
+async function lobbyDeleted(){
+    
+    console.log("lobby has been deleted")
 }
