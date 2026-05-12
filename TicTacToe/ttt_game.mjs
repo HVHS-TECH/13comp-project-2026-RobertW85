@@ -4,7 +4,7 @@
  * Writen by Robert Watt
  * Term 1-2 2026
  */
-import { fb_read, fb_write, fb_onValue, fb_removeOnDisconnect } from "../FireBase/fb_io.mjs";
+import { fb_read, fb_write, fb_waitForChange, fb_removeOnDisconnect, fb_remove } from "../FireBase/fb_io.mjs";
 import { startLobbyScreen } from "./ttt_lobby.mjs";
 
 let lineColor = (13, 161, 146);
@@ -20,23 +20,12 @@ const LAYOUT = {
     spriteScale: 0.036,
     imageScale: 0.02
 }
-
 //assets
-let noughtImage;
-let crossImage;
-
+let noughtImage, crossImage;
 //lobby info
-let boardArray;
-let canMove;
-let players;
-let lobbyName;
-
+let boardArray, canMove, players, lobbyName;
 //player info
-let uid;
-let symbolImage;
-let symbolName;
-let turn;
-let userName;
+let uid, symbolImage, symbolName, turn, userName;
 
 window.preload = preload;
 window.setup = setup;
@@ -95,7 +84,7 @@ export async function ttt_startGame() {
     }
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "visible";
     updateScreen()
-    //fb_removeOnDisconnect(`/lobbies/${lobbyName}/players`)
+    fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
 }
 
 /**
@@ -250,7 +239,7 @@ async function makeTurn(row, column, symbolName) {
  * @returns {void}
  */
 async function waitForTurn() {
-    await fb_onValue(`/lobbies/${lobbyName}/turn`);
+    await fb_waitForChange(`/lobbies/${lobbyName}/turn`);
     //begin turn
     boardArray = await fb_read(`/lobbies/${lobbyName}/board`);
     turn = true;
@@ -303,10 +292,11 @@ function leave() {
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
     resizeCanvas(1, 1);
     startLobbyScreen();
+    fb_remove('/lobbies/${lobbyName}')
 }
 
 /**
- * will update scoreboard values of each player depending on the difference of points
+ * will update scoreboard for the player depending on the difference of points
  * @param {string} winner 
  * @returns {void}
  */

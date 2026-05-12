@@ -4,7 +4,7 @@
  * Writen by Robert Watt
  * Term 1-2 2026
  */
-import { fb_initialize, fb_read, fb_write, fb_onValue, fb_readSorted } from "../FireBase/fb_io.mjs";
+import { fb_initialize, fb_read, fb_write, fb_waitForChange, fb_readSorted } from "../FireBase/fb_io.mjs";
 import { ttt_startGame } from "./ttt_game.mjs";
 
 let lobbyTable, lobbyDiv;
@@ -97,7 +97,7 @@ async function hostLobby() {
  * @returns {void}
  */
 async function waitForPlayer(lobbyName) {
-    await fb_onValue(`/lobbies/${lobbyName}/players`);
+    await fb_waitForChange(`/lobbies/${lobbyName}/players`);
     let startingPlayer = Math.floor(Math.random() * 2);
     let players = await fb_read(`/lobbies/${lobbyName}/players`);
     let turn = players[startingPlayer].uid;

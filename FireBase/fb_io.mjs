@@ -16,7 +16,7 @@ export {
     fb_authenticate,
     fb_write,
     fb_read,
-    fb_onValue,
+    fb_waitForChange,
     fb_readSorted,
     fb_remove,
     fb_removeOnDisconnect
@@ -103,7 +103,7 @@ async function fb_read(path) {
  * @param {string} path 
  * @returns void
  */
-async function fb_onValue(path) {
+async function fb_waitForChange(path) {
     return new Promise((resolve) => {
         let old;
         const REF = ref(FB_DB, path);

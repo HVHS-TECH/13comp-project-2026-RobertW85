@@ -4,11 +4,8 @@ body {
 }
 
 .gameButton {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    width: 25vw;
-    height: 25vh;
+   width: 20vw;
+   height: 10vh;
 }
 
 #signIn_bt {
@@ -25,4 +22,14 @@ button {
     border: 0;
 }
 
-#admin_bt {}
+#admin_bt {
+    width: 20vw;
+    height: 10vh;
+}
+
+#buttons_di{
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

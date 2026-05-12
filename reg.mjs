@@ -1,11 +1,11 @@
 import { fb_write } from "./FireBase/fb_io.mjs";
-
+import { login } from "./index.mjs";
 /**
  * will write user details if all inputs are valid
  */
 async function submit() {
     document.querySelectorAll('.errorMessages').forEach(element => { element.remove() })
-
+    
     let userDetails = {
         address: await validateAdress('address_in'),
         phone: await validatePhoneNumber('phoneNumber_in'),
@@ -16,9 +16,14 @@ async function submit() {
         photoURL: sessionStorage.getItem("photoURL"),
         displayName: sessionStorage.getItem("displayName"),
     };
-    for (let i = 0; i < Object.values(userDetails).length; i++) { if (Object.values(userDetails)[i] == undefined) { return } }
+    //if any field is undefined do not complete registration, any invalid input is not returned and will be undefined
+    for (let i = 0; i < Object.values(userDetails).length; i++) { 
+        if (Object.values(userDetails)[i] == undefined) { return } }
+    
     await fb_write(userDetails, `/userDetails/${userDetails.uid}`);
     document.getElementById('registration_di').style.display = "none";
+    login(userDetails.uid)
+    document.getElementById('reg_sc').remove() //does nothing
 }
 
 async function validateAdress(addressId) {
@@ -93,8 +98,8 @@ function errorMessage(inputID, message) {
 }
 window.submit = submit;
 
-window.onclick = function (event) {
-    if (event.target == document.getElementById('registration_di')) {
-        document.getElementById('registration_di').style.display = "none";
-    }
-}
+// window.onclick = function (event) {
+//     if (event.target == document.getElementById('registration_di')) {
+//         document.getElementById('registration_di').style.display = "none";
+//     }
+// }

@@ -1,5 +1,5 @@
 //2026 t1
-import { fb_authenticate, fb_initialize, fb_onValue, fb_read } from "./FireBase/fb_io.mjs";
+import { fb_authenticate, fb_initialize, fb_waitForChange, fb_read } from "./FireBase/fb_io.mjs";
 
 fb_initialize();
 if (sessionStorage.getItem("uid") != null) {
@@ -24,28 +24,19 @@ async function signIn() {
       document.body.appendChild(reg_sc)
     }
     document.getElementById('registration_di').style.display = 'block'
-    while (true) {
-      console.log("test")
-      await fb_onValue(`/userDetails/`);
-      const READ = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}`)
-      if (READ != null) {
-        break
-      }
-    }
-    login(result.user.uid)
   } else {
     login(result.user.uid);
   }
 }
 
-async function login(uid) {
+export async function login(uid) {
   if (await fb_read(`/admin/${uid}`) != null) {
     console.log("admin")
     let admin_bt = document.createElement("button");
     admin_bt.id = 'admin_bt';
     admin_bt.innerHTML = 'Admin';
     admin_bt.onclick = () => { window.location.href = "/Admin/admin.html" };
-    document.body.appendChild(admin_bt);
+    document.getElementById('buttons_di').appendChild(admin_bt);
   }
   document.getElementById('signIn_bt').remove();
   for (let i = 0; i < document.getElementsByClassName("gameButton").length; i++) {
