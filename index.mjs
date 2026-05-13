@@ -5,8 +5,13 @@ fb_initialize();
 if (sessionStorage.getItem("uid") != null) {
   if (await fb_read(`/userDetails/${sessionStorage.getItem("uid")}`) != null) {
     login(sessionStorage.getItem("uid"));
+  } else {
+    document.getElementById('signIn_bt').style.display = 'block'
   }
+} else {
+  document.getElementById('signIn_bt').style.display = 'block'
 }
+
 async function signIn() {
   let result = await fb_authenticate();
   //console.log(result)

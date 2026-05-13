@@ -4,7 +4,7 @@
  * Writen by Robert Watt
  * Term 1-2 2026
  */
-import { fb_read, fb_write, fb_waitForChange, fb_removeOnDisconnect, fb_remove, fb_onValue} from "../FireBase/fb_io.mjs";
+import { fb_read, fb_write, fb_waitForChange, fb_removeOnDisconnect, fb_remove, fb_onValue } from "../FireBase/fb_io.mjs";
 import { startLobbyScreen } from "./ttt_lobby.mjs";
 
 let lineColor = (13, 161, 146);
@@ -84,10 +84,10 @@ export async function ttt_startGame() {
     }
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "visible";
     updateScreen()
-    await fb_onValue(`/lobbies/${lobbyName}`, async(data)=>{
+    await fb_onValue(`/lobbies/${lobbyName}`, async (data) => {
         //console.log(data.val())
-        if (data.val() == null){
-            console.log("player has left the lobby")
+        if (data.val() == null) {
+            lobbyDeleted()
         }
     })
     fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
@@ -152,6 +152,21 @@ function refreshSprites() {
     makeSprite(center.x + boardSize * 2, center.y + boardSize * 2, boardSize, 3, 3,);
     if (!canMove) {
         endGame("draw");
+    } else {
+        let leave_bt = new Sprite();
+        Object.assign(leave_bt, {
+            color: backgroundColor,
+            scale: 100 * LAYOUT.spriteScale,
+            collider: "static",
+            text: "leave"
+        })
+        let x = 100
+        let y = 300
+        leave_bt.position = { x, y }
+        // leave_bt.mousePressed = () => {
+        //     console.log("click");
+        //     (leave)
+        // }
     }
 }
 
@@ -246,6 +261,7 @@ async function makeTurn(row, column, symbolName) {
  */
 async function waitForTurn() {
     await fb_waitForChange(`/lobbies/${lobbyName}/turn`);
+    if (await fb_read(`/lobbies/${lobbyName}`) == null) { return }
     //begin turn
     boardArray = await fb_read(`/lobbies/${lobbyName}/board`);
     turn = true;
@@ -281,7 +297,8 @@ async function endGame(outcome) {
             `${winInfo.userName} (${winInfo.symbol}${plural}) wins!`;
         calcMmr(winInfo.uid)
     }
-    document.getElementById("endScreen_di").style.visibility = "visible";
+    document.getElementById("rematch_bt").style.display = 'block'
+    document.getElementById("endScreen_di").style.display = 'block'
     document.getElementById("rematch_bt").onclick = () => rematch();
     document.getElementById("leave_bt").onclick = () => leave();
 }
@@ -298,7 +315,7 @@ function leave() {
     document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
     resizeCanvas(1, 1);
     startLobbyScreen();
-    fb_remove('/lobbies/${lobbyName}')
+    fb_remove(`/lobbies/${lobbyName}`)
 }
 
 /**
@@ -324,7 +341,11 @@ async function calcMmr(winner) {
     }
 }
 
-async function lobbyDeleted(){
-    
+async function lobbyDeleted() {
     console.log("lobby has been deleted")
+    var leavingPLAYER = players[0].uid == uid ? players[1] : players[0];
+    document.getElementById("endGameHeader_h1").innerHTML = `${leavingPLAYER.userName} has left`;
+    document.getElementById("endScreen_di").style.display = 'block'
+    document.getElementById("rematch_bt").style.display = 'none'
+    document.getElementById("leave_bt").onclick = () => leave();
 }
