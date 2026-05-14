@@ -2,14 +2,10 @@
 import { fb_authenticate, fb_initialize, fb_waitForChange, fb_read } from "./FireBase/fb_io.mjs";
 
 fb_initialize();
-if (sessionStorage.getItem("uid") != null) {
-  if (await fb_read(`/userDetails/${sessionStorage.getItem("uid")}`) != null) {
-    login(sessionStorage.getItem("uid"));
-  } else {
-    document.getElementById('signIn_bt').style.display = 'block'
-  }
-} else {
+if (sessionStorage.getItem("signedIn") == null) {
   document.getElementById('signIn_bt').style.display = 'block'
+} else {
+  login(sessionStorage.getItem("uid"));
 }
 
 async function signIn() {
@@ -35,19 +31,34 @@ async function signIn() {
 }
 
 export async function login(uid) {
-  if (await fb_read(`/admin/${uid}`) != null) {
-    console.log("admin")
-    let admin_bt = document.createElement("button");
-    admin_bt.id = 'admin_bt';
-    admin_bt.innerHTML = 'Admin';
-    admin_bt.onclick = () => { window.location.href = "/Admin/admin.html" };
-    document.getElementById('buttons_di').appendChild(admin_bt);
+  sessionStorage.setItem("signedIn", "true")
+  if (sessionStorage.getItem("admin") == "true") {
+    activateAdmin()
   }
+  else if (sessionStorage.getItem("admin") == null) {
+    console.log("sign in for the first time")
+    if (await fb_read(`/admin/${uid}`) != null) {
+      activateAdmin()
+      sessionStorage.setItem("admin", "true")
+    } else {
+      sessionStorage.setItem("admin", "false")
+    }
+  }
+
   document.getElementById('signIn_bt').remove();
   for (let i = 0; i < document.getElementsByClassName("gameButton").length; i++) {
     document.getElementsByClassName("gameButton")[i].style.display = 'inline';
     document.getElementsByClassName("gameButton")[i].disabled = false;
   }
+}
+
+function activateAdmin() {
+  console.log("admin")
+  let admin_bt = document.createElement("button");
+  admin_bt.id = 'admin_bt';
+  admin_bt.innerHTML = 'Admin';
+  admin_bt.onclick = () => { window.location.href = "/Admin/admin.html" };
+  document.getElementById('buttons_di').appendChild(admin_bt);
 }
 
 window.signIn = signIn;

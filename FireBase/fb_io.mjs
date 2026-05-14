@@ -85,6 +85,7 @@ async function fb_write(input, path) {
  * @returns {any}
  */
 async function fb_read(path) {
+    console.log(`read ${path}`)
     const dbReference = ref(FB_DB, path);
     try {
         const snapshot = await get(dbReference);
@@ -120,7 +121,7 @@ async function fb_waitForChange(path) {
 /**
  * 
  */
-async function fb_onValue(path,func){
+async function fb_onValue(path, func) {
     const REF = ref(FB_DB, path)
     onValue(REF, func)
 }

@@ -163,10 +163,11 @@ function refreshSprites() {
         let x = 100
         let y = 300
         leave_bt.position = { x, y }
-        // leave_bt.mousePressed = () => {
-        //     console.log("click");
-        //     (leave)
-        // }
+        leave_bt.update = function () {
+            if (this.mouse.presses()) {
+                console.log('leave')
+            }
+        }
     }
 }
 
