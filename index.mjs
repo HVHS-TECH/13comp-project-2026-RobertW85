@@ -32,18 +32,10 @@ async function signIn() {
 
 export async function login(uid) {
   sessionStorage.setItem("signedIn", "true")
-  if (sessionStorage.getItem("admin") == "true") {
-    activateAdmin()
+  if (sessionStorage.getItem("admin") == null) {
+    (await fb_read(`/admin/${uid}`) == null) ? sessionStorage.setItem("admin", "false") : activateAdmin();
   }
-  else if (sessionStorage.getItem("admin") == null) {
-    console.log("sign in for the first time")
-    if (await fb_read(`/admin/${uid}`) != null) {
-      activateAdmin()
-      sessionStorage.setItem("admin", "true")
-    } else {
-      sessionStorage.setItem("admin", "false")
-    }
-  }
+  else if (sessionStorage.getItem("admin") == "true") activateAdmin();
 
   document.getElementById('signIn_bt').remove();
   for (let i = 0; i < document.getElementsByClassName("gameButton").length; i++) {
@@ -53,6 +45,7 @@ export async function login(uid) {
 }
 
 function activateAdmin() {
+  sessionStorage.setItem("admin", "true")
   console.log("admin")
   let admin_bt = document.createElement("button");
   admin_bt.id = 'admin_bt';
