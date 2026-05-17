@@ -4,7 +4,7 @@
  * Writen by Robert Watt
  * Term 1-2 2026
  */
-import { fb_initialize, fb_read, fb_write, fb_waitForChange, fb_readSorted } from "../FireBase/fb_io.mjs";
+import { fb_initialize, fb_read, fb_write, fb_waitForChange, fb_readSorted, fb_remove, fb_removeOnDisconnect } from "../FireBase/fb_io.mjs";
 import { ttt_startGame } from "./ttt_game.mjs";
 
 let lobbyTable, lobbyDiv;
@@ -97,7 +97,23 @@ async function hostLobby() {
  * @returns {void}
  */
 async function waitForPlayer(lobbyName) {
+    let wait_bt = document.createElement('button')
+    let wait_h2 = document.createElement('h2')
+    wait_bt.innerText = 'back'
+    wait_h2.innerText = 'waiting for a player to join'
+    wait_bt.onclick = async() => {
+        wait_bt.remove()
+        wait_h2.remove()
+        await fb_remove(`/lobbies/${lobbyName}`)
+        startLobbyScreen()
+        return
+    }
+    document.body.append(wait_bt, wait_h2)
+    fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
     await fb_waitForChange(`/lobbies/${lobbyName}/players`);
+    if (document.getElementById(wait_bt) == null){return}
+    document.getElementById(wait_bt).remove()
+    document.getElementById(wait_h2).remove()
     let startingPlayer = Math.floor(Math.random() * 2);
     let players = await fb_read(`/lobbies/${lobbyName}/players`);
     let turn = players[startingPlayer].uid;

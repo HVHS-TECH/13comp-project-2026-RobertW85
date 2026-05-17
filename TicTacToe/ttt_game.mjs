@@ -46,7 +46,7 @@ function preload() {
  */
 async function setup() {
     while (document.getElementsByClassName("q5Canvas") == null) { await new Promise((resolve) => setTimeout(resolve, 100)); }
-    document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
+    document.getElementsByClassName("q5Canvas")[0].style.display = "none";
     userName = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`,);
 }
 
