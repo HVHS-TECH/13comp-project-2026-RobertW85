@@ -857,7 +857,7 @@ async function calculateScore() {
     ).then(async (result) => {
         if (!result) {
             //no previous score
-            let entry = { score: score, gameName: await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`) }
+            let entry = { score: score, gameName: await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`) }
             await fb_write(entry, "/Games/Rogue/Scores/" + sessionStorage.getItem("uid"))
         } else if (result < score) {
             //update high score

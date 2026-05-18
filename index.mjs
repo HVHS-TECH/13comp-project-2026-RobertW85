@@ -20,7 +20,7 @@ async function signIn() {
   sessionStorage.setItem("uid", result.user.uid);
   sessionStorage.setItem("email", result.user.email);
   sessionStorage.setItem("photoURL", result.user.photoURL);
-  sessionStorage.setItem("displayName", result.user.displayName);
+  sessionStorage.setItem("googleName", result.user.displayName);
   if (await fb_read("/userDetails/" + result.user.uid) == null) {
     //window.location.href = "reg.html";
     if (document.getElementById('reg_sc') == null) {
@@ -46,7 +46,6 @@ export async function login(uid) {
     (await fb_read(`/admin/${uid}`) == null) ? sessionStorage.setItem("admin", "false") : activateAdmin();
   }
   else if (sessionStorage.getItem("admin") == "true") activateAdmin();
-
   document.getElementById('signIn_bt').remove();
   for (let i = 0; i < document.getElementsByClassName("gameButton").length; i++) {
     document.getElementsByClassName("gameButton")[i].style.display = 'inline';

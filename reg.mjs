@@ -1,7 +1,10 @@
 import { fb_write } from "./FireBase/fb_io.mjs";
 import { login } from "./index.mjs";
-//2026 t1-2
-//Robert Watt
+/**
+ * @description register account to fire base
+ * Writen by Robert Watt
+ * Term 1-2 2026
+ */
 
 /**
  * will write user details if all inputs are valid
@@ -17,11 +20,24 @@ async function submit() {
         uid: sessionStorage.getItem("uid"),
         email: sessionStorage.getItem("email"),
         photoURL: sessionStorage.getItem("photoURL"),
-        displayName: sessionStorage.getItem("displayName"),
+        googleName: sessionStorage.getItem("googleName"),
     };
     //if any field is undefined do not complete registration, any invalid input is not returned and will be undefined
     for (let i = 0; i < Object.values(userDetails).length; i++) { if (Object.values(userDetails)[i] == undefined) return }
-    await fb_write(userDetails, `/userDetails/${userDetails.uid}`);
+    let privateDetails = {
+        address: userDetails.address,
+        phone: userDetails.phone,
+        age: userDetails.age,
+        email: userDetails.email,
+        googleName: userDetails.googleName
+    }
+    let publicDetails = {
+        username: userDetails.username,
+        photoURL: userDetails.photoURL,
+        uid: userDetails.uid
+    }
+    await fb_write(publicDetails, `/userDetails/${userDetails.uid}/public`);
+    await fb_write(privateDetails, `/userDetails/${userDetails.uid}/private`);
     document.getElementById('registration_di').style.display = "none";
     login(userDetails.uid)
     document.getElementById('reg_sc').remove() //does not fully unload script

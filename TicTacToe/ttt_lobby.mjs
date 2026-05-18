@@ -101,8 +101,9 @@ async function waitForPlayer(lobbyName) {
     let wait_h2 = document.createElement('h2')
     wait_bt.innerText = 'back'
     wait_h2.innerText = 'waiting for a player to join'
-    wait_bt.onclick = async() => {
+    wait_bt.onclick = async () => {
         wait_bt.remove()
+        wait_bt = undefined
         wait_h2.remove()
         await fb_remove(`/lobbies/${lobbyName}`)
         startLobbyScreen()
@@ -111,9 +112,9 @@ async function waitForPlayer(lobbyName) {
     document.body.append(wait_bt, wait_h2)
     fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
     await fb_waitForChange(`/lobbies/${lobbyName}/players`);
-    if (document.getElementById(wait_bt) == null){return}
-    document.getElementById(wait_bt).remove()
-    document.getElementById(wait_h2).remove()
+    if (wait_bt == undefined) return;
+    wait_bt.remove()
+    wait_h2.remove()
     let startingPlayer = Math.floor(Math.random() * 2);
     let players = await fb_read(`/lobbies/${lobbyName}/players`);
     let turn = players[startingPlayer].uid;
@@ -141,7 +142,7 @@ async function joinLobby(lobbyName) {
 async function getPlayerData() {
     let playerData = {
         uid: uid,
-        userName: await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`)
+        userName: await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`)
     };
     return playerData;
 }

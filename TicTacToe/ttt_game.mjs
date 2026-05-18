@@ -47,7 +47,7 @@ function preload() {
 async function setup() {
     while (document.getElementsByClassName("q5Canvas") == null) { await new Promise((resolve) => setTimeout(resolve, 100)); }
     document.getElementsByClassName("q5Canvas")[0].style.display = "none";
-    userName = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/username`,);
+    //userName = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`,);
 }
 
 /**
@@ -70,6 +70,7 @@ export async function ttt_startGame() {
     //wait incase lobby creator has not completed lobby setup
     while (lobbyTurn == undefined) {
         lobbyTurn = await fb_read(`/lobbies/${lobbyName}/turn`);
+        await new Promise((resolve) => setTimeout(resolve, 100));
     }
     //set turn
     if (uid == lobbyTurn) {

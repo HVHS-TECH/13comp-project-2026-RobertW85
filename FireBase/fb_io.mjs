@@ -1,11 +1,9 @@
 /**
  * fb_io.mjs
  * Generalised firebase routines
- * Written by Robert, mostly (Term 1-2 2026)
- * 
+ * Written by Robert Watt
+ * mostly Term 1-2 2026
  * 2025- fb_intialize - fb_authenticate - fb_read - fb_readsorted
- *
- * All variables & function begin with fb_  all const with FB_
  */
 let FB_DB;
 
@@ -121,7 +119,9 @@ async function fb_waitForChange(path) {
 }
 
 /**
- * 
+ * runs func when path is updated
+ * @param {string} path 
+ * @param {Function} func 
  */
 async function fb_onValue(path, func) {
     const REF = ref(FB_DB, path)
@@ -161,6 +161,7 @@ async function fb_remove(path) {
 
 /**
  * remove path when user disconnects
+ * @param {string} path 
  */
 async function fb_removeOnDisconnect(path) {
     const REF = ref(FB_DB, path);
