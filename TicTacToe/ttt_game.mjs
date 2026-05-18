@@ -342,8 +342,10 @@ async function calcMmr(winner) {
     }
 }
 
+/**
+ * Handle when the other player leaves
+ */
 async function lobbyDeleted() {
-    console.log("lobby has been deleted")
     var leavingPLAYER = players[0].uid == uid ? players[1] : players[0];
     document.getElementById("endGameHeader_h1").innerHTML = `${leavingPLAYER.userName} has left`;
     document.getElementById("endScreen_di").style.display = 'block'

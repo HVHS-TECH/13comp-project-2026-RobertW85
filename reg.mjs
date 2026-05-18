@@ -1,5 +1,8 @@
 import { fb_write } from "./FireBase/fb_io.mjs";
 import { login } from "./index.mjs";
+//2026 t1-2
+//Robert Watt
+
 /**
  * will write user details if all inputs are valid
  */
@@ -10,7 +13,7 @@ async function submit() {
         address: await validateAdress('address_in'),
         phone: await validatePhoneNumber('phoneNumber_in'),
         age: await validateAge('age_in'),
-        username: await validateUserName('username_in'),
+        username: await validateusername('username_in'),
         uid: sessionStorage.getItem("uid"),
         email: sessionStorage.getItem("email"),
         photoURL: sessionStorage.getItem("photoURL"),
@@ -18,13 +21,17 @@ async function submit() {
     };
     //if any field is undefined do not complete registration, any invalid input is not returned and will be undefined
     for (let i = 0; i < Object.values(userDetails).length; i++) { if (Object.values(userDetails)[i] == undefined) return }
-
     await fb_write(userDetails, `/userDetails/${userDetails.uid}`);
     document.getElementById('registration_di').style.display = "none";
     login(userDetails.uid)
-    document.getElementById('reg_sc').remove() //does nothing
+    document.getElementById('reg_sc').remove() //does not fully unload script
 }
 
+/**
+ * checks if address is valid
+ * @param {string} addressId id of address input
+ * @returns address or null if invalid
+ */
 async function validateAdress(addressId) {
     let address = document.getElementById(addressId).value
     address = address.trim()
@@ -32,6 +39,11 @@ async function validateAdress(addressId) {
     return address
 }
 
+/**
+ * checks if phoneNumber is valid
+ * @param {string} phoneNumberID id of phoneNumber input
+ * @returns phonenumber or null if invalid
+ */
 async function validatePhoneNumber(phoneNumberID) {
     let phoneNumber = Number(document.getElementById(phoneNumberID).value)
     if (await checkEmpty(phoneNumberID, phoneNumber)) return;
@@ -54,6 +66,11 @@ async function validatePhoneNumber(phoneNumberID) {
     return phoneNumber
 }
 
+/**
+ * check if age is valid
+ * @param {string} ageID id of age input 
+ * @returns age or null if invalid
+ */
 async function validateAge(ageID) {
     let age = document.getElementById(ageID).value
     age = parseInt(Number(age))
@@ -69,21 +86,32 @@ async function validateAge(ageID) {
     return age
 }
 
-async function validateUserName(userNameID) {
-    let userName = document.getElementById(userNameID).value
-    userName = userName.trim()
-    if (await checkEmpty(userNameID, userName)) return;
-    if (userName.length > 20) {
-        errorMessage(userNameID, 'username is too long!')
+/**
+ * check if username is valid
+ * @param {string} usernameID id of username input
+ * @returns username or null if invalid
+ */
+async function validateusername(usernameID) {
+    let username = document.getElementById(usernameID).value
+    username = username.trim()
+    if (await checkEmpty(usernameID, username)) return;
+    if (username.length > 20) {
+        errorMessage(usernameID, 'username is too long!')
         return
     }
-    if (userName.length < 4) {
-        errorMessage(userNameID, 'username is too short!')
+    if (username.length < 4) {
+        errorMessage(usernameID, 'username is too short!')
         return
     }
-    return userName
+    return username
 }
 
+/**
+ * check if value is empty or spaces
+ * @param {*} id id of element for error message
+ * @param {*} value value to check if is empty
+ * @returns 
+ */
 async function checkEmpty(id, value) {
     if (value == '') {
         let idName = id.slice(0, -3)
@@ -97,6 +125,11 @@ async function checkEmpty(id, value) {
     return false
 }
 
+/**
+ * displays an error message
+ * @param {string} inputID id of element that message will be under
+ * @param {string} message
+ */
 function errorMessage(inputID, message) {
     let element = document.getElementById(inputID)
     let err_p = document.createElement('p')

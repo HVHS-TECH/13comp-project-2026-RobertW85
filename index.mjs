@@ -1,16 +1,22 @@
-//2026 t1
+//2026 t1-2
+//Robert Watt
 import { fb_authenticate, fb_initialize, fb_waitForChange, fb_read } from "./FireBase/fb_io.mjs";
 
 fb_initialize();
+
+//check if signed in, auto log in / if not display sign in button
 if (sessionStorage.getItem("signedIn") == null) {
   document.getElementById('signIn_bt').style.display = 'block'
 } else {
   login(sessionStorage.getItem("uid"));
 }
 
+/**
+ * get google auth
+ * register/login if account exists
+ */
 async function signIn() {
   let result = await fb_authenticate();
-  //console.log(result)
   sessionStorage.setItem("uid", result.user.uid);
   sessionStorage.setItem("email", result.user.email);
   sessionStorage.setItem("photoURL", result.user.photoURL);
@@ -30,6 +36,10 @@ async function signIn() {
   }
 }
 
+/**
+ * display elements and checks admin
+ * @param {string} uid 
+ */
 export async function login(uid) {
   sessionStorage.setItem("signedIn", "true")
   if (sessionStorage.getItem("admin") == null) {
@@ -44,9 +54,11 @@ export async function login(uid) {
   }
 }
 
+/**
+ * enables admin button
+ */
 function activateAdmin() {
   sessionStorage.setItem("admin", "true")
-  console.log("admin")
   let admin_bt = document.createElement("button");
   admin_bt.id = 'admin_bt';
   admin_bt.innerHTML = 'Admin';

@@ -1,7 +1,9 @@
 /**
  * fb_io.mjs
  * Generalised firebase routines
- * Written by Robert, Term 1-2 2026
+ * Written by Robert, mostly (Term 1-2 2026)
+ * 
+ * 2025- fb_intialize - fb_authenticate - fb_read - fb_readsorted
  *
  * All variables & function begin with fb_  all const with FB_
  */
