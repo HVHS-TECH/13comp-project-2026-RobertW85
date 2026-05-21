@@ -1,7 +1,8 @@
 //Term 1 2026
 import { fb_read, fb_initialize, fb_write, fb_remove } from "../FireBase/fb_io.mjs"
-
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 fb_initialize()
+getAuth() //need for fb_rules???
 
 window.userButton = userButton
 window.rgButton = rgButton
@@ -11,16 +12,30 @@ function userButton() { fillTable("/userDetails") }
 function rgButton() { fillTable("/Games/Rogue/Scores") }
 function tttButton() { fillTable("/Games/TTT/MMR") }
 
+
 async function fillTable(path) {
     document.getElementsByTagName("table")[0].innerHTML = ''
     let data = await fb_read(path)
     if (data == null) { return }
-
     for (let i = 0; i < Object.keys(data).length; i++) {
         let tr = document.createElement("tr")
+        let pathName = document.createElement("p")
+        pathName.innerText = `${Object.keys(data)[i]}`
+        tr.append(pathName)
         let Info = data[Object.keys(data)[i]]
         if (typeof Info !== 'object') { return }
         for (let j = 0; j < Object.keys(Info).length; j++) {
+            if (typeof(Info[Object.keys(Info)[j]]) == 'object'){ //instead of this maybe run this outside of for loop/table instead use class to remove
+                let innerObject_bt = document.createElement("button")
+                innerObject_bt.textContent = `${Object.keys(Info)[j]}`
+                innerObject_bt.onclick = () => {
+                    let innerPath = `${path}/${Object.keys(data)[i]}/${Object.keys(Info)[j]}`
+                    fillTable(innerPath)
+                };
+
+                tr.append(innerObject_bt)
+                continue
+            }
             //console.log("key: ", Object.keys(Info)[j])
             //console.log("value: ", Info[Object.keys(Info)[j]])
             let key_td = document.createElement("td")
