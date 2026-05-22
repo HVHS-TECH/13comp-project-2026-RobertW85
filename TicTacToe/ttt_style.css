@@ -1,3 +1,8 @@
 #leave_bt {
     margin-bottom: 3vh;
 }
+
+.centered {
+    position: absolute;
+    margin: auto;
+}

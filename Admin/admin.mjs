@@ -2,7 +2,6 @@
 import { fb_read, fb_initialize, fb_write, fb_remove } from "../FireBase/fb_io.mjs"
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 fb_initialize()
-getAuth() //need for fb_rules???
 
 window.userButton = userButton
 window.rgButton = rgButton
@@ -13,61 +12,50 @@ function rgButton() { fillTable("/Games/Rogue/Scores") }
 function tttButton() { fillTable("/Games/TTT/MMR") }
 
 
-async function fillTable(path) {
-    document.getElementsByTagName("table")[0].innerHTML = ''
+async function fillTable(path, table) {
+    if (!table) {
+        table = document.getElementById('mainAdminTable')
+        table.innerHTML = ''
+    }
+
+    console.log(`fill table: ${table.id}, path:${path}`)
     let data = await fb_read(path)
+    console.log(data)
     if (data == null) { return }
     for (let i = 0; i < Object.keys(data).length; i++) {
+        // Create table row with name of path
         let tr = document.createElement("tr")
         let pathName = document.createElement("p")
         pathName.innerText = `${Object.keys(data)[i]}`
         tr.append(pathName)
-        let Info = data[Object.keys(data)[i]]
-        if (typeof Info !== 'object') { return }
-        for (let j = 0; j < Object.keys(Info).length; j++) {
-            if (typeof(Info[Object.keys(Info)[j]]) == 'object'){ //instead of this maybe run this outside of for loop/table instead use class to remove
-                let innerObject_bt = document.createElement("button")
-                innerObject_bt.textContent = `${Object.keys(Info)[j]}`
-                innerObject_bt.onclick = () => {
-                    let innerPath = `${path}/${Object.keys(data)[i]}/${Object.keys(Info)[j]}`
-                    fillTable(innerPath)
-                };
 
+        let info = data[Object.keys(data)[i]]
+        if (typeof info !== 'object') {
+            //console.log(data)
+            interperateKeyValuePair(Object.keys(data)[i], data[Object.keys(data)[i]], tr);
+            return
+        }
+        //create for each path inside the path 
+        //if the path is a key value pair create a input with the value and a p with the key
+        //if the path is an object that leads to more key value pairs create a button which runs this function again
+        for (let j = 0; j < Object.keys(info).length; j++) {
+            //if row contains expandable object
+            if (typeof (info[Object.keys(info)[j]]) == 'object') {
+                let innerObject_bt = document.createElement("button")
+                innerObject_bt.textContent = `${Object.keys(info)[j]}`
+                innerObject_bt.onclick = () => {
+                    let innerPath = `${path}/${Object.keys(data)[i]}/${Object.keys(info)[j]}`
+                    let innerTable = document.createElement('table')
+                    innerTable.id = `${path}/${Object.keys(data)[i]}/${Object.keys(info)[j]}`
+                    tr.append(innerTable)
+                    fillTable(innerPath, innerTable)
+                };
                 tr.append(innerObject_bt)
                 continue
             }
-            //console.log("key: ", Object.keys(Info)[j])
-            //console.log("value: ", Info[Object.keys(Info)[j]])
-            let key_td = document.createElement("td")
-            let value_in = document.createElement("input")
-            let type_sl = document.createElement("select")
-            key_td.innerHTML = Object.keys(Info)[j]
-            value_in.value = Info[Object.keys(Info)[j]]
-            value_in.id = key_td.innerHTML
-
-            //type options:
-            //original type: typeof Info[Object.keys(Info)[j]]
-            let string_op = document.createElement("option")
-            string_op.value = "string"
-            string_op.innerHTML = "string"
-            let int_op = document.createElement("option")
-            int_op.value = "int"
-            int_op.innerHTML = "int"
-            type_sl.append(string_op, int_op)
-            type_sl.id = `${key_td.innerHTML}_sl`
-
-            tr.append(key_td, value_in, type_sl)
-            value_in.addEventListener("change", function (e) {
-                let valueType = document.getElementById(`${this.id}_sl`).value
-                //console.log(`path:${Object.keys(data)[i]} key:${this.id} value:${e.target.value}`)
-                let value = e.target.value
-                if (valueType == 'int') {
-                    value = parseInt(value)
-                    if (isNaN(value)) { console.log("is nan"); return }
-                }
-                fb_write(value, `${path}/${Object.keys(data)[i]}/${this.id}`)
-            })
+            interperateKeyValuePair(Object.keys(info)[j], info[Object.keys(info)[j]], tr)
         }
+        //add a button to each entry allowing for firebase deletion
         let remove_bt = document.createElement("button")
         tr.appendChild(remove_bt)
         remove_bt.textContent = "DELETE"
@@ -75,6 +63,42 @@ async function fillTable(path) {
             fb_remove(`${path}/${Object.keys(data)[i]}`);
             this.parentElement.remove()
         })
-        document.getElementsByTagName("table")[0].appendChild(tr)
+        table.appendChild(tr)
     }
+}
+
+function interperateKeyValuePair(key, value, tr) {
+    //create value and key combo allowing for value to be edited
+    let key_td = document.createElement("td")
+    let value_in = document.createElement("input")
+    let type_sl = document.createElement("select")
+    key_td.innerHTML = key
+    value_in.value = value
+    value_in.id = key_td.innerHTML
+    //allow the type stored to be changed
+    //should change the defualt selected to match the existing type in the future
+    //original type: typeof info[Object.keys(info)[j]]
+    let string_op = document.createElement("option")
+    string_op.value = "string"
+    string_op.innerHTML = "string"
+    let int_op = document.createElement("option")
+    int_op.value = "int"
+    int_op.innerHTML = "int"
+    type_sl.append(string_op, int_op)
+    type_sl.id = `${key_td.innerHTML}_sl`
+    tr.append(key_td, value_in, type_sl)
+    //allow the value to be edited in fire base following the selected type
+    value_in.addEventListener("change", function (e) {
+        let valueType = document.getElementById(`${this.id}_sl`).value
+        let value = e.target.value
+        if (valueType == 'int') {
+            value = parseInt(value)
+            if (isNaN(value)) { console.log("is nan"); return }
+        }
+        fb_write(value, `${path}/${Object.keys(data)[i]}/${this.id}`)
+    })
+}
+
+function dealWithObejcts() {
+
 }

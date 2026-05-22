@@ -4,8 +4,8 @@ body {
 }
 
 .gameButton {
-   width: 20vw;
-   height: 10vh;
+    width: 20vw;
+    height: 10vh;
 }
 
 #signIn_bt {
@@ -27,7 +27,7 @@ button {
     height: 10vh;
 }
 
-#buttons_di{
+#buttons_di {
     margin: 0 auto;
     display: flex;
     flex-direction: column;

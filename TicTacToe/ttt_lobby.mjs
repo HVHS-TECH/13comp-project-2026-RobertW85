@@ -101,6 +101,7 @@ async function waitForPlayer(lobbyName) {
     let wait_h2 = document.createElement('h2')
     wait_bt.innerText = 'back'
     wait_h2.innerText = 'waiting for a player to join'
+    wait_h2.className = 'centered'
     wait_bt.onclick = async () => {
         wait_bt.remove()
         wait_bt = undefined
