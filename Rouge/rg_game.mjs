@@ -830,7 +830,7 @@ win and lose, could be the same function
 async function endGame(result) {
     playing = false;
     await calculateScore();
-    let writtenScore = await fb_read("/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score",);
+    let writtenScore = await fb_read("/games/rogue/scores/" + sessionStorage.getItem("uid") + "/score",);
     if (writtenScore != null) {
         middlePopup(`${result}`, `Score: ${int(score)} \n High Score: ${int(writtenScore)}`);
     } else {
@@ -853,15 +853,15 @@ async function calculateScore() {
     score = int(score);
     console.log("score: " + score.toString());
     fb_read(
-        "/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score",
+        "/games/rogue/scores/" + sessionStorage.getItem("uid") + "/score",
     ).then(async (result) => {
         if (!result) {
             //no previous score
             let entry = { score: score, gameName: await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`) }
-            await fb_write(entry, "/Games/Rogue/Scores/" + sessionStorage.getItem("uid"))
+            await fb_write(entry, "/games/rogue/scores/" + sessionStorage.getItem("uid"))
         } else if (result < score) {
             //update high score
-            await fb_write(score, "/Games/Rogue/Scores/" + sessionStorage.getItem("uid") + "/score",);
+            await fb_write(score, "/games/rogue/scores/" + sessionStorage.getItem("uid") + "/score",);
         }
     });
     return
@@ -920,7 +920,7 @@ function middlePopup(title, content) {
 populateLeaderBoard()
 *************************************************/
 async function populateLeaderBoard() {
-    let list = await fb_readSorted("/Games/Rogue/Scores", "score", 3)
+    let list = await fb_readSorted("/games/rogue/scores", "score", 3)
     let lb_Table = document.createElement("table");
     console.log(list)
     for (let i = 0; i < list.length; i++) {

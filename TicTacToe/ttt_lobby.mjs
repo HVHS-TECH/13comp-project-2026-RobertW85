@@ -52,7 +52,7 @@ async function refreshAvailableLobbies() {
     if (LOBBYLIST == null) { return; }
     const LOBBYLISTKEYS = Object.keys(LOBBYLIST)
     for (let i = 0; i < LOBBYLISTKEYS.length; i++) {
-        if (LOBBYLIST[LOBBYLISTKEYS[i]].players.length >= 2) { continue; }
+        if (LOBBYLIST[LOBBYLISTKEYS[i]].players.length >= 2) continue;
         let tableRow = document.createElement("tr");
         let lobbyName = document.createElement("td");
         let joinButton = document.createElement("button");
@@ -124,6 +124,7 @@ async function waitForPlayer(lobbyName) {
     //set last player symbol
     await fb_write("nought", `/lobbies/${lobbyName}/players/${Math.abs(startingPlayer - 1)}/symbol`);
     await fb_write(turn, `/lobbies/${lobbyName}/turn`);
+
     startGame(lobbyName);
 }
 
@@ -163,8 +164,9 @@ function startGame(lobbyName) {
  */
 async function displayLeaderBoard(size) {
     document.getElementById('leaderBoardContent_tb').innerHTML = ''
-    let scores = await fb_readSorted("/Games/TTT/MMR", "MMR", size)
+    let scores = await fb_readSorted("/games/TTT/MMR", "MMR", size)
     //create table row for each players top scores, containing their username and score
+    if (scores == null) console.log('scores == null'); return;
     for (let i = 0; i < scores.length; i++) {
         let entry = document.createElement('tr')
         let name = document.createElement('td')

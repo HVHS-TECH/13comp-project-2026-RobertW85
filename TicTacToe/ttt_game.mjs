@@ -25,7 +25,9 @@ let noughtImage, crossImage;
 //lobby info
 let boardArray, canMove, players, lobbyName;
 //player info
-let uid, symbolImage, symbolName, turn, userName;
+let uid, symbolImage, symbolName, turn, username;
+//fb
+const mmrPath = '/games/TTT/MMR'
 
 window.preload = preload;
 window.setup = setup;
@@ -41,13 +43,13 @@ function preload() {
 
 /**
  * automatically hides defualt canvas
- * sets userName
+ * sets username
  * @returns{void}
  */
 async function setup() {
     while (document.getElementsByClassName("q5Canvas") == null) { await new Promise((resolve) => setTimeout(resolve, 100)); }
     document.getElementsByClassName("q5Canvas")[0].style.display = "none";
-    //userName = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`,);
+    username = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`,);
 }
 
 /**
@@ -56,6 +58,7 @@ async function setup() {
  * @returns{void}
  */
 export async function ttt_startGame() {
+    console.log("start game")
     resizeCanvas(window.innerWidth, window.innerHeight);
     lobbyName = sessionStorage.getItem("lobbyName");
     let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
@@ -66,11 +69,11 @@ export async function ttt_startGame() {
         [0, 0, 0],
         [0, 0, 0],
     ];
-    let lobbyTurn = await fb_read(`/lobbies/${lobbyName}/turn`);
+    let lobbyTurn = lobbyData.turn
     //wait incase lobby creator has not completed lobby setup
     while (lobbyTurn == undefined) {
         lobbyTurn = await fb_read(`/lobbies/${lobbyName}/turn`);
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 300));
     }
     //set turn
     if (uid == lobbyTurn) {
@@ -83,10 +86,9 @@ export async function ttt_startGame() {
         symbolName = "nought";
         waitForTurn();
     }
-    document.getElementsByClassName("q5Canvas")[0].style.visibility = "visible";
+    document.getElementsByClassName("q5Canvas")[0].style.display = "block"
     updateScreen()
     await fb_onValue(`/lobbies/${lobbyName}`, async (data) => {
-        //console.log(data.val())
         if (data.val() == null) {
             lobbyDeleted()
         }
@@ -99,7 +101,7 @@ export async function ttt_startGame() {
  * redraws sprites and lines
  */
 function updateScreen() {
-    if (document.getElementsByClassName("q5Canvas")[0].style.visibility == "hidden") { return; }
+    if (document.getElementsByClassName("q5Canvas")[0].style.display == "none") { return; }
     resizeCanvas(window.innerWidth, window.innerHeight);
 
     //resize
@@ -166,7 +168,7 @@ function refreshSprites() {
         leave_bt.position = { x, y }
         leave_bt.update = function () {
             if (this.mouse.presses()) {
-                console.log('leave')
+                leave()
             }
         }
     }
@@ -275,11 +277,11 @@ async function waitForTurn() {
 }
 
 /**
- * writes symbol, userName and uid to database after winning
+ * writes symbol, username and uid to database after winning
  * @returns {void}
  */
 async function winningMove() {
-    let winInfo = { symbol: symbolName, userName: userName, uid: sessionStorage.getItem("uid") };
+    let winInfo = { symbol: symbolName, username: username, uid: sessionStorage.getItem("uid") };
     await fb_write(winInfo, `/lobbies/${lobbyName}/winner`);
     endGame("win");
 }
@@ -296,7 +298,7 @@ async function endGame(outcome) {
         let plural;
         winInfo.symbol == "cross" ? (plural = "es") : (plural = "s");
         document.getElementById("endGameHeader_h1").innerHTML =
-            `${winInfo.userName} (${winInfo.symbol}${plural}) wins!`;
+            `${winInfo.username} (${winInfo.symbol}${plural}) wins!`;
         calcMmr(winInfo.uid)
     }
     document.getElementById("rematch_bt").style.display = 'block'
@@ -329,17 +331,17 @@ async function calcMmr(winner) {
     const BASEMMRCHANGE = 10
     let uidLoser = players[0].uid == winner ? players[1].uid : players[0].uid
     let uidWinner = players[0].uid == uidLoser ? players[1].uid : players[0].uid
-    let winnerMMR = await fb_read(`/Games/TTT/MMR/${uidWinner}/MMR`)
-    let loserMMR = await fb_read(`/Games/TTT/MMR/${uidLoser}/MMR`)
+    let winnerMMR = await fb_read(`${mmrPath}/${uidWinner}/MMR`)
+    let loserMMR = await fb_read(`${mmrPath}/${uidLoser}/MMR`)
     if (winnerMMR == (null)) { winnerMMR = 100 }
     if (loserMMR == (null)) { loserMMR = 100 }
     let averageMMR = (winnerMMR + loserMMR) / 2
     let MMRChange = BASEMMRCHANGE * (loserMMR / averageMMR)
     let newMMR = uid == uidWinner ? winnerMMR + MMRChange : loserMMR - MMRChange
-    if (await fb_read(`/Games/TTT/MMR/${uid}`) == null) {
-        await fb_write({ MMR: newMMR, userName: userName }, `/Games/TTT/MMR/${uid}`)
+    if (await fb_read(`${mmrPath}/${uid}`) == null) {
+        await fb_write({ MMR: newMMR, username: username }, `${mmrPath}/${uid}`)
     } else {
-        await fb_write(newMMR, `/Games/TTT/MMR/${uid}/MMR`)
+        await fb_write(newMMR, `${mmrPath}/${uid}/MMR`)
     }
 }
 
@@ -348,7 +350,7 @@ async function calcMmr(winner) {
  */
 async function lobbyDeleted() {
     var leavingPLAYER = players[0].uid == uid ? players[1] : players[0];
-    document.getElementById("endGameHeader_h1").innerHTML = `${leavingPLAYER.userName} has left`;
+    document.getElementById("endGameHeader_h1").innerHTML = `${leavingPLAYER.username} has left`;
     document.getElementById("endScreen_di").style.display = 'block'
     document.getElementById("rematch_bt").style.display = 'none'
     document.getElementById("leave_bt").onclick = () => leave();

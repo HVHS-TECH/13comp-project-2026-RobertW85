@@ -8,9 +8,8 @@ window.rgButton = rgButton
 window.tttButton = tttButton
 
 function userButton() { fillTable("/userDetails") }
-function rgButton() { fillTable("/Games/Rogue/Scores") }
-function tttButton() { fillTable("/Games/TTT/MMR") }
-
+function rgButton() { fillTable("/games/rogue/scores") }
+function tttButton() { fillTable("/games/TTT/MMR") }
 
 async function fillTable(path, table) {
     if (!table) {
