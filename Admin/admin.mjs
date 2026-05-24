@@ -31,29 +31,32 @@ async function fillTable(path, table) {
 
         let info = data[Object.keys(data)[i]]
         if (typeof info !== 'object') {
-            //console.log(data)
-            interperateKeyValuePair(Object.keys(data)[i], data[Object.keys(data)[i]], tr);
-            return
-        }
-        //create for each path inside the path 
-        //if the path is a key value pair create a input with the value and a p with the key
-        //if the path is an object that leads to more key value pairs create a button which runs this function again
-        for (let j = 0; j < Object.keys(info).length; j++) {
-            //if row contains expandable object
-            if (typeof (info[Object.keys(info)[j]]) == 'object') {
-                let innerObject_bt = document.createElement("button")
-                innerObject_bt.textContent = `${Object.keys(info)[j]}`
-                innerObject_bt.onclick = () => {
-                    let innerPath = `${path}/${Object.keys(data)[i]}/${Object.keys(info)[j]}`
-                    let innerTable = document.createElement('table')
-                    innerTable.id = `${path}/${Object.keys(data)[i]}/${Object.keys(info)[j]}`
-                    tr.append(innerTable)
-                    fillTable(innerPath, innerTable)
-                };
-                tr.append(innerObject_bt)
-                continue
+            //hard coded for users public/private and is rather sketchy (no key instead using tr?)
+            //console.log(info)
+            interperateKeyValuePair("", info, tr);
+            table.appendChild(tr)
+        }else{
+            //create for each path inside the path 
+            //if the path is a key value pair create a input with the value and a p with the key
+            //if the path is an object that leads to more key value pairs create a button which runs this function again
+            for (let j = 0; j < Object.keys(info).length; j++) {
+                //if row contains expandable object
+                if (typeof (info[Object.keys(info)[j]]) == 'object') {
+                    let innerObject_bt = document.createElement("button")
+                    innerObject_bt.textContent = `${Object.keys(info)[j]}`
+                    innerObject_bt.onclick = () => {
+                        let innerPath = `${path}/${Object.keys(data)[i]}/${Object.keys(info)[j]}`
+                        let innerTable = document.createElement('table')
+                        innerTable.id = `${path}/${Object.keys(data)[i]}/${Object.keys(info)[j]}`
+                        if(document.getElementById(innerTable.id) != null){document.getElementById(innerTable.id).remove()}
+                            tr.append(innerTable)
+                            fillTable(innerPath, innerTable)
+                    };
+                    tr.append(innerObject_bt)
+                    continue
+                }
+                interperateKeyValuePair(Object.keys(info)[j], info[Object.keys(info)[j]], tr)
             }
-            interperateKeyValuePair(Object.keys(info)[j], info[Object.keys(info)[j]], tr)
         }
         //add a button to each entry allowing for firebase deletion
         let remove_bt = document.createElement("button")
@@ -97,8 +100,4 @@ function interperateKeyValuePair(key, value, tr) {
         }
         fb_write(value, `${path}/${Object.keys(data)[i]}/${this.id}`)
     })
-}
-
-function dealWithObejcts() {
-
 }
