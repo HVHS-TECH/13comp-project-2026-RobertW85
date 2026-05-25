@@ -139,7 +139,6 @@ async function fb_onValue(path, func) {
 async function fb_readSorted(path, key, amount) {
     const dbReference = query(ref(FB_DB, path), orderByChild(key), limitToLast(amount));
     const snapshot = await get(dbReference);
-    console.log(snapshot)
     if (snapshot.val() != null) {
         var result = [];
         snapshot.forEach((child) => {

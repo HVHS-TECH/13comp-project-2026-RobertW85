@@ -23,7 +23,7 @@ const LAYOUT = {
 //assets
 let noughtImage, crossImage;
 //lobby info
-let boardArray, canMove, players, lobbyName;
+let boardArray, canMove, players, lobbyName, gameOver;
 //player info
 let uid, symbolImage, symbolName, turn, username;
 //fb
@@ -291,6 +291,7 @@ async function winningMove() {
  * @param {string} outcome 
  */
 async function endGame(outcome) {
+    gameOver = true
     if (outcome == "draw") {
         document.getElementById("endGameHeader_h1").innerHTML = `YOU draw`;
     } else {
@@ -315,9 +316,8 @@ function rematch() {
  * hides the game and starts lobby script
  */
 function leave() {
-    document.getElementById("endScreen_di").style.visibility = "hidden";
-    document.getElementsByClassName("q5Canvas")[0].style.visibility = "hidden";
-    resizeCanvas(1, 1);
+    document.getElementById("endScreen_di").style.display = "none";
+    document.getElementsByClassName("q5Canvas")[0].style.display = "none";
     startLobbyScreen();
     fb_remove(`/lobbies/${lobbyName}`)
 }
@@ -333,22 +333,21 @@ async function calcMmr(winner) {
     let uidWinner = players[0].uid == uidLoser ? players[1].uid : players[0].uid
     let winnerMMR = await fb_read(`${mmrPath}/${uidWinner}/MMR`)
     let loserMMR = await fb_read(`${mmrPath}/${uidLoser}/MMR`)
-    if (winnerMMR == (null)) { winnerMMR = 100 }
-    if (loserMMR == (null)) { loserMMR = 100 }
+    let entryIsNull = false
+    if (winnerMMR == null) { winnerMMR = 100 }
+    if (loserMMR == null) { loserMMR = 100 }
     let averageMMR = (winnerMMR + loserMMR) / 2
     let MMRChange = BASEMMRCHANGE * (loserMMR / averageMMR)
     let newMMR = uid == uidWinner ? winnerMMR + MMRChange : loserMMR - MMRChange
-    if (await fb_read(`${mmrPath}/${uid}`) == null) {
-        await fb_write({ MMR: newMMR, username: username }, `${mmrPath}/${uid}`)
-    } else {
-        await fb_write(newMMR, `${mmrPath}/${uid}/MMR`)
-    }
+    await fb_write({ MMR: newMMR, username: username }, `${mmrPath}/${uid}`)
 }
 
 /**
  * Handle when the other player leaves
  */
 async function lobbyDeleted() {
+    //to prevent deleting the lobby at the end of the game sending a second message
+    if (gameOver) { return }
     var leavingPLAYER = players[0].uid == uid ? players[1] : players[0];
     document.getElementById("endGameHeader_h1").innerHTML = `${leavingPLAYER.username} has left`;
     document.getElementById("endScreen_di").style.display = 'block'

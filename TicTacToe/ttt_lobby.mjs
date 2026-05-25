@@ -7,7 +7,7 @@
 import { fb_initialize, fb_read, fb_write, fb_waitForChange, fb_readSorted, fb_remove, fb_removeOnDisconnect } from "../FireBase/fb_io.mjs";
 import { ttt_startGame } from "./ttt_game.mjs";
 
-let lobbyTable, lobbyDiv;
+let lobbyTable, lobby_di;
 let uid = sessionStorage.getItem("uid");
 fb_initialize();
 startLobbyScreen();
@@ -16,7 +16,7 @@ startLobbyScreen();
  * create the main elements of the lobby
  */
 export function startLobbyScreen() {
-    lobbyDiv = document.createElement("div");
+    lobby_di = document.createElement("div");
     lobbyTable = document.createElement("table");
     let lobbyTitle = document.createElement("h1");
     let buttonDiv = document.createElement("div");
@@ -25,17 +25,18 @@ export function startLobbyScreen() {
     let backButton = document.createElement("button");
     let leaderBoardButton = document.createElement("button");
 
-    document.body.appendChild(lobbyDiv);
+    document.body.appendChild(lobby_di);
     buttonDiv.append(backButton, hostButton, refreshButton, leaderBoardButton);
-    lobbyDiv.append(lobbyTitle, buttonDiv, lobbyTable);
+    lobby_di.append(lobbyTitle, buttonDiv, lobbyTable);
 
+    lobby_di.className = 'centered'
     backButton.innerHTML = "Back";
     backButton.onclick = () => { history.back() };
     hostButton.innerHTML = "Host";
     hostButton.onclick = hostLobby;
-    refreshButton.innerHTML = "refresh";
+    refreshButton.innerHTML = "Refresh";
     refreshButton.onclick = refreshAvailableLobbies;
-    leaderBoardButton.innerHTML = "leaderboard";
+    leaderBoardButton.innerHTML = "Leaderboard";
     leaderBoardButton.onclick = () => { displayLeaderBoard(5) };
     lobbyTitle.innerHTML = "Tic tac toe Lobby";
     refreshAvailableLobbies();
@@ -70,7 +71,7 @@ async function refreshAvailableLobbies() {
  * then wait for a player to join
  */
 async function hostLobby() {
-    document.body.removeChild(lobbyDiv);
+    document.body.removeChild(lobby_di);
     let lobbyList = await fb_read("/lobbies");
     let lobbyNumber;
     if (lobbyList != null) { lobbyNumber = Object.keys(lobbyList).length + 1; }
@@ -97,10 +98,11 @@ async function hostLobby() {
  * @returns {void}
  */
 async function waitForPlayer(lobbyName) {
+    let wait_di = document.createElement('div')
     let wait_bt = document.createElement('button')
     let wait_h2 = document.createElement('h2')
-    wait_bt.innerText = 'back'
-    wait_h2.innerText = 'waiting for a player to join'
+    wait_bt.innerText = 'Back'
+    wait_h2.innerText = 'Waiting for a player to join'
     wait_h2.className = 'centered'
     wait_bt.onclick = async () => {
         wait_bt.remove()
@@ -110,7 +112,9 @@ async function waitForPlayer(lobbyName) {
         startLobbyScreen()
         return
     }
-    document.body.append(wait_bt, wait_h2)
+    wait_di.className = 'centered'
+    wait_di.append(wait_h2, wait_bt)
+    document.body.append(wait_di)
     fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
     await fb_waitForChange(`/lobbies/${lobbyName}/players`);
     if (wait_bt == undefined) return;
@@ -134,7 +138,7 @@ async function waitForPlayer(lobbyName) {
  */
 async function joinLobby(lobbyName) {
     await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
-    document.body.removeChild(lobbyDiv);
+    document.body.removeChild(lobby_di);
     startGame(lobbyName);
 }
 
@@ -166,12 +170,12 @@ async function displayLeaderBoard(size) {
     document.getElementById('leaderBoardContent_tb').innerHTML = ''
     let scores = await fb_readSorted("/games/TTT/MMR", "MMR", size)
     //create table row for each players top scores, containing their username and score
-    if (scores == null) console.log('scores == null'); return;
+    if (scores == null) { console.log('scores == null'); return };
     for (let i = 0; i < scores.length; i++) {
         let entry = document.createElement('tr')
         let name = document.createElement('td')
         let score = document.createElement('td')
-        name.innerHTML = scores[i].userName
+        name.innerHTML = scores[i].username
         score.innerHTML = scores[i].MMR
         entry.append(name, score)
         document.getElementById('leaderBoardContent_tb').append(entry)

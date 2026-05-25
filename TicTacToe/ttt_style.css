@@ -3,6 +3,18 @@
 }
 
 .centered {
-    position: absolute;
-    margin: auto;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+body {
+    min-height: 100vh;
+    margin-left: 8vw;
+    margin-right: 8vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
