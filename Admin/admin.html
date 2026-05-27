@@ -4,16 +4,19 @@
 <head>
   <title>ADMIN</title>
   <script type="module" src="./admin.mjs"></script>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="admin_style.css" />
 </head>
 
 <body>
-  <button onclick="history.back()">BACK</button>
-  <nav>
-    <button onclick="userButton()">user</button>
-    <button onclick="rgButton()">Rogue</button>
-    <button onclick="tttButton()">Tic tac toe</button>
+  <button onclick="history.back()" id="back_bt">BACK</button>
+  <h1 class="title">Admin</h1>
+  <nav class="centered">
+    <button onclick="userButton()">User Details</button>
+    <button onclick="rgButton()">Rogue Scores</button>
+    <button onclick="tttButton()">Tic Tac Toe Scores</button>
   </nav>
-  <table id="mainAdminTable"></table>
+  <table id="mainAdminTable" style="display: none;"></table>
 </body>
 
 </html>

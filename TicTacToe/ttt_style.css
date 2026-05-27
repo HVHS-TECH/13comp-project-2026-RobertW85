@@ -2,19 +2,14 @@
     margin-bottom: 3vh;
 }
 
-.centered {
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+body {
+    min-height: 10vh;
+    margin: 0;
 }
 
-body {
-    min-height: 100vh;
-    margin-left: 8vw;
-    margin-right: 8vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+button {
+    /*margin: 2px;*/
+    border-radius: 5%;
+    border: 1px;
+    border-style: solid;
 }

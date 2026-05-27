@@ -157,14 +157,16 @@ function refreshSprites() {
         endGame("draw");
     } else {
         let leave_bt = new Sprite();
+        fill(lineColor)
         Object.assign(leave_bt, {
             color: backgroundColor,
-            scale: 100 * LAYOUT.spriteScale,
             collider: "static",
-            text: "leave"
+            text: "leave",
+            textSize: 30,
         })
-        let x = 100
-        let y = 300
+
+        let x = 50 + (leave_bt.width / 2)
+        let y = 150
         leave_bt.position = { x, y }
         leave_bt.update = function () {
             if (this.mouse.presses()) {

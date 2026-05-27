@@ -1,0 +1,14 @@
+table {
+    border: 1px;
+    border-style: dashed;
+}
+
+body {
+    min-height: 0vh;
+}
+
+#back_bt {
+    width: 10vh;
+    position: absolute;
+    top: 3vh;
+}

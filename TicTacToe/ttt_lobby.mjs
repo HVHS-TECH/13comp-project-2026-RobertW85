@@ -176,7 +176,7 @@ async function displayLeaderBoard(size) {
         let name = document.createElement('td')
         let score = document.createElement('td')
         name.innerHTML = scores[i].username
-        score.innerHTML = scores[i].MMR
+        score.innerHTML = int(scores[i].MMR)
         entry.append(name, score)
         document.getElementById('leaderBoardContent_tb').append(entry)
     }

@@ -852,7 +852,7 @@ async function calculateScore() {
     score = (player.money + player.totalXp) * timeMultiplier;
     score = int(score);
     console.log("score: " + score.toString());
-    fb_read(
+    await fb_read(
         "/games/rogue/scores/" + sessionStorage.getItem("uid") + "/score",
     ).then(async (result) => {
         if (!result) {
@@ -923,6 +923,7 @@ async function populateLeaderBoard() {
     let list = await fb_readSorted("/games/rogue/scores", "score", 3)
     let lb_Table = document.createElement("table");
     console.log(list)
+    if (list == null) { return }
     for (let i = 0; i < list.length; i++) {
         if (list[i].gameName) {
             console.log(list[i])

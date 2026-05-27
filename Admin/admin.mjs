@@ -17,10 +17,11 @@ async function fillTable(path, table) {
         table.innerHTML = ''
     }
 
-    console.log(`fill table: ${table.id}, path:${path}`)
+
     let data = await fb_read(path)
-    console.log(data)
-    if (data == null) { return }
+    if (data == null) { table.style.display = 'none'; return }
+    table.style.display = 'block'
+
     for (let i = 0; i < Object.keys(data).length; i++) {
         // Create table row with name of path
         let tr = document.createElement("tr")
@@ -34,7 +35,7 @@ async function fillTable(path, table) {
             //console.log(info)
             interperateKeyValuePair("", info, tr);
             table.appendChild(tr)
-        }else{
+        } else {
             //create for each path inside the path 
             //if the path is a key value pair create a input with the value and a p with the key
             //if the path is an object that leads to more key value pairs create a button which runs this function again
@@ -47,9 +48,18 @@ async function fillTable(path, table) {
                         let innerPath = `${path}/${Object.keys(data)[i]}/${Object.keys(info)[j]}`
                         let innerTable = document.createElement('table')
                         innerTable.id = `${path}/${Object.keys(data)[i]}/${Object.keys(info)[j]}`
-                        if(document.getElementById(innerTable.id) != null){document.getElementById(innerTable.id).remove()}
-                            tr.append(innerTable)
-                            fillTable(innerPath, innerTable)
+                        if (document.getElementById(innerTable.id) != null) { document.getElementById(innerTable.id).remove() }
+                        //add a button to collapse
+                        let collapse_bt = document.createElement("image")
+                        //icon is a image from google icons (https://fonts.google.com/icons)
+                        collapse_bt.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg>'
+                        collapse_bt.onclick = () => {
+                            document.getElementById(innerTable.id).remove()
+                            collapse_bt.remove()
+                        }
+                        tr.append(collapse_bt)
+                        tr.append(innerTable)
+                        fillTable(innerPath, innerTable)
                     };
                     tr.append(innerObject_bt)
                     continue
