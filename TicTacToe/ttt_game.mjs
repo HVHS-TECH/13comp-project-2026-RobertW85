@@ -97,7 +97,7 @@ export async function ttt_startGame() {
     })
 
     fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
-    gameOver = true
+    gameOver = false
 }
 
 
