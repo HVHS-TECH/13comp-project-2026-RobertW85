@@ -87,12 +87,12 @@ export async function ttt_startGame() {
     }
     document.getElementsByClassName("q5Canvas")[0].style.display = "block"
     updateScreen()
-    //todo: remove listener when lobbyDeleted()
+
     fb_onValue(`/lobbies/${lobbyName}`, async (data) => {
         if (data.val() == null) {
+            console.log("no record found")
             lobbyDeleted()
-        } else {
-            console.log(data.val())
+            //remove fb_onValue now
         }
     })
 
@@ -355,7 +355,7 @@ async function calcMmr(winner) {
  */
 async function lobbyDeleted() {
     //to prevent deleting the lobby at the end of the game sending a second message
-    if (gameOver) { return }
+    if (gameOver == true) { return }
     var leavingPLAYER = players[0].uid == uid ? players[1] : players[0];
     document.getElementById("endGameHeader_h1").innerHTML = `${leavingPLAYER.username} has left`;
     document.getElementById("endScreen_di").style.display = 'block'
