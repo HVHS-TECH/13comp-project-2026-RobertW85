@@ -58,7 +58,6 @@ async function setup() {
  * @returns{void}
  */
 export async function ttt_startGame() {
-    console.log("start game")
     resizeCanvas(window.innerWidth, window.innerHeight);
     lobbyName = sessionStorage.getItem("lobbyName");
     let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
@@ -88,13 +87,23 @@ export async function ttt_startGame() {
     }
     document.getElementsByClassName("q5Canvas")[0].style.display = "block"
     updateScreen()
-    await fb_onValue(`/lobbies/${lobbyName}`, async (data) => {
+    //todo: remove listener when lobbyDeleted()
+    fb_onValue(`/lobbies/${lobbyName}`, async (data) => {
         if (data.val() == null) {
             lobbyDeleted()
+        } else {
+            console.log(data.val())
         }
     })
+
+    function sigma(unsub) {
+
+    }
+
     fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
+    gameOver = true
 }
+
 
 /**
  * changes size of canvas
@@ -305,6 +314,7 @@ async function endGame(outcome) {
         calcMmr(winInfo.uid)
     }
     document.getElementById("rematch_bt").style.display = 'block'
+    document.getElementById("leave_bt").style.display = 'block'
     document.getElementById("endScreen_di").style.display = 'block'
     document.getElementById("rematch_bt").onclick = () => rematch();
     document.getElementById("leave_bt").onclick = () => leave();
@@ -318,10 +328,10 @@ function rematch() {
  * hides the game and starts lobby script
  */
 function leave() {
+    fb_remove(`/lobbies/${lobbyName}`)
     document.getElementById("endScreen_di").style.display = "none";
     document.getElementsByClassName("q5Canvas")[0].style.display = "none";
     startLobbyScreen();
-    fb_remove(`/lobbies/${lobbyName}`)
 }
 
 /**

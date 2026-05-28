@@ -148,7 +148,7 @@ async function joinLobby(lobbyName) {
 async function getPlayerData() {
     let playerData = {
         uid: uid,
-        userName: await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`)
+        username: await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`)
     };
     return playerData;
 }
