@@ -96,10 +96,6 @@ export async function ttt_startGame() {
         }
     })
 
-    function sigma(unsub) {
-
-    }
-
     fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
     gameOver = true
 }
