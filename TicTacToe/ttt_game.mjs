@@ -168,9 +168,10 @@ function refreshSprites() {
             collider: "static",
             text: "leave",
             textSize: 30,
+            textColor: lineColor
         })
 
-        let x = 50 + (leave_bt.width / 2)
+        let x = 90
         let y = 150
         leave_bt.position = { x, y }
         leave_bt.update = function () {
@@ -301,6 +302,9 @@ async function endGame(outcome) {
     gameOver = true
     if (outcome == "draw") {
         document.getElementById("endGameHeader_h1").innerHTML = `YOU draw`;
+        if (await fb_read(`${mmrPath}/${uid}/MMR`) == null) {
+            await fb_write({ MMR: 100, username: username }, `${mmrPath}/${uid}`)
+        }
     } else {
         let winInfo = await fb_read(`/lobbies/${lobbyName}/winner`);
         let plural;
