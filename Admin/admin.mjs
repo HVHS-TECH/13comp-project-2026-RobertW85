@@ -1,6 +1,5 @@
 //Term 1 2026
 import { fb_read, fb_initialize, fb_write, fb_remove } from "../FireBase/fb_io.mjs"
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 fb_initialize()
 
 window.userButton = userButton
