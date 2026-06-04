@@ -126,8 +126,9 @@ async function fb_waitForChange(path) {
  */
 async function fb_onValue(path, func) {
     const REF = ref(FB_DB, path)
-    const UNSUB = onValue(REF, func)
-    return UNSUB
+    onValue(REF, (snapshot) => {
+        func(snapshot.val())
+    })
 }
 
 /**
