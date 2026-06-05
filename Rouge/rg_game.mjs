@@ -184,7 +184,6 @@ function realSetup() {
         "Rank: " + PLAYERLEVELS[player.level - 1];
 
     player.money = 10
-    endGame("win")
 }
 
 /*************************************************

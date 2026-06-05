@@ -110,7 +110,7 @@ async function waitForPlayer(lobbyName) {
     let wait_bt = document.createElement('button')
     let wait_h2 = document.createElement('h2')
     wait_bt.innerText = 'Back'
-    wait_h2.innerText = 'Waiting for a player to join'
+    wait_h2.innerText = `Waiting for a player to join, lobby:${lobbyName}`
     wait_h2.className = 'centered'
     wait_bt.onclick = async () => {
         wait_bt.remove()
