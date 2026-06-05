@@ -87,7 +87,7 @@ async function hostLobby() {
     let username = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`,);
     let lobbyData = {
         //name: `lobby${lobbyNumber}`,
-        name: `${username}'s lobby`,
+        name: `${username}'s lobby, (${lobbyNumber})`,
         players: [await getPlayerData()],
         board: [
             [0, 0, 0],
@@ -95,9 +95,8 @@ async function hostLobby() {
             [0, 0, 0],
         ],
     };
-    let lobbyName = `lobby${lobbyNumber}`;
-    await fb_write(lobbyData, `/lobbies/${lobbyName}`);
-    waitForPlayer(lobbyName);
+    await fb_write(lobbyData, `/lobbies/${lobbyData.name}`);
+    waitForPlayer(lobbyData.name);
 }
 
 /**

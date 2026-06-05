@@ -89,7 +89,7 @@ export async function ttt_startGame() {
     updateScreen()
 
     fb_onValue(`/lobbies/${lobbyName}`, async (data) => {
-        if (data.val() == null) {
+        if (data == null) {
             console.log("no record found")
             lobbyDeleted()
             //remove fb_onValue now
