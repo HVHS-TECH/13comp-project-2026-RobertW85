@@ -84,8 +84,10 @@ async function hostLobby() {
     let lobbyNumber;
     if (lobbyList != null) { lobbyNumber = Object.keys(lobbyList).length + 1; }
     else { lobbyNumber = 1; }
+    let username = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`,);
     let lobbyData = {
-        name: `lobby${lobbyNumber}`,
+        //name: `lobby${lobbyNumber}`,
+        name: `${username}'s lobby`,
         players: [await getPlayerData()],
         board: [
             [0, 0, 0],
