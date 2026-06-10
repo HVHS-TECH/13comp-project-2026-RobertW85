@@ -1,3 +1,13 @@
+.leaderBoardContent {
+    font-size: 5vh;
+    text-wrap: nowrap;
+    padding-right: 5vw;
+}
+
+#innerLeaderBoard_di {
+    width: 45vw;
+}
+
 #leave_bt {
     margin-bottom: 3vh;
 }

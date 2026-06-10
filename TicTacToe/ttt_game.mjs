@@ -320,8 +320,19 @@ async function endGame(outcome) {
     document.getElementById("leave_bt").onclick = () => leave();
 }
 
-function rematch() {
-    console.log("rematch");
+async function rematch() {
+    await fb_write(true, `/lobbies/${lobbyNumber}/rematch/${uid}`)
+    if (await fb_read(`/lobbies/${lobbyNumber}/rematch`).size != 2) {
+        await fb_waitForChange(`/lobbies/${lobbyNumber}/rematch`)
+    }
+
+    //TODO ADD thing to stop rematch/display for over player if player is rematching
+
+    //both players have rematched
+    document.getElementById("endScreen_di").style.display = "none";
+    document.getElementsByClassName("q5Canvas")[0].style.display = "none";
+    await fb_remove(`/lobbies/${lobbyNumber}/winner`)
+    ttt_startGame()
 }
 
 /**

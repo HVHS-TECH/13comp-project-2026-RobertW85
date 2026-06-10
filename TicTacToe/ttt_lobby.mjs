@@ -23,12 +23,11 @@ export function startLobbyScreen() {
     let lobbyTitle = document.createElement("h1");
     let buttonDiv = document.createElement("div");
     let hostButton = document.createElement("button");
-    let refreshButton = document.createElement("button");
     let backButton = document.createElement("button");
     let leaderBoardButton = document.createElement("button");
 
     document.body.appendChild(lobby_di);
-    buttonDiv.append(backButton, hostButton, refreshButton, leaderBoardButton);
+    buttonDiv.append(backButton, hostButton, leaderBoardButton);
     lobby_di.append(lobbyTitle, buttonDiv, lobbyTable);
 
     lobby_di.className = 'centered'
@@ -36,8 +35,6 @@ export function startLobbyScreen() {
     backButton.onclick = () => { history.back() };
     hostButton.innerHTML = "Host";
     hostButton.onclick = hostLobby;
-    refreshButton.innerHTML = "Refresh";
-    refreshButton.onclick = refreshAvailableLobbies;
     leaderBoardButton.innerHTML = "Leaderboard";
     leaderBoardButton.onclick = () => { displayLeaderBoard(5) };
     lobbyTitle.innerHTML = "Tic tac toe Lobby";
@@ -110,27 +107,29 @@ async function hostLobby() {
  * @returns {void}
  */
 async function waitForPlayer(lobbyNumber) {
+    //create waiting display
     let wait_di = document.createElement('div')
-    let wait_bt = document.createElement('button')
+    let back_bt = document.createElement('button')
     let wait_h2 = document.createElement('h2')
-    wait_bt.innerText = 'Back'
-    wait_h2.innerText = `Waiting for a player to join, lobby:${username}'s lobby`
+    back_bt.innerText = 'Back'
+    wait_h2.innerText = `Waiting for a player to join\nlobby: ${username}'s lobby`
     wait_h2.className = 'centered'
-    wait_bt.onclick = async () => {
-        wait_bt.remove()
-        wait_bt = undefined
+    back_bt.onclick = async () => {
+        back_bt.remove()
+        back_bt = undefined
         wait_h2.remove()
         await fb_remove(`/lobbies/${lobbyNumber}`)
         startLobbyScreen()
         return
     }
     wait_di.className = 'centered'
-    wait_di.append(wait_h2, wait_bt)
+    wait_di.append(wait_h2, back_bt)
     document.body.append(wait_di)
+    //start waiting for another player to join
     fb_removeOnDisconnect(`/lobbies/${lobbyNumber}`)
     await fb_waitForChange(`/lobbies/${lobbyNumber}/players`);
-    if (wait_bt == undefined) return;
-    wait_bt.remove()
+    if (back_bt == undefined) return; //this is incase back_bt was pressed
+    back_bt.remove()
     wait_h2.remove()
     let startingPlayer = Math.floor(Math.random() * 2);
     let players = await fb_read(`/lobbies/${lobbyNumber}/players`);
@@ -189,6 +188,8 @@ async function displayLeaderBoard(size) {
         let score = document.createElement('td')
         name.innerHTML = scores[i].username
         score.innerHTML = int(scores[i].MMR)
+        name.className = "leaderBoardContent"
+        score.className = "leaderBoardContent"
         entry.append(name, score)
         document.getElementById('leaderBoardContent_tb').append(entry)
     }
