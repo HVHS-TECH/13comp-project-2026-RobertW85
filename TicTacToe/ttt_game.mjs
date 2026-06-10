@@ -23,7 +23,7 @@ const LAYOUT = {
 //assets
 let noughtImage, crossImage;
 //lobby info
-let boardArray, canMove, players, lobbyName, gameOver;
+let boardArray, canMove, players, lobbyNumber, gameOver;
 //player info
 let uid, symbolImage, symbolName, turn, username;
 //fb
@@ -49,7 +49,7 @@ function preload() {
 async function setup() {
     while (document.getElementsByClassName("q5Canvas") == null) { await new Promise((resolve) => setTimeout(resolve, 100)); }
     document.getElementsByClassName("q5Canvas")[0].style.display = "none";
-    username = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`,);
+    username = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`);
 }
 
 /**
@@ -59,8 +59,8 @@ async function setup() {
  */
 export async function ttt_startGame() {
     resizeCanvas(window.innerWidth, window.innerHeight);
-    lobbyName = sessionStorage.getItem("lobbyName");
-    let lobbyData = await fb_read(`/lobbies/${lobbyName}`);
+    lobbyNumber = sessionStorage.getItem("lobbyNumber");
+    let lobbyData = await fb_read(`/lobbies/${lobbyNumber}`);
     players = lobbyData.players;
     uid = sessionStorage.getItem("uid");
     boardArray = [
@@ -71,7 +71,7 @@ export async function ttt_startGame() {
     let lobbyTurn = lobbyData.turn
     //wait incase lobby creator has not completed lobby setup
     while (lobbyTurn == undefined) {
-        lobbyTurn = await fb_read(`/lobbies/${lobbyName}/turn`);
+        lobbyTurn = await fb_read(`/lobbies/${lobbyNumber}/turn`);
         await new Promise((resolve) => setTimeout(resolve, 300));
     }
     //set turn
@@ -88,7 +88,7 @@ export async function ttt_startGame() {
     document.getElementsByClassName("q5Canvas")[0].style.display = "block"
     updateScreen()
 
-    fb_onValue(`/lobbies/${lobbyName}`, async (data) => {
+    fb_onValue(`/lobbies/${lobbyNumber}`, async (data) => {
         if (data == null) {
             console.log("no record found")
             lobbyDeleted()
@@ -96,7 +96,7 @@ export async function ttt_startGame() {
         }
     })
 
-    fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
+    fb_removeOnDisconnect(`/lobbies/${lobbyNumber}`)
     gameOver = false
 }
 
@@ -257,10 +257,10 @@ async function makeTurn(row, column, symbolName) {
     turn = false;
     textSize(30);
     fill(lineColor);
-    await fb_write(boardArray, `/lobbies/${lobbyName}/board`);
+    await fb_write(boardArray, `/lobbies/${lobbyNumber}/board`);
     checkWin(row, column, symbolName);
     let lobbyTurn = players[0].uid == uid ? players[1].uid : players[0].uid;
-    await fb_write(lobbyTurn, `/lobbies/${lobbyName}/turn`);
+    await fb_write(lobbyTurn, `/lobbies/${lobbyNumber}/turn`);
     updateScreen();
     waitForTurn();
 }
@@ -272,13 +272,13 @@ async function makeTurn(row, column, symbolName) {
  * @returns {void}
  */
 async function waitForTurn() {
-    await fb_waitForChange(`/lobbies/${lobbyName}/turn`);
-    if (await fb_read(`/lobbies/${lobbyName}`) == null) { return }
+    await fb_waitForChange(`/lobbies/${lobbyNumber}/turn`);
+    if (await fb_read(`/lobbies/${lobbyNumber}`) == null) { return }
     //begin turn
-    boardArray = await fb_read(`/lobbies/${lobbyName}/board`);
+    boardArray = await fb_read(`/lobbies/${lobbyNumber}/board`);
     turn = true;
     updateScreen();
-    let winCheck = await fb_read(`/lobbies/${lobbyName}/winner`);
+    let winCheck = await fb_read(`/lobbies/${lobbyNumber}/winner`);
     if (winCheck != undefined) {
         endGame("win");
     }
@@ -290,7 +290,7 @@ async function waitForTurn() {
  */
 async function winningMove() {
     let winInfo = { symbol: symbolName, username: username, uid: sessionStorage.getItem("uid") };
-    await fb_write(winInfo, `/lobbies/${lobbyName}/winner`);
+    await fb_write(winInfo, `/lobbies/${lobbyNumber}/winner`);
     endGame("win");
 }
 
@@ -306,7 +306,7 @@ async function endGame(outcome) {
             await fb_write({ MMR: 100, username: username }, `${mmrPath}/${uid}`)
         }
     } else {
-        let winInfo = await fb_read(`/lobbies/${lobbyName}/winner`);
+        let winInfo = await fb_read(`/lobbies/${lobbyNumber}/winner`);
         let plural;
         winInfo.symbol == "cross" ? (plural = "es") : (plural = "s");
         document.getElementById("endGameHeader_h1").innerHTML =
@@ -328,7 +328,7 @@ function rematch() {
  * hides the game and starts lobby script
  */
 function leave() {
-    fb_remove(`/lobbies/${lobbyName}`)
+    fb_remove(`/lobbies/${lobbyNumber}`)
     document.getElementById("endScreen_di").style.display = "none";
     document.getElementsByClassName("q5Canvas")[0].style.display = "none";
     startLobbyScreen();

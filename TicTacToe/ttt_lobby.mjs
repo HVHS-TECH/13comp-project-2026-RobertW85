@@ -10,6 +10,7 @@ import { ttt_startGame } from "./ttt_game.mjs";
 let lobbyTable, lobby_di;
 let autoRefreshLastLength = 0;
 let uid = sessionStorage.getItem("uid");
+let username;
 fb_initialize();
 startLobbyScreen();
 
@@ -40,7 +41,9 @@ export function startLobbyScreen() {
     leaderBoardButton.innerHTML = "Leaderboard";
     leaderBoardButton.onclick = () => { displayLeaderBoard(5) };
     lobbyTitle.innerHTML = "Tic tac toe Lobby";
+
     refreshAvailableLobbies();
+
     fb_onValue('/lobbies', (read) => {
         if (read == null) { refreshAvailableLobbies(); return }
         if (autoRefreshLastLength != Object.values(read).length) {
@@ -56,8 +59,8 @@ export function startLobbyScreen() {
  * @returns {void}
  */
 async function refreshAvailableLobbies() {
-    lobbyTable.innerHTML = "";
     const LOBBYLIST = await fb_read("/lobbies");
+    lobbyTable.innerHTML = "";
     if (LOBBYLIST == null) { return; }
     const LOBBYLISTKEYS = Object.keys(LOBBYLIST)
     for (let i = 0; i < LOBBYLISTKEYS.length; i++) {
@@ -65,7 +68,7 @@ async function refreshAvailableLobbies() {
         let tableRow = document.createElement("tr");
         let lobbyName = document.createElement("td");
         let joinButton = document.createElement("button");
-        lobbyName.innerHTML = LOBBYLISTKEYS[i];
+        lobbyName.innerHTML = LOBBYLIST[LOBBYLISTKEYS[i]].name;
         joinButton.innerHTML = "Join";
         joinButton.onclick = () => { joinLobby(LOBBYLISTKEYS[i]) };
         tableRow.append(lobbyName, joinButton);
@@ -79,15 +82,15 @@ async function refreshAvailableLobbies() {
  * then wait for a player to join
  */
 async function hostLobby() {
+    username = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`);
     document.body.removeChild(lobby_di);
     let lobbyList = await fb_read("/lobbies");
     let lobbyNumber;
     if (lobbyList != null) { lobbyNumber = Object.keys(lobbyList).length + 1; }
     else { lobbyNumber = 1; }
-    let username = await fb_read(`/userDetails/${sessionStorage.getItem("uid")}/public/username`,);
+    lobbyNumber.toString();
     let lobbyData = {
-        //name: `lobby${lobbyNumber}`,
-        name: `${username}'s lobby, (${lobbyNumber})`,
+        name: `${username}'s lobby`,
         players: [await getPlayerData()],
         board: [
             [0, 0, 0],
@@ -95,60 +98,60 @@ async function hostLobby() {
             [0, 0, 0],
         ],
     };
-    await fb_write(lobbyData, `/lobbies/${lobbyData.name}`);
-    waitForPlayer(lobbyData.name);
+    await fb_write(lobbyData, `/lobbies/${lobbyNumber}`);
+    waitForPlayer(lobbyNumber);
 }
 
 /**
  * will wait until a player joins then will decide a starting player
  * starting player will have cross as their symbol
  * turn is stored as the uid of the player whose turn it is
- * @param {string} lobbyName 
+ * @param {string} lobbyNumber
  * @returns {void}
  */
-async function waitForPlayer(lobbyName) {
+async function waitForPlayer(lobbyNumber) {
     let wait_di = document.createElement('div')
     let wait_bt = document.createElement('button')
     let wait_h2 = document.createElement('h2')
     wait_bt.innerText = 'Back'
-    wait_h2.innerText = `Waiting for a player to join, lobby:${lobbyName}`
+    wait_h2.innerText = `Waiting for a player to join, lobby:${username}'s lobby`
     wait_h2.className = 'centered'
     wait_bt.onclick = async () => {
         wait_bt.remove()
         wait_bt = undefined
         wait_h2.remove()
-        await fb_remove(`/lobbies/${lobbyName}`)
+        await fb_remove(`/lobbies/${lobbyNumber}`)
         startLobbyScreen()
         return
     }
     wait_di.className = 'centered'
     wait_di.append(wait_h2, wait_bt)
     document.body.append(wait_di)
-    fb_removeOnDisconnect(`/lobbies/${lobbyName}`)
-    await fb_waitForChange(`/lobbies/${lobbyName}/players`);
+    fb_removeOnDisconnect(`/lobbies/${lobbyNumber}`)
+    await fb_waitForChange(`/lobbies/${lobbyNumber}/players`);
     if (wait_bt == undefined) return;
     wait_bt.remove()
     wait_h2.remove()
     let startingPlayer = Math.floor(Math.random() * 2);
-    let players = await fb_read(`/lobbies/${lobbyName}/players`);
+    let players = await fb_read(`/lobbies/${lobbyNumber}/players`);
     let turn = players[startingPlayer].uid;
     //set starting player symbol
-    await fb_write("cross", `/lobbies/${lobbyName}/players/${startingPlayer}/symbol`);
+    await fb_write("cross", `/lobbies/${lobbyNumber}/players/${startingPlayer}/symbol`);
     //set last player symbol
-    await fb_write("nought", `/lobbies/${lobbyName}/players/${Math.abs(startingPlayer - 1)}/symbol`);
-    await fb_write(turn, `/lobbies/${lobbyName}/turn`);
+    await fb_write("nought", `/lobbies/${lobbyNumber}/players/${Math.abs(startingPlayer - 1)}/symbol`);
+    await fb_write(turn, `/lobbies/${lobbyNumber}/turn`);
 
-    startGame(lobbyName);
+    startGame(lobbyNumber);
 }
 
 /**
  * the player joining a lobby will be the last, it will start the game
  * @returns {void}
  */
-async function joinLobby(lobbyName) {
-    await fb_write(await getPlayerData(), `/lobbies/${lobbyName}/players/1`);
+async function joinLobby(lobbyNumber) {
+    await fb_write(await getPlayerData(), `/lobbies/${lobbyNumber}/players/1`);
     document.body.removeChild(lobby_di);
-    startGame(lobbyName);
+    startGame(lobbyNumber);
 }
 
 /**
@@ -166,8 +169,8 @@ async function getPlayerData() {
  * run by both players once a lobby is full
  * lobbyName is important for mulitplayer in ttt
  */
-function startGame(lobbyName) {
-    sessionStorage.setItem("lobbyName", lobbyName);
+function startGame(lobbyNumber) {
+    sessionStorage.setItem("lobbyNumber", lobbyNumber);
     ttt_startGame()
 }
 
