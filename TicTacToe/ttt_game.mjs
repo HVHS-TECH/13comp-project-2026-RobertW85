@@ -7,8 +7,8 @@
 import { fb_read, fb_write, fb_waitForChange, fb_removeOnDisconnect, fb_remove, fb_onValue } from "../FireBase/fb_io.mjs";
 import { startLobbyScreen } from "./ttt_lobby.mjs";
 
-let lineColor = (13, 161, 146);
-let backgroundColor = (20, 189, 172);
+let lineColor = (255, 255, 255)//(13, 161, 146);
+let backgroundColor = (0, 0, 0);//(20, 189, 172);
 
 //screen cords
 let center;
