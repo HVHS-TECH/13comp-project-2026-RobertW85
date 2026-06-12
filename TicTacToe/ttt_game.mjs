@@ -320,14 +320,22 @@ async function endGame(outcome) {
     document.getElementById("leave_bt").onclick = () => leave();
 }
 
+/**
+ * runs the game again for both players in the lobby 
+ */
 async function rematch() {
     await fb_write(true, `/lobbies/${lobbyNumber}/rematch/${uid}`)
-    if (await fb_read(`/lobbies/${lobbyNumber}/rematch`).size != 2) {
+    gameOver = false
+    if (Object.keys(await fb_read(`/lobbies/${lobbyNumber}/rematch`)).length != 2) {
         await fb_waitForChange(`/lobbies/${lobbyNumber}/rematch`)
+        if (await fb_read(`/lobbies/${lobbyNumber}`) == null) {
+            endGame
+            return
+        }
+    } else {
+        await fb_remove(`/lobbies/${lobbyNumber}/rematch/`)
+        //could reset board but doesnt seem to matter
     }
-
-    //TODO ADD thing to stop rematch/display for over player if player is rematching
-
     //both players have rematched
     document.getElementById("endScreen_di").style.display = "none";
     document.getElementsByClassName("q5Canvas")[0].style.display = "none";
