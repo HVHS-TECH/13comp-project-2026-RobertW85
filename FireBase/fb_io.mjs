@@ -42,8 +42,7 @@ function fb_initialize() {
     };
     const FB_APP = initializeApp(FB_Cfg);
     FB_DB = getDatabase(FB_APP);
-    console.log(getAuth())
-    console.info(FB_DB);
+    getAuth()
 }
 
 /**

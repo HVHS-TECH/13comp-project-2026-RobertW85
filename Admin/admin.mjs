@@ -31,7 +31,6 @@ async function fillTable(path, table) {
         let info = data[Object.keys(data)[i]]
         if (typeof info !== 'object') {
             //hard coded for users public/private and is rather sketchy (no key instead using tr?)
-            //console.log(info)
             interperateKeyValuePair("", info, tr);
             table.appendChild(tr)
         } else {

@@ -153,7 +153,6 @@ Real Setup()
 this is to allow a loading screen while it generates
 *************************************************/
 function realSetup() {
-    //console.log("setup");
     gameCanvas = new Canvas(600, 316, "pixelated x4");
     allSprites.pixelPerfect = true;
     world.gravity.y = 0;
@@ -263,7 +262,6 @@ Input:  items = [["tile", amount],["tile2", amount]]
 Return: n/a
 *************************************************/
 function autoAddItems(items) {
-    //console.log(items)
     for (let objects = 0; objects < items.length; objects++) {
         let tileChance = findFloorTiles(); //to prevent overlap
         for (let row = 0; row < tileMap.length; row++) {
@@ -272,25 +270,13 @@ function autoAddItems(items) {
                     if (int(random(1, tileChance)) <= items[objects][1]) {
                         items[objects][1] = items[objects][1] - 1;
                         if (!ENEMY_TILES.includes(items[objects][0])) {
-                            //console.log(items[objects][0], " is not an enemy")
+                            //items[objects][0] is not an enemy
                             spriteArray.push([items[objects][0], column, row]);
                         } else {
-                            //console.log(items[objects][0], " is an enemy")
+                            //items[objects][0] is an enemy
                             let enemyStatIndex;
-                            for (
-                                let index = 0;
-                                index < ENEMY_STATS.length;
-                                index++
-                            ) {
-                                if (
-                                    ENEMY_STATS[index].Tile == items[objects][0]
-                                ) {
-                                    enemyStatIndex = index;
-                                    //console.log(ENEMY_STATS[index].Tile, " = ", items[objects][0])
-                                }
-                            }
-                            //console.log(enemyStatIndex)
-                            //console.log([items[objects][0], column, row, ENEMY_STATS[enemyStatIndex], findRoom(column, row)])
+                            for (let index = 0;index < ENEMY_STATS.length;index++)
+                                {if (ENEMY_STATS[index].Tile == items[objects][0]) {enemyStatIndex = index;}}
                             spriteArray.push([
                                 items[objects][0],
                                 column,
@@ -308,7 +294,6 @@ function autoAddItems(items) {
             }
         }
     }
-    //console.log(spriteArray)
 }
 
 /*************************************************
@@ -321,7 +306,6 @@ function getEnemyPool() {
     let MinEnemyAmount = 2;
     let MaxEnemyAmount = 5;
     let EnemyAmount = int(random(MinEnemyAmount, MaxEnemyAmount));
-    //console.log(totalEnemyXp)
 
     for (let enemy = 0; enemy < EnemyAmount; enemy++) {
         let AvalibleEnemies = [];
@@ -330,7 +314,6 @@ function getEnemyPool() {
                 AvalibleEnemies.push(ENEMY_STATS[a]);
             }
         }
-        //console.log(AvalibleEnemies)
         if (AvalibleEnemies.length > 0) {
             let SelectedEnemy =
                 AvalibleEnemies[int(random(0, AvalibleEnemies.length))];
@@ -370,9 +353,7 @@ function createSpriteFunc(index) {
     sprite.height = int(tileScale);
     for (let row = 0; row < TILE_ARRAY.length; row++) {
         for (let column = 0; column < TILE_ARRAY[row].length; column++) {
-            //console.log(TILE_ARRAY[row][column])
             if (TILE_ARRAY[row][column][1] == tile) {
-                //console.log(TILE_ARRAY[row][column][1])
                 TileMapCol = column;
                 TileMapRow = row;
             }
@@ -397,7 +378,6 @@ function updateSprite(index) {
         for (let i = 0; i < spriteArray[index].length; i++) {
             if (typeof spriteArray[index][i] == "object") {
                 if (spriteArray[index][i]._isSprite == true) {
-                    //console.log("update sprite ", spriteArray[index][0])
                     spriteArray[index][i].x =
                         spriteArray[index][1] * tileScale + tiles[0].x;
                     spriteArray[index][i].y =
@@ -417,7 +397,6 @@ Return: n/a
 *************************************************/
 
 function deleteSprite(index) {
-    //console.log("delete sprite")
     for (let i = 0; i < spriteArray[index].length; i++) {
         if (typeof spriteArray[index][i] == "object") {
             if (spriteArray[index][i]._isSprite == true) {
@@ -434,7 +413,6 @@ uses TILE_ARRAY to create tiles, uses the index to find tile map position
 function declearTiles() {
     for (let rows = 0; rows < TILE_ARRAY.length; rows++) {
         for (let columns = 0; columns < TILE_ARRAY[rows].length; columns++) {
-            //console.log(TILE_ARRAY[rows][columns][0], rows, columns, TILE_ARRAY[rows][columns][1])
             createTile(
                 TILE_ARRAY[rows][columns][0],
                 rows,
@@ -484,7 +462,6 @@ input: x, y, NewTile = "T"
 return: n/a
 *************************************************/
 function replaceTile(x, y, newTile) {
-    //console.log(x,y,newTile, layer)
     let row = tileMap[y].split("");
     row[x] = newTile;
     row = row.join("");
@@ -513,7 +490,6 @@ Input: roomLocationX, roomLocationY, roomWidth, roomHieght
 Return: coordinates = ([x,y],[x,y],[x,y],[x,y])
 *************************************************/
 function calcRoomSpace(roomLocationX, roomLocationY, roomWidth, roomHieght) {
-    //console.log("recived : ", roomLocationX, roomLocationY, roomWidth, roomHieght)
     let coordinates = [];
     for (let y = 0; y < roomHieght + 2; y++) {
         for (let x = 0; x < roomWidth + 2; x++) {
@@ -560,7 +536,6 @@ function movePlayer(derection) {
 
     if (newLoctaion[1] >= 0) {
         let newPlayerStandingOn = checkTile(newLoctaion[0], newLoctaion[1]);
-        //console.log(newPlayerStandingOn)
         if (
             newLoctaion[0] >= 0 &&
             newLoctaion[0] <= TILE_GRID_SIZE_X - 1 &&
@@ -577,7 +552,6 @@ function movePlayer(derection) {
             if (playerRoom != "hallWay") {
                 enemyMove();
             }
-            //console.log("movement is valid")
         }
     }
 }
@@ -624,12 +598,10 @@ Return: tileMap0[x] = "T"
 function checkTile(x, y) {
     for (let object = 0; object < spriteArray.length; object++) {
         if (spriteArray[object][1] == x && spriteArray[object][2] == y) {
-            //console.log("Tile at : x", x, " y", y,  " = ",spriteArray[object][0])
             return spriteArray[object][0];
         }
     }
     let tileMap0 = tileMap[y].split("");
-    //console.log("Tile at : x", x, " y", y,  " = ",tileMap0[x])
     return tileMap0[x];
 }
 
@@ -645,9 +617,6 @@ function mouseCheck() {
     y = int(y / tileScale);
 
     if (x <= TILE_GRID_SIZE_X && x >= 0 && y >= 0 && y < TILE_GRID_SIZE_Y) {
-        console.log(x, y);
-        console.log(checkTile(x, y));
-
         if (mouseSprite == null) {
             mouseSprite = new Sprite();
             mouseSprite.width = 8;
@@ -690,10 +659,8 @@ function nextLevel() {
     } else {
         for (let object = 0; object < spriteArray.length; object++) {
             deleteSprite(object);
-            //console.log("clearing sprites")
         }
         difficulty *= 1.1;
-        //console.log("next level");
         spriteArray = [];
         tileMap = [];
         manualGenerate(2);
@@ -728,15 +695,12 @@ function findFloorTiles() {
     let emptyTiles = 0;
     //search for every empty floor space inside tile map 1
     for (let row = 0; row < tileMap.length; row++) {
-        //console.log(tileMap[row])
         for (let column = 0; column < tileMap[row].length; column++) {
-            //console.log(tileMap[row][column])
             if (tileMap[row][column] === "▫") {
                 emptyTiles++;
             }
         }
     }
-    //console.log(emptyTiles)
     return emptyTiles;
 }
 
@@ -746,7 +710,6 @@ The enemy is based on the xy of the enemy, then it searchs spriteArray for the e
 Enemy stats are multiplied by difficulty
 *************************************************/
 function fightEnemy(x, y) {
-    //console.log("fighting enemy at", x, y)
     let enemyIndex;
     for (let index = 0; index < spriteArray.length; index++) {
         if (spriteArray[index][1] == x && spriteArray[index][2] == y) {
@@ -765,8 +728,6 @@ function fightEnemy(x, y) {
             player.strength / (1 + enemy.armor * difficulty * 0.5),
         );
         if (enemyHealth <= 0) {
-            //console.log(spriteArray[enemyIndex][6])
-            //console.log(playerLevelProgress)
             updatePlayerLevel(spriteArray[enemyIndex][3].xp);
             updatePlayerMoney(spriteArray[enemyIndex][3].money);
             deleteSprite(enemyIndex);
@@ -774,8 +735,6 @@ function fightEnemy(x, y) {
         } else {
             spriteArray[enemyIndex][3].health = enemyHealth / difficulty;
         }
-        //console.log(enemyHealth)
-        //console.log(spriteArray[enemyIndex])
     }
 }
 
@@ -789,7 +748,6 @@ function updatePlayerLevel(xp) {
     player.levelProgress += xp;
     //amount of xp needed to level up
     if (player.levelProgress >= player.levelProgressRequired) {
-        //console.log("level up")
         player.level += 1;
         player.levelProgress -= player.levelProgressRequired;
         player.levelProgressRequired *= 1.4;
@@ -850,7 +808,6 @@ async function calculateScore() {
     }
     score = (player.money + player.totalXp) * timeMultiplier;
     score = int(score);
-    console.log("score: " + score.toString());
     await fb_read(
         "/games/rogue/scores/" + sessionStorage.getItem("uid") + "/score",
     ).then(async (result) => {
@@ -864,7 +821,6 @@ async function calculateScore() {
         }
     });
     return
-    //populateLeaderBoard();
 }
 
 /*************************************************
@@ -921,11 +877,9 @@ populateLeaderBoard()
 async function populateLeaderBoard() {
     let list = await fb_readSorted("/games/rogue/scores", "score", 3)
     let lb_Table = document.createElement("table");
-    console.log(list)
     if (list == null) { return }
     for (let i = 0; i < list.length; i++) {
         if (list[i].gameName) {
-            console.log(list[i])
             let lb_Entry = document.createElement("tr");
             let Name = document.createElement("td");
             Name.innerHTML = list[i].gameName.slice(0, 5);
@@ -946,8 +900,6 @@ Starts game again
 *************************************************/
 
 function reset() {
-    //console.log("running reset function")
-
     playerSprite.remove();
     for (let object = 0; object < spriteArray.length; object++) {
         deleteSprite(object);
@@ -999,8 +951,6 @@ function reset() {
     spawnSpriteArray();
     refreshTileMap();
     runStarted = Date.now();
-
-    //console.log("reset done")
 }
 
 /*************************************************
@@ -1060,7 +1010,6 @@ function calculateRoomAreas() {
             let tile = tileMap[rows][column];
             if (tile === "╔") {
                 findingTop = true;
-                //console.log("╔")
                 startpointTop = [int(column), int(rows)];
             }
             if ((findingTop = true)) {
@@ -1083,7 +1032,6 @@ function calculateRoomAreas() {
                             if (
                                 tileMap[rows + tempHeightSearch][column] === "╝"
                             ) {
-                                //console.log("╝" + "x"+ column.toString() + " y" + (rows+tempHeightSearch).toString())
                                 endpointBottom = [
                                     int(column),
                                     int(rows + tempHeightSearch - 1),
@@ -1099,7 +1047,6 @@ function calculateRoomAreas() {
             }
         }
     }
-    //console.log(importantRoomCorners)
     for (let room = 0; room < importantRoomCorners.length; room++) {
         let width =
             importantRoomCorners[room][1][0] - importantRoomCorners[room][0][0];
@@ -1107,7 +1054,6 @@ function calculateRoomAreas() {
             importantRoomCorners[room][1][1] - importantRoomCorners[room][0][1];
         let locationX = importantRoomCorners[room][0][0];
         let locationY = importantRoomCorners[room][0][1];
-        //console.log(calcRoomSpace(locationX,locationY,width,height))
         roomAreas.push(calcRoomSpace(locationX, locationY, width, height));
     }
 }
@@ -1154,7 +1100,6 @@ function enemyMove() {
             if (spriteArray[tile][4] == playerRoom) {
                 let enemyMoved = false;
                 if (spriteArray[tile][3].movement == "standard") {
-                    //console.log("enemy move ", spriteArray[tile])
                     let enemyX = spriteArray[tile][1];
                     let enemyY = spriteArray[tile][2];
                     let canMoveX = false;
@@ -1231,7 +1176,6 @@ function enemyMove() {
                                                 spriteArray[tile][1],
                                                 spriteArray[tile][2],
                                             );
-                                            //console.log("fight started by enemy")
                                         }
                                     }
                                 }
@@ -1239,7 +1183,6 @@ function enemyMove() {
                         }
                     }
                 } else if (spriteArray[tile][3].movement == "passive") {
-                    //console.log("passive Enemy Move")
                     let enemyX = spriteArray[tile][1];
                     let enemyY = spriteArray[tile][2];
 
@@ -1298,20 +1241,16 @@ function draw() {
         }
 
         if (kb.pressing("enter")) {
-            //console.log(checkTile(0, playerTileMapx,playerTileMapy))
             if (checkTile(playerTileMapx, playerTileMapy) === ">") {
                 nextLevel();
             }
         }
 
         document.getElementById("time").innerText =
-            //"Time: " + int((Date.now() - runStarted) / 1000).toString();
             "Time Multiplier: " +
             int(
                 (2 - int((Date.now() - runStarted) / 1000) / 60) * 100,
             ).toString() +
             "%";
-
-        //mouseCheck()
     }
 }
