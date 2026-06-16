@@ -1,21 +1,4 @@
-.leaderBoardContent {
-    font-size: 5vh;
-    text-wrap: nowrap;
-    padding-right: 5vw;
-}
-
-#innerLeaderBoard_di {
-    width: 45vw;
-}
-
-#leave_bt {
-    margin-bottom: 3vh;
-}
-
-#rematch_bt {
-    margin-bottom: 3vh;
-}
-
+/*elements*/
 body {
     min-height: 10vh;
     margin: 0;
@@ -26,4 +9,24 @@ button {
     border-radius: 5%;
     border: 1px;
     border-style: solid;
+}
+
+/*classes*/
+.leaderBoardContent {
+    font-size: 5vh;
+    text-wrap: nowrap;
+    padding-right: 5vw;
+}
+
+/*ids*/
+#innerLeaderBoard_di {
+    width: 45vw;
+}
+
+#leave_bt {
+    margin-bottom: 3vh;
+}
+
+#rematch_bt {
+    margin-bottom: 3vh;
 }

@@ -1,7 +1,13 @@
+/*elements*/
+input {
+    width: 100%;
+}
+
+/*classes*/
 .errorMessages {
     margin: 0;
 }
-
+/*ids*/
 #submitReg {
     border-radius: 100%;
     height: 10vh;
@@ -14,16 +20,10 @@
     margin: 0 auto;
     display: block;
 }
-
 #reg_fo {
     display: flex;
     flex-direction: column;
 }
-
-input {
-    width: 100%;
-}
-
 #registrationInner_di {
     padding-bottom: 20px;
 }

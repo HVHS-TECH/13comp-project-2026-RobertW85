@@ -1,38 +1,21 @@
+/*elements*/
 body {
     background-color: rgb(0, 0, 0);
     overflow: hidden;
-    /* background color should be black but is this way to see size of canas*/
 }
 
-.mainMenuButtons {
-    padding: 1vw 1vw;
-    font-size: 7vw;
-    cursor: pointer;
-    border: none;
-    background-color: #000000;
-    display: block;
-    color: #fff;
-    transition: background-color 0.3s;
-    width: 50vw;
-    text-align: center;
-}
-
-.mainMenuButtons:hover {
-    background-color: gray;
-}
-
-.mainMenuButtonContainer{
-    position: fixed;
-    left: 2%;
-    top: 10%;
-}
-
-.title{
-    text-align: center;
-    font-size: 20vw;
+td{
     color: white;
+    font-size: 250%;
 }
 
+table{
+    width: 100%;
+    border-spacing: 5vw;
+    border-spacing: 1vh;
+}
+
+/*classes*/
 .statisticText{
     display: inline-block;
     padding: 1vw 1vw;
@@ -42,50 +25,35 @@ body {
     margin-right: 2vw;
 }
 
-.lowerStatsBar{
+.popUpButton{
+    border-color: white;
+    border-style: double;
+    border-width: 0.5vw;
+    background-color: black;
+    align-items: center;
+    color: white;
+
+    font-size: 130%;
+    width: 70%;
+    margin: 1%;
+}
+
+/*ids*/
+#title{
+    font-size: 350%;
+    text-align: center;
+    color:white;
+    margin: 1%;
+}
+
+#lowerStatsBar{
     position: fixed;
     left: 5%;
     bottom: 1%;
     display: flex;
 }
 
-.returnButton{
-    position: fixed;
-    display: flex;
-    right: 5%;
-    top: 5%;
-    height: auto;
-    width: auto;
-    font-size: 8vw;
-    cursor: pointer;
-    border: none;
-    background-color: #00000000;
-    color: #fff;
-    transition: background-color 0.3s;
-    text-align: center;
-}
-
-.returnButton:hover {
-    background-color: gray;
-}
-
-.centerTitle{
-    font-size: 15vw;
-    display: block;
-    top: 10%;
-    color: white;
-    text-align: center;
-}
-
-.instructionsList{
-    position:fixed;
-    font-size: 4vw;
-    display: block;
-    left: 5vw;
-    color: white;
-}
-
-.screenBackground{
+#screenBackground{
     position: fixed;
     z-index: 1;
     left: 0%;
@@ -95,7 +63,7 @@ body {
     background-color: rgba(0, 0, 0, 0.7);
 }
 
-.contentBox{
+#contentBox_di{
     white-space: nowrap;
     display: flex;
     border-color: white;
@@ -114,47 +82,11 @@ body {
     flex-direction: column;
 }
 
-.titleElement{
-    font-size: 350%;
-    text-align: center;
-    color:white;
-    margin: 1%;
-}
-
-.textElement{
+#textElement_p{
     font-size: 150%;
     text-align: center;
     color:white;
     margin: 1%;
-}
-
-.popUpButton{
-    border-color: white;
-    border-style: double;
-    border-width: 0.5vw;
-    background-color: black;
-    align-items: center;
-    color: white;
-
-    font-size: 130%;
-    width: 70%;
-    margin: 1%;
-}
-
-.loadingScreen{
-    position: fixed;
-    z-index: 2;
-    left: 0%;
-    top: 0%;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    text-align: center;
-}
-
-.loadingText{
-    color: white;
-    font-size: 5vw;
 }
 
 #leaderBoard{
@@ -170,15 +102,4 @@ body {
     width: 70%;
     /*height: 70%;*/
     margin: 1%;
-}
-
-td{
-    color: white;
-    font-size: 250%;
-}
-
-table{
-    width: 100%;
-    border-spacing: 5vw;
-    border-spacing: 1vh;
 }

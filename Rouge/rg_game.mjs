@@ -874,24 +874,24 @@ Used for lose/win
 *************************************************/
 function middlePopup(title, content) {
     let screenBackground = document.createElement("div");
-    let contentBox = document.createElement("div");
+    let contentBox_di = document.createElement("div");
     let titleElement = document.createElement("p");
-    let textElement = document.createElement("p");
+    let textElement_p = document.createElement("p");
     //let winScreenBr = document.createElement("br")
     let mainMenuButton = document.createElement("button");
     let playAgainButton = document.createElement("button");
     let leaderBoard = document.createElement("div");
 
-    screenBackground.classList.add("screenBackground");
-    contentBox.classList.add("contentBox");
-    titleElement.classList.add("titleElement");
-    textElement.classList.add("textElement");
+    screenBackground.id = "screenBackground";
+    contentBox_di.id = "contentBox_di";
+    titleElement.id = "title";
+    textElement_p.id = "textElement_p";
     mainMenuButton.classList.add("popUpButton");
     playAgainButton.classList.add("popUpButton");
     leaderBoard.id = "leaderBoard";
 
     titleElement.innerText = title;
-    textElement.innerText = content;
+    textElement_p.innerText = content;
     mainMenuButton.innerHTML = "Main Menu";
     playAgainButton.innerHTML = "Play Again";
 
@@ -902,13 +902,13 @@ function middlePopup(title, content) {
         startLoadingScreen(reset());
     };
 
-    contentBox.appendChild(titleElement);
-    contentBox.appendChild(textElement);
-    screenBackground.appendChild(contentBox);
-    //contentBox.appendChild(winScreenBr)
-    contentBox.appendChild(leaderBoard);
-    contentBox.appendChild(mainMenuButton);
-    contentBox.appendChild(playAgainButton);
+    contentBox_di.appendChild(titleElement);
+    contentBox_di.appendChild(textElement_p);
+    screenBackground.appendChild(contentBox_di);
+    //contentBox_di.appendChild(winScreenBr)
+    contentBox_di.appendChild(leaderBoard);
+    contentBox_di.appendChild(mainMenuButton);
+    contentBox_di.appendChild(playAgainButton);
 
     document.body.appendChild(screenBackground);
 
@@ -1029,8 +1029,6 @@ function loadingScreenHandler() {
     screen.classList.add("loadingScreen");
     document.body.appendChild(screen);
     draw();
-
-    //console.log("added loading screen.... this should be before the rest function is done or any function that loading screen calls")
 }
 
 /*************************************************
