@@ -93,16 +93,18 @@ function interperateKeyValuePair(key, value, tr) {
     string_op.value = "string"
     string_op.innerHTML = "string"
     let int_op = document.createElement("option")
-    int_op.value = "int"
-    int_op.innerHTML = "int"
+    //using number as that is what typeof value returns, would rather use int/float
+    int_op.value = "number"
+    int_op.innerHTML = "number"
     type_sl.append(string_op, int_op)
     type_sl.id = `${key_td.innerHTML}_sl`
+    type_sl.value = `${typeof value}`
     tr.append(key_td, value_in, type_sl)
     //allow the value to be edited in fire base following the selected type
     value_in.addEventListener("change", function (e) {
         let valueType = document.getElementById(`${this.id}_sl`).value
         let value = e.target.value
-        if (valueType == 'int') {
+        if (valueType == 'number') {
             value = parseInt(value)
             if (isNaN(value)) { console.log("is nan"); return }
         }
