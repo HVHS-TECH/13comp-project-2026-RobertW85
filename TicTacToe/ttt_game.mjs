@@ -1,5 +1,5 @@
 /**
- * p5.play: ttt_game.mjs
+ * ttt_game.mjs
  * @description features: turn based multiplayer game with scoring system
  * Writen by Robert Watt
  * Term 1-2 2026

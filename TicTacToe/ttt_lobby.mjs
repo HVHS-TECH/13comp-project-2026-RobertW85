@@ -1,5 +1,5 @@
 /**
- * Js: ttt_lobby.mjs
+ * ttt_lobby.mjs
  * @description features: join or host turn based multiplayer games and display a leaderBoard
  * Writen by Robert Watt
  * Term 1-2 2026

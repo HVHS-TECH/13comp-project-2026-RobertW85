@@ -1,4 +1,9 @@
-//Term 1 2026
+/**
+ * admin.mjs
+ * Allow fire base admins to read, edit and delete data base information
+ * Written by Robert Watt
+ * Term 1-2 2026
+ */
 import { fb_read, fb_initialize, fb_write, fb_remove } from "../FireBase/fb_io.mjs"
 fb_initialize()
 

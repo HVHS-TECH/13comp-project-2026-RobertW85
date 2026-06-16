@@ -3,7 +3,7 @@
  * Generalised firebase routines
  * Written by Robert Watt
  * mostly Term 1-2 2026
- * 2025- fb_intialize - fb_authenticate - fb_read - fb_readsorted
+ * 2025- fb_intialize - fb_authenticate - fb_read
  */
 let FB_DB;
 
