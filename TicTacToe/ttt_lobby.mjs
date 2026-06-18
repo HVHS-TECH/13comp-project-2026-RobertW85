@@ -178,6 +178,10 @@ function startGame(lobbyNumber) {
  * will make a modal div visible and populate it with data
  */
 async function displayLeaderBoard(size) {
+    //blur background, the div happens to be centered class
+    document.querySelectorAll('.centered').forEach(element => {
+        element.classList.add('blured')
+    });
     document.getElementById('leaderBoardContent_tb').innerHTML = ''
     let scores = await fb_readSorted("/games/TTT/MMR", "MMR", size)
     //create table row for each players top scores, containing their username and score
@@ -200,5 +204,8 @@ async function displayLeaderBoard(size) {
 window.onclick = function (event) {
     if (event.target == document.getElementById('leaderBoard_di')) {
         document.getElementById('leaderBoard_di').style.display = "none";
+        document.querySelectorAll('.centered').forEach(element => {
+            element.classList.remove('blured')
+        });
     }
 }

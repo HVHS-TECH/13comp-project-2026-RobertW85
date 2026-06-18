@@ -13,9 +13,15 @@ button {
 
 /*classes*/
 .leaderBoardContent {
-    font-size: 5vh;
+    font-size: 3vw;
     text-wrap: nowrap;
     padding-right: 5vw;
+    border: 1px;
+    border-style: dashed;
+}
+
+.blured {
+    filter: blur(5px);
 }
 
 /*ids*/
@@ -29,4 +35,8 @@ button {
 
 #rematch_bt {
     margin-bottom: 3vh;
+}
+
+#gameTitle_h2 {
+    font-size: 5vw;
 }
