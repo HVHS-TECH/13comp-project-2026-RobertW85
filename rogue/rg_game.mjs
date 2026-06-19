@@ -275,8 +275,7 @@ function autoAddItems(items) {
                         } else {
                             //items[objects][0] is an enemy
                             let enemyStatIndex;
-                            for (let index = 0;index < ENEMY_STATS.length;index++)
-                                {if (ENEMY_STATS[index].Tile == items[objects][0]) {enemyStatIndex = index;}}
+                            for (let index = 0; index < ENEMY_STATS.length; index++) { if (ENEMY_STATS[index].Tile == items[objects][0]) { enemyStatIndex = index; } }
                             spriteArray.push([
                                 items[objects][0],
                                 column,

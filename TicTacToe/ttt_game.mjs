@@ -99,7 +99,6 @@ export async function ttt_startGame() {
     gameOver = false
 }
 
-
 /**
  * changes size of canvas
  * redraws sprites and lines
@@ -121,7 +120,11 @@ function updateScreen() {
     refreshSprites();
     textSize(30);
     fill(lineColor);
-    text(`Turn: ${turn}`, 50, 50);
+    let turnText
+    if (turn == true) {
+        turnText = 'Your turn'
+    } else { turnText = 'Opponents turn' }
+    text(`${turnText}`, 50, 50);
     text(`Your Symbol: ${symbolName}`, 50, 100);
 }
 

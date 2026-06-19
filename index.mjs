@@ -65,7 +65,7 @@ function activateAdmin() {
   let admin_bt = document.createElement("button");
   admin_bt.id = 'admin_bt';
   admin_bt.innerHTML = 'Admin';
-  admin_bt.onclick = () => { window.location.href = "/Admin/admin.html" };
+  admin_bt.onclick = () => { window.location.href = "/admin/admin.html" };
   document.getElementById('buttons_di').appendChild(admin_bt);
 }
 

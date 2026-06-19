@@ -30,14 +30,19 @@ export function startLobbyScreen() {
     buttonDiv.append(backButton, hostButton, leaderBoardButton);
     lobby_di.append(lobbyTitle, buttonDiv, lobbyTable);
 
-    lobby_di.className = 'centered'
+    buttonDiv.id = 'titleButtons_di';
+    lobby_di.className = 'centered';
     backButton.innerHTML = "Back";
     backButton.onclick = () => { history.back() };
-    hostButton.innerHTML = "Host";
+    hostButton.innerHTML = "Create Lobby";
     hostButton.onclick = hostLobby;
     leaderBoardButton.innerHTML = "Leaderboard";
     leaderBoardButton.onclick = () => { displayLeaderBoard(5) };
-    lobbyTitle.innerHTML = "Tic tac toe Lobby";
+    lobbyTitle.innerHTML = "Tic Tac Toe Lobby";
+
+    [backButton, hostButton, leaderBoardButton].forEach(element => {
+        element.className = "navButtons"
+    });
 
     refreshAvailableLobbies();
 
@@ -68,7 +73,9 @@ async function refreshAvailableLobbies() {
         lobbyName.innerHTML = LOBBYLIST[LOBBYLISTKEYS[i]].name;
         joinButton.innerHTML = "Join";
         joinButton.onclick = () => { joinLobby(LOBBYLISTKEYS[i]) };
+        joinButton.className = "joinButtons"
         tableRow.append(lobbyName, joinButton);
+        tableRow.className = 'lobbyTb'
         lobbyTable.appendChild(tableRow);
     }
 }
@@ -190,11 +197,14 @@ async function displayLeaderBoard(size) {
         let entry = document.createElement('tr')
         let name = document.createElement('td')
         let score = document.createElement('td')
+        let ranking = document.createElement('td')
+        ranking.innerHTML = i + 1
         name.innerHTML = scores[i].username
         score.innerHTML = int(scores[i].MMR)
+        ranking.className = "leaderBoardContent"
         name.className = "leaderBoardContent"
         score.className = "leaderBoardContent"
-        entry.append(name, score)
+        entry.append(ranking, name, score)
         document.getElementById('leaderBoardContent_tb').append(entry)
     }
     document.getElementById('leaderBoard_di').style.display = 'block'
