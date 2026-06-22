@@ -63,7 +63,15 @@ export function startLobbyScreen() {
 async function refreshAvailableLobbies() {
     const LOBBYLIST = await fb_read("/lobbies");
     lobbyTable.innerHTML = "";
-    if (LOBBYLIST == null) { return; }
+    if (LOBBYLIST == null) {
+        let noLobbies = document.createElement("p");
+        noLobbies.innerHTML = "Waiting for lobbies..."
+        noLobbies.style.fontStyle = 'italic';
+        noLobbies.style.fontSize = '5vw';
+        noLobbies.style.color = 'gray';
+        lobbyTable.appendChild(noLobbies)
+        return;
+    }
     const LOBBYLISTKEYS = Object.keys(LOBBYLIST)
     for (let i = 0; i < LOBBYLISTKEYS.length; i++) {
         if (LOBBYLIST[LOBBYLISTKEYS[i]].players.length >= 2) continue;
