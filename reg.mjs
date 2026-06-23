@@ -3,7 +3,7 @@
  * Writen by Robert Watt
  * Term 1-2 2026
  */
-import { fb_write } from "./FireBase/fb_io.mjs";
+import { fb_write } from "./fireBase/fb_io.mjs";
 import { login } from "./index.mjs";
 
 /**

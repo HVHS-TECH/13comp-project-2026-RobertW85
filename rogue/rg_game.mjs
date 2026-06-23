@@ -10,7 +10,7 @@ import {
     fb_readSorted,
     fb_read,
     fb_write,
-} from "../FireBase/fb_io.mjs";
+} from "../fireBase/fb_io.mjs";
 
 fb_initialize();
 

@@ -4,7 +4,7 @@
  * Writen by Robert Watt
  * Term 1-2 2026
  */
-import { fb_initialize, fb_read, fb_write, fb_waitForChange, fb_readSorted, fb_remove, fb_removeOnDisconnect, fb_onValue } from "../FireBase/fb_io.mjs";
+import { fb_initialize, fb_read, fb_write, fb_waitForChange, fb_readSorted, fb_remove, fb_removeOnDisconnect, fb_onValue } from "../fireBase/fb_io.mjs";
 import { ttt_startGame } from "./ttt_game.mjs";
 
 let lobbyTable, lobby_di;

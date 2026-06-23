@@ -4,7 +4,7 @@
  * Written by Robert Watt
  * Term 1-2 2026
  */
-import { fb_read, fb_initialize, fb_write, fb_remove } from "../FireBase/fb_io.mjs"
+import { fb_read, fb_initialize, fb_write, fb_remove } from "../fireBase/fb_io.mjs"
 fb_initialize()
 
 window.userButton = userButton

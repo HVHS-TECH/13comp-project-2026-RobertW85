@@ -4,7 +4,7 @@
  * Writen by Robert Watt
  * Term 1-2 2026
  */
-import { fb_authenticate, fb_initialize, fb_waitForChange, fb_read } from "./FireBase/fb_io.mjs";
+import { fb_authenticate, fb_initialize, fb_waitForChange, fb_read } from "./fireBase/fb_io.mjs";
 
 fb_initialize();
 
