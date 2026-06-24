@@ -315,8 +315,8 @@ async function endGame(outcome) {
             `${winInfo.username} (${winInfo.symbol}${plural}) wins!`;
         calcMmr(winInfo.uid)
     }
-    document.getElementById("rematch_bt").style.display = 'block'
-    document.getElementById("leave_bt").style.display = 'block'
+    //document.getElementById("rematch_bt").style.display = 'block'
+    //document.getElementById("leave_bt").style.display = 'block'
     document.getElementById("endScreen_di").style.display = 'block'
     document.getElementById("rematch_bt").onclick = () => rematch();
     document.getElementById("leave_bt").onclick = () => leave();

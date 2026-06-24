@@ -36,7 +36,7 @@ async function fillTable(path, table) {
         let info = data[Object.keys(data)[i]]
         if (typeof info !== 'object') {
             //hard coded for users public/private and is rather sketchy (no key instead using tr?)
-            interperateKeyValuePair("", info, tr);
+            interperateKeyValuePair("", info, tr, `${path}/${Object.keys(data)[i]}`);
             table.appendChild(tr)
         } else {
             //create for each path inside the path 
@@ -67,7 +67,7 @@ async function fillTable(path, table) {
                     tr.append(innerObject_bt)
                     continue
                 }
-                interperateKeyValuePair(Object.keys(info)[j], info[Object.keys(info)[j]], tr)
+                interperateKeyValuePair(Object.keys(info)[j], info[Object.keys(info)[j]], tr, `${path}/${Object.keys(data)[i]}`)
             }
         }
         //add a button to each entry allowing for firebase deletion
@@ -82,7 +82,7 @@ async function fillTable(path, table) {
     }
 }
 
-function interperateKeyValuePair(key, value, tr) {
+function interperateKeyValuePair(key, value, tr, path) {
     //create value and key combo allowing for value to be edited
     let key_td = document.createElement("td")
     let value_in = document.createElement("input")
@@ -112,6 +112,6 @@ function interperateKeyValuePair(key, value, tr) {
             value = parseInt(value)
             if (isNaN(value)) { console.log("is nan"); return }
         }
-        fb_write(value, `${path}/${Object.keys(data)[i]}/${this.id}`)
+        fb_write(value, `${path}/${this.id}`)
     })
 }

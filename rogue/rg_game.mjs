@@ -141,7 +141,7 @@ window.setup = setup;
 window.draw = draw;
 
 function preload() {
-    sheetImg = loadImage("TileSheet8x8.png");
+    sheetImg = loadImage("tileSheet8x8.png");
 }
 
 function setup() {
@@ -851,7 +851,7 @@ function middlePopup(title, content) {
     playAgainButton.innerHTML = "Play Again";
 
     mainMenuButton.onclick = function () {
-        window.location.href = "./index.html";
+        window.location.href = "/index.html";
     };
     playAgainButton.onclick = function () {
         startLoadingScreen(reset());

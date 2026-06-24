@@ -43,6 +43,12 @@ body {
     margin-left: 2vw;
 }
 
+.endScreenButtons {
+    font-size: 20px;
+    padding: 2vh;
+    margin: 10px;
+}
+
 /*ids*/
 #titleButtons_di {
     padding-bottom: 5vh;
