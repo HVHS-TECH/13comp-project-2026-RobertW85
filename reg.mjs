@@ -51,11 +51,16 @@ async function submit() {
 async function validateAdress(addressId) {
     let address = document.getElementById(addressId).value
     address = address.trim()
+    if (await checkEmpty(addressId, address)) return;
     if (address.length > 85) {
-        errorMessage(addressId, 'address is to long')
+        errorMessage(addressId, 'address is too long')
         return
     }
-    if (await checkEmpty(addressId, address)) return;
+    if (address.length < 4) {
+        errorMessage(addressId, 'address is too short')
+        return
+    }
+
     return address
 }
 
