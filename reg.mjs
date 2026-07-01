@@ -50,14 +50,14 @@ async function submit() {
  */
 async function validateAdress(addressId) {
     let address = document.getElementById(addressId).value
+    if (address.length < 6) {
+        errorMessage(addressId, 'address is too short')
+        return
+    }
     address = address.trim()
     if (await checkEmpty(addressId, address)) return;
     if (address.length > 85) {
         errorMessage(addressId, 'address is too long')
-        return
-    }
-    if (address.length < 4) {
-        errorMessage(addressId, 'address is too short')
         return
     }
 
@@ -70,24 +70,26 @@ async function validateAdress(addressId) {
  * @returns phonenumber or null if invalid
  */
 async function validatePhoneNumber(phoneNumberID) {
-    let phoneNumber = Number(document.getElementById(phoneNumberID).value)
-    if (await checkEmpty(phoneNumberID, phoneNumber)) return;
+    let phoneNumber = document.getElementById(phoneNumberID).value
     if (isNaN(phoneNumber)) {
         errorMessage(phoneNumberID, 'phone number is not a number')
         return
     }
-    if (phoneNumber != parseInt(phoneNumber)) {
-        errorMessage(phoneNumberID, 'phone number is not valid')
-        return
-    }
-    if (phoneNumber.length > 11) {
+    if (phoneNumber.length > 15) { //longest number (AUS)
         errorMessage(phoneNumberID, 'phone number is too long')
         return
     }
-    if (phoneNumber.length < 9) {
+    if (phoneNumber.length < 4) { //shortest number (NIUE   )
         errorMessage(phoneNumberID, 'phone number is too short')
         return
     }
+    phoneNumber = Number(phoneNumber)
+    if (await checkEmpty(phoneNumberID, phoneNumber)) return;
+    if (phoneNumber != parseInt(phoneNumber)) { //to check if decimals
+        errorMessage(phoneNumberID, 'phone number is not valid')
+        return
+    }
+    
     return phoneNumber
 }
 
