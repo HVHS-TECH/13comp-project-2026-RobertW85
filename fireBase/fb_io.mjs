@@ -28,7 +28,7 @@ export {
  * will set FB_DB for other functions
  */
 function fb_initialize() {
-    console.log("fb_initialize");
+    //console.log("fb_initialize");
     const FB_Cfg = {
         apiKey: "AIzaSyBMIIDBNTsiyjzbIqdMcWDZF2bKbgzsMRo",
         authDomain: "fir-refresher-f1f18.firebaseapp.com",
@@ -74,7 +74,7 @@ async function fb_authenticate() {
  * @param {string} path 
  */
 async function fb_write(input, path) {
-    console.log(`Write ${input} at ${path}`);
+    //console.log(`Write ${input} at ${path}`);
     const dbReference = ref(FB_DB, path);
     await set(dbReference, input);
 }
@@ -85,7 +85,7 @@ async function fb_write(input, path) {
  * @returns {any}
  */
 async function fb_read(path) {
-    console.log(`read ${path}`)
+    //console.log(`read ${path}`)
     const dbReference = ref(FB_DB, path);
     try {
         const snapshot = await get(dbReference);
@@ -93,7 +93,7 @@ async function fb_read(path) {
         if (fb_data != null) {
             return fb_data;
         } else {
-            console.log(`No record found:${path}`);
+            //console.log(`No record found:${path}`);
         }
     } catch (error) {
         console.log(error);
@@ -156,7 +156,7 @@ async function fb_readSorted(path, key, amount) {
  * @param {string} path 
  */
 async function fb_remove(path) {
-    console.log(`remove ${path}`)
+    //console.log(`remove ${path}`)
     await remove(ref(FB_DB, path))
 }
 
@@ -165,6 +165,6 @@ async function fb_remove(path) {
  * @param {string} path 
  */
 async function fb_removeOnDisconnect(path) {
-    const REF = ref(FB_DB, path);
+    //const REF = ref(FB_DB, path);
     onDisconnect(REF).remove()
 }
