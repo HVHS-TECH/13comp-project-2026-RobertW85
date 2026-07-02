@@ -851,7 +851,7 @@ function middlePopup(title, content) {
     playAgainButton.innerHTML = "Play Again";
 
     mainMenuButton.onclick = function () {
-        window.location.href = "/index.html";
+        window.location.href = "../index.html";
     };
     playAgainButton.onclick = function () {
         startLoadingScreen(reset());
