@@ -153,6 +153,7 @@ Real Setup()
 this is to allow a loading screen while it generates
 *************************************************/
 function realSetup() {
+    if(sessionStorage.getItem("uid") == null){alert("must sign in!");return}
     gameCanvas = new Canvas(600, 316, "pixelated x4");
     allSprites.pixelPerfect = true;
     world.gravity.y = 0;

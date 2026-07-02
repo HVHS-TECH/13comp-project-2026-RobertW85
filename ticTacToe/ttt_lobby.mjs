@@ -18,6 +18,7 @@ startLobbyScreen();
  * create the main elements of the lobby
  */
 export function startLobbyScreen() {
+    if(sessionStorage.getItem("uid") == null){alert("must sign in!");return}
     lobby_di = document.createElement("div");
     lobbyTable = document.createElement("table");
     let lobbyTitle = document.createElement("h1");
