@@ -165,6 +165,6 @@ async function fb_remove(path) {
  * @param {string} path 
  */
 async function fb_removeOnDisconnect(path) {
-    //const REF = ref(FB_DB, path);
+    const REF = ref(FB_DB, path);
     onDisconnect(REF).remove()
 }
