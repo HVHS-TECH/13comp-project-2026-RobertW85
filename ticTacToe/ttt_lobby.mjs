@@ -75,7 +75,7 @@ async function refreshAvailableLobbies() {
     }
     const LOBBYLISTKEYS = Object.keys(LOBBYLIST)
     for (let i = 0; i < LOBBYLISTKEYS.length; i++) {
-        if (LOBBYLIST[LOBBYLISTKEYS[i]].players.length >= 2) continue;
+        if (LOBBYLIST[LOBBYLISTKEYS[i]].players.length >= 2) continue; 
         let tableRow = document.createElement("tr");
         let lobbyName = document.createElement("td");
         let joinButton = document.createElement("button");
@@ -86,6 +86,15 @@ async function refreshAvailableLobbies() {
         tableRow.append(lobbyName, joinButton);
         tableRow.className = 'lobbyTb'
         lobbyTable.appendChild(tableRow);
+    }
+    if (lobbyTable.children.length == 0) { //incase all lobbies are full
+        let noLobbies = document.createElement("p");
+        noLobbies.innerHTML = "Waiting for lobbies..."
+        noLobbies.style.fontStyle = 'italic';
+        noLobbies.style.fontSize = '5vw';
+        noLobbies.style.color = 'gray';
+        lobbyTable.appendChild(noLobbies)
+        return;
     }
 }
 
